@@ -23,15 +23,15 @@ export default function ElementPage({ slug, track }: ElementPageProps) {
       </a>
       <div className="mt-6 grid gap-10 lg:grid-cols-12">
         <div className="lg:col-span-5">
-          <img
-            src={el.image}
-            alt={el.imageAlt}
-            className="w-full rounded-lg border border-atmos/20 object-cover"
-          />
-          <h1 className="mt-5 text-3xl font-bold tracking-tight text-cloud">
+          <h1 className="text-3xl font-bold tracking-tight text-cloud">
             {el.element} — {el.experience}
           </h1>
           <p className="mt-2 text-atmos">{el.strapline}</p>
+          <img
+            src={el.image}
+            alt={el.imageAlt}
+            className="mt-5 h-64 w-full rounded-lg border border-atmos/20 object-cover md:h-[340px]"
+          />
           <p className="mt-4 text-slate-200">{el.description}</p>
           <h2 className="mt-6 text-lg font-semibold text-cloud">
             Scientific context
