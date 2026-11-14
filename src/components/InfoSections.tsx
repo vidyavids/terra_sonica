@@ -87,9 +87,10 @@ export default function InfoSections() {
             not ocean colour or sea height.
           </li>
           <li>
-            The SVS visual ({ninoData.provenance.visualCoverage}) is
-            contextual, not synchronized with the sound (
-            {ninoData.provenance.soundCoverage}).
+            The SVS visual shows Jan 29–Oct 10, 2025 vs 2026 (verified on
+            the SVS 5683 page, Nov 2026). It is contextual, not synchronized
+            with the sound, which covers Jan 2020–Aug 2026 monthly (80
+            months).
           </li>
           <li>
             Reference periods follow each dataset&apos;s methodology (

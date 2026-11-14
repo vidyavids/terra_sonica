@@ -486,10 +486,12 @@ function explainNino(
         <div>
           <dt className="font-semibold text-atmos">The visual</dt>
           <dd>
-            {ninoData.provenance.visual} It shows{' '}
-            {ninoData.provenance.visualCoverage} while the sound covers{' '}
-            {ninoData.provenance.soundCoverage} The visual is context, not
-            synchronization.
+            NASA Scientific Visualization Studio, 'Signs of El Niño in
+            2026' (SVS 5683), https://svs.gsfc.nasa.gov/5683/. It shows
+            Jan 29–Oct 10, 2025 vs 2026 (verified on the SVS 5683 page, Nov
+            2026). The visual is contextual, not synchronized with the
+            sound, while the sound covers Jan 2020–Aug 2026 monthly (80
+            months).
           </dd>
         </div>
         <div>
