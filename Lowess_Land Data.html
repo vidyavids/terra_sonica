@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Temperature Timelapse</title></head>
+<body style="font-family: sans-serif; text-align: center; padding: 40px;">
+  <h1>Global Temperature, 1880–2025</h1>
+  <p id="display" style="font-size: 48px;">Press Play</p>
+  <p id="note" style="font-size: 24px; color: #555;"></p>
+  <button id="playBtn" style="font-size: 20px; padding: 12px 30px;">▶ Play</button>
+  <div style="width: 80%; height: 10px; background: #ddd; margin: 30px auto;">
+    <div id="bar" style="height: 100%; width: 0%; background: #e74c3c;"></div>
+  </div>
+
+<script src="frequencies.js"></script>
+<script>
+const NOTE_MS = 400;
+
+let ctx;
+document.getElementById('playBtn').onclick = async () => {
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  await ctx.resume();
+  const display = document.getElementById('display');
+  const noteEl = document.getElementById('note');
+  const bar = document.getElementById('bar');
+
+  for (let i = 0; i < freqs.length; i++) {
+    const year = 1880 + i;
+    const freq = freqs[i];
+    display.textContent = year;
+    noteEl.textContent = freq + ' Hz';
+    bar.style.width = ((i + 1) / freqs.length * 100) + '%';
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + NOTE_MS / 1000);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + NOTE_MS / 1000);
+
+    await new Promise(r => setTimeout(r, NOTE_MS));
+  }
+  display.textContent = 'Done — 1880 to 2025';
+};
+</script>
+</body>
+</html>
