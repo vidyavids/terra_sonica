@@ -67,6 +67,8 @@ Skin images (originals in `to build/`, web-sized copies in
   Robert Simmon, using Suomi NPP VIIRS data courtesy of Chris Elvidge
   (NOAA National Geophysical Data Center).
 - WATER reuses the SVS 5683 still frame (`public/media/`).
+- Nav logo. NASA insignia (meatball) from NASA SVS static media
+  (svs.gsfc.nasa.gov). Credit: NASA.
 
 Scope note: the brief's volume slider was dropped — a master gain would
 require touching the frozen audio engines.
