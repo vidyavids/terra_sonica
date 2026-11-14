@@ -41,3 +41,32 @@ No backend. Native Web Audio API only.
   `scripts/download_svs_media.py`).
 - `src/audio/conductor.ts`, `src/hooks/useTrackPlayer.ts` — shared
   no-overlap playback coordinator and scrub state (engines untouched).
+- `src/components/` — page shell (Nav, Hero, Experiences, PlayerSection,
+  InfoSections, SiteFooter). Styling and layout only; playback logic lives
+  in the frozen `src/audio/` + `src/hooks/` modules.
+- `public/images/` — web-sized skin images (see Image credits below).
+- `to build/` — approved brief, mockups, credits, and full-size image
+  originals (reference material, not shipped).
+
+## Image credits
+
+Skin images (originals in `to build/`, web-sized copies in
+`public/images/`):
+
+- Hero Earth. The Blue Marble (remastered), Apollo 17 photograph, 1972.
+  Credit: NASA.
+- AIR section. Hurricane Katrina, MODIS, 28 Aug 2005. Credit: NASA.
+- EARTH section. Amazon rainforest, northern Brazil, MODIS, 1 Jul 2002.
+  Credit: NASA Earth Observatory image by Jacques Descloitres, MODIS Land
+  Rapid Response Team, NASA/GSFC.
+- FIRE section. Fires in Greece, MODIS on Aqua, 22 Aug 2009; fire areas
+  outlined in red, smoke plume over the Aegean Sea. Credit: NASA Earth
+  Observatory image by Jeff Schmaltz, MODIS Rapid Response Team, NASA GSFC.
+- AETHER section. Asia and Australia at night, Black Marble composite,
+  Suomi NPP VIIRS, Apr–Oct 2012. Credit: NASA Earth Observatory image by
+  Robert Simmon, using Suomi NPP VIIRS data courtesy of Chris Elvidge
+  (NOAA National Geophysical Data Center).
+- WATER reuses the SVS 5683 still frame (`public/media/`).
+
+Scope note: the brief's volume slider was dropped — a master gain would
+require touching the frozen audio engines.
