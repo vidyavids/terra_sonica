@@ -105,7 +105,7 @@ const ELEMENTS: Element[] = [
 
 export default function Experiences() {
   return (
-    <section aria-label="Experiences" className="mx-auto max-w-5xl px-4 py-10">
+    <section id="experiences" aria-label="Experiences" className="mx-auto max-w-5xl px-4 py-10">
       <h2 className="text-2xl font-bold text-cloud">
         THE EARTH JUKEBOX — Hear Our Planet
       </h2>

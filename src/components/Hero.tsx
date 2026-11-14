@@ -117,7 +117,7 @@ export default function Hero() {
               <WaveAccent />
             </div>
             <a
-              href="#player"
+              href="#experiences"
               className="mt-6 inline-block rounded bg-atmos px-8 py-3 font-semibold text-slate-950 shadow-[0_0_28px_rgba(86,199,245,0.45)] hover:shadow-[0_0_36px_rgba(86,199,245,0.65)]"
             >
               Enter the Jukebox
