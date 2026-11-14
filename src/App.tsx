@@ -6,8 +6,6 @@ import { useTrackPlayer } from './hooks/useTrackPlayer';
 import tempData from './data/global-temperature.json';
 import ninoData from './data/nino34.json';
 
-const NINO_VIDEO =
-  '/media/elnino_2026_ssta_avw_ssha_1010_nolabels_1080p60.mp4';
 const NINO_STILL =
   '/media/elnino_2026_ssta_avw_ssha_1010_nolabels.02200_preview.jpg';
 
@@ -448,21 +446,6 @@ export default function App() {
           </figcaption>
         </figure>
 
-        <div className="mt-4">
-          <p className="mb-1 text-xs text-slate-400">
-            Watch the NASA animation (20 s) — covers Jan–Oct 2026 only, plays
-            independently of the track
-          </p>
-          <video
-            className="w-full rounded border border-slate-800"
-            controls
-            preload="none"
-            poster={NINO_STILL}
-            aria-label="NASA SVS 5683 animation comparing tropical Pacific conditions in 2025 and 2026. Contextual visual, not synchronized with the sound."
-          >
-            <source src={NINO_VIDEO} type="video/mp4" />
-          </video>
-        </div>
       </section>
 
       <section

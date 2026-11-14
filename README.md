@@ -37,7 +37,7 @@ No backend. Native Web Audio API only.
   and derived 80-month artifact (see `scripts/validate_nino34.py`,
   `src/data/nino34.json`, `src/audio/ninoEngine.ts`,
   `docs/nino34-mapping.md`).
-- `public/media/` — SVS 5683 video + still (see
+- `public/media/` — SVS 5683 still (see
   `scripts/download_svs_media.py`).
 - `src/audio/conductor.ts`, `src/hooks/useTrackPlayer.ts` — shared
   no-overlap playback coordinator and scrub state (engines untouched).

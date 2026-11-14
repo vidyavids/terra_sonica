@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Terra Sonica track 2: download the SVS 5683 contextual media.
+"""Terra Sonica track 2: download the SVS 5683 contextual still frame.
 
-Fetches the verified no-labels video and matching still frame from
+Fetches the verified no-labels still from
 https://svs.gsfc.nasa.gov/5683/ ("Signs of El Nino in 2026", released
 Oct 15 2026, visualizations by Kel Elkins) into public/media/.
+(The no-labels video was removed from the track card; this script no
+longer fetches it.)
 
-Verifies each file by size bounds and magic bytes (MP4 ftyp / JPEG SOI).
+Verifies the file by size bounds and magic bytes (JPEG SOI).
 Exits non-zero on any failure. Re-runnable: re-downloads every time.
 """
 
@@ -19,8 +21,6 @@ BASE = "https://svs.gsfc.nasa.gov/vis/a000000/a005600/a005683"
 
 FILES: list[tuple[str, str, int, int]] = [
     # (filename, kind, min_bytes, max_bytes)
-    ("elnino_2026_ssta_avw_ssha_1010_nolabels_1080p60.mp4", "mp4",
-     30_000_000, 45_000_000),  # page lists 36.0 MB
     ("elnino_2026_ssta_avw_ssha_1010_nolabels.02200_preview.jpg", "jpg",
      600_000, 1_500_000),  # page lists 796.2 KB; observed 1186965 bytes
 ]

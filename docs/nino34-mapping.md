@@ -78,12 +78,12 @@ Not synchronized with the sound — shown alongside as context.
 - Page: NASA Scientific Visualization Studio, "Signs of El Niño in
   2026" (SVS 5683), <https://svs.gsfc.nasa.gov/5683/>, released
   Oct 15 2026, updated Oct 21 2026. Visualizations by Kel Elkins.
-- Video: `elnino_2026_ssta_avw_ssha_1010_nolabels_1080p60.mp4`
-  (1920×1080, observed 37,784,743 bytes ≈ 36.0 MB as listed),
-  stored at `public/media/`.
 - Still: `elnino_2026_ssta_avw_ssha_1010_nolabels.02200_preview.jpg`
   (1920×1080, observed 1,186,965 bytes; the page lists 796.2 KB),
-  used as the track's main visual and the video poster.
+  the track's sole visual, stored at `public/media/`.
+- The no-labels 1080p60 video was removed from the track card (it spans
+  only Jan–Oct 2026 while the sound covers 80 months); it no longer
+  ships in `public/media/`.
 - Verified coverage: the animations run Jan 29–Oct 10 of 2025 vs
   2026 (same months compared; "1010" = Oct 10). The sound covers
   Jan 2020–Aug 2026 monthly. Products shown: SSTA, AVW (ocean
