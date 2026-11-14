@@ -570,177 +570,196 @@ function explainNino(
   );
 }
 
-export default function PlayerSection() {
+function atTempYear(events: { year: number }[], year: number): number {
+  return events.findIndex((e) => e.year === year);
+}
+
+function atNinoMonth(
+  events: { year: number; month: number }[],
+  year: number,
+  month: number,
+): number {
+  return events.findIndex((e) => e.year === year && e.month === month);
+}
+
+function ninoYearBounds(
+  events: { year: number }[],
+  year: number,
+): { from: number; to: number } {
+  const idx = events
+    .map((e, i) => (e.year === year ? i : -1))
+    .filter((i) => i >= 0);
+  return { from: idx[0], to: idx[idx.length - 1] };
+}
+
+function TempTrackPanel() {
   const conductor = useMemo(() => new PlaybackConductor(), []);
   const tempEvents = tempData.events;
-  const ninoEvents = ninoData.events;
-  const t1PlayerRef = useRef<TemperaturePlayer | null>(null);
-  const t2PlayerRef = useRef<NinoPlayer | null>(null);
-  const t1Tap = useCallback(
-    () => t1PlayerRef.current?.getAnalyser() ?? null,
-    [],
-  );
-  const t2Tap = useCallback(
-    () => t2PlayerRef.current?.getAnalyser() ?? null,
+  const playerRef = useRef<TemperaturePlayer | null>(null);
+  const tap = useCallback(
+    () => playerRef.current?.getAnalyser() ?? null,
     [],
   );
   const t1 = useTrackPlayer(
     tempEvents,
     (evts) => {
       const p = new TemperaturePlayer(evts);
-      t1PlayerRef.current = p;
+      playerRef.current = p;
       return p;
     },
     conductor,
+  );
+
+  if (tempEvents.length !== 146) {
+    return (
+      <p className="text-red-300" role="alert">
+        Track data failed validation
+      </p>
+    );
+  }
+
+  const tempRange = `${TEMP_FIRST_YEAR}–${TEMP_LAST_YEAR}`;
+
+  return (
+    <TrackCard<TempEvent>
+      anchorId="track-1"
+      cardLabel="Track 1: Global Surface Temperature"
+      title="Track 1 · Global Surface Temperature"
+      dateRange={tempRange}
+      measurement="Combined land–ocean surface temperature anomaly · NASA GISTEMP"
+      description="One note per year; pitch rises as the planet warms."
+      events={tempEvents}
+      noteMs={NOTE_MS}
+      controls={t1}
+      presets={[
+        { label: 'Jump to the 1910s', index: atTempYear(tempEvents, 1910) },
+        { label: 'Jump to the 2020s', index: atTempYear(tempEvents, 2020) },
+      ]}
+      presetHeading="Scrub the timeline, or jump straight to a decade"
+      compare={{
+        a: {
+          label: 'Early 1900s',
+          from: atTempYear(tempEvents, 1900),
+          to: atTempYear(tempEvents, 1909),
+        },
+        b: {
+          label: '2020–2025',
+          from: atTempYear(tempEvents, 2020),
+          to: atTempYear(tempEvents, 2025),
+        },
+      }}
+      guidance="Listen as each year becomes a note. Higher notes represent warmer global surface temperature anomalies."
+      getTap={tap}
+      stepUnit="year"
+      bigFor={(v) => String(v.year)}
+      idleBig={tempRange}
+      idleSub={`Press Play to hear ${tempEvents.length} years of warming.`}
+      doneText={`Done — ${TEMP_FIRST_YEAR} to ${TEMP_LAST_YEAR}.`}
+      tipFor={(e) => `${e.year} · ${formatAnomaly(e.anomalyC)}`}
+      scrubLabel="Scrub Global Surface Temperature timeline"
+      progressLabel="Track 1 playback progress"
+      sparkStart={String(TEMP_FIRST_YEAR)}
+      sparkEnd={String(TEMP_LAST_YEAR)}
+      sparkCaption="anomaly °C, dashed line = 0"
+      sparkDescription={`Annual temperature anomaly, ${tempRange}`}
+      explain={explainTemperature}
+    />
+  );
+}
+
+function NinoTrackPanel() {
+  const conductor = useMemo(() => new PlaybackConductor(), []);
+  const ninoEvents = ninoData.events;
+  const playerRef = useRef<NinoPlayer | null>(null);
+  const tap = useCallback(
+    () => playerRef.current?.getAnalyser() ?? null,
+    [],
   );
   const t2 = useTrackPlayer(
     ninoEvents,
     (evts) => {
       const p = new NinoPlayer(evts);
-      t2PlayerRef.current = p;
+      playerRef.current = p;
       return p;
     },
     conductor,
   );
 
-  if (tempEvents.length !== 146 || ninoEvents.length !== 80) {
+  if (ninoEvents.length !== 80) {
     return (
-      <section
-        id="player"
-        aria-label="The Earth Jukebox"
-        className="mx-auto max-w-7xl px-4 py-10"
-      >
-        <h2 className="text-2xl font-bold text-red-300">
-          Track data failed validation
-        </h2>
-      </section>
+      <p className="text-red-300" role="alert">
+        Track data failed validation
+      </p>
     );
   }
 
-  const tempRange = `${TEMP_FIRST_YEAR}–${TEMP_LAST_YEAR}`;
   const ninoRange = `${ninoEvents[0].year}–${ninoEvents[ninoEvents.length - 1].year}`;
-  const atTempYear = (year: number) =>
-    tempEvents.findIndex((e) => e.year === year);
-  const atNinoMonth = (year: number, month: number) =>
-    ninoEvents.findIndex((e) => e.year === year && e.month === month);
-  const ninoYearBounds = (year: number) => {
-    const idx = ninoEvents
-      .map((e, i) => (e.year === year ? i : -1))
-      .filter((i) => i >= 0);
-    return { from: idx[0], to: idx[idx.length - 1] };
-  };
-  const nino21 = ninoYearBounds(2021);
-  const nino23 = ninoYearBounds(2023);
+  const nino21 = ninoYearBounds(ninoEvents, 2021);
+  const nino23 = ninoYearBounds(ninoEvents, 2023);
 
   return (
-    <section
-      id="player"
-      aria-label="The Earth Jukebox"
-      className="mx-auto max-w-7xl px-4 py-10"
-    >
-      <h2 className="text-2xl font-bold text-cloud">The Earth Jukebox</h2>
-      <div className="mt-6 space-y-8">
-        <TrackCard<TempEvent>
-          anchorId="track-1"
-          cardLabel="Track 1: Global Surface Temperature"
-          title="Track 1 · Global Surface Temperature"
-          dateRange={tempRange}
-          measurement="Combined land–ocean surface temperature anomaly · NASA GISTEMP"
-          description="One note per year; pitch rises as the planet warms."
-          events={tempEvents}
-          noteMs={NOTE_MS}
-          controls={t1}
-          presets={[
-            { label: 'Jump to the 1910s', index: atTempYear(1910) },
-            { label: 'Jump to the 2020s', index: atTempYear(2020) },
-          ]}
-          presetHeading="Scrub the timeline, or jump straight to a decade"
-          compare={{
-            a: {
-              label: 'Early 1900s',
-              from: atTempYear(1900),
-              to: atTempYear(1909),
-            },
-            b: {
-              label: '2020–2025',
-              from: atTempYear(2020),
-              to: atTempYear(2025),
-            },
-          }}
-          guidance="Listen as each year becomes a note. Higher notes represent warmer global surface temperature anomalies."
-          getTap={t1Tap}
-          stepUnit="year"
-          bigFor={(v) => String(v.year)}
-          idleBig={tempRange}
-          idleSub={`Press Play to hear ${tempEvents.length} years of warming.`}
-          doneText={`Done — ${TEMP_FIRST_YEAR} to ${TEMP_LAST_YEAR}.`}
-          tipFor={(e) => `${e.year} · ${formatAnomaly(e.anomalyC)}`}
-          scrubLabel="Scrub Global Surface Temperature timeline"
-          progressLabel="Track 1 playback progress"
-          sparkStart={String(TEMP_FIRST_YEAR)}
-          sparkEnd={String(TEMP_LAST_YEAR)}
-          sparkCaption="anomaly °C, dashed line = 0"
-          sparkDescription={`Annual temperature anomaly, ${tempRange}`}
-          explain={explainTemperature}
-        />
-        <TrackCard<NinoEvent>
-          anchorId="track-2"
-          cardLabel="Track 2: El Niño"
-          title="Track 2 · El Niño"
-          dateRange={`${NINO_FIRST_LABEL} – ${NINO_LAST_LABEL}`}
-          measurement="Niño 3.4 sea-surface temperature anomaly · NOAA ERSSTv6"
-          description="One note per month; cool La Niña months sound low, warm El Niño months high."
-          events={ninoEvents}
-          noteMs={NINO_NOTE_MS}
-          controls={t2}
-          presets={[
-            { label: 'Jump to La Niña 2021', index: atNinoMonth(2021, 2) },
-            { label: 'Jump to El Niño 2023', index: atNinoMonth(2023, 7) },
-          ]}
-          presetHeading="Scrub the timeline, or jump straight to a contrast moment"
-          compare={{
-            a: {
-              label: 'La Niña 2021',
-              from: nino21.from,
-              to: nino21.to,
-            },
-            b: {
-              label: 'El Niño 2023',
-              from: nino23.from,
-              to: nino23.to,
-            },
-          }}
-          guidance="Listen as each month becomes a note. Lower notes represent cooler La Niña conditions; higher notes represent warmer El Niño conditions."
-          getTap={t2Tap}
-          stepUnit="month"
-          bigFor={(v) => v.label}
-          idleBig={ninoRange}
-          idleSub="Press Play to hear El Niño and La Niña play out month by month."
-          doneText={`Done — ${NINO_FIRST_LABEL} to ${NINO_LAST_LABEL}.`}
-          tipFor={(e) => `${e.label} · ${formatAnomaly(e.anomalyC)}`}
-          scrubLabel="Scrub El Niño timeline"
-          progressLabel="Track 2 playback progress"
-          sparkStart={NINO_FIRST_LABEL}
-          sparkEnd={NINO_LAST_LABEL}
-          sparkCaption="anomaly °C, dashed line = 0"
-          sparkDescription={`Monthly Niño 3.4 SST anomaly, ${NINO_FIRST_LABEL} to ${NINO_LAST_LABEL}`}
-          visual={
-            <figure className="mt-5">
-              <img
-                src={NINO_STILL}
-                alt="Still frame from NASA SVS 5683 showing tropical Pacific conditions in 2025 versus 2026"
-                loading="lazy"
-                className="w-full rounded border border-slate-800"
-              />
-              <figcaption className="mt-1 font-mono text-xs text-slate-400">
-                NASA SVS 5683 · contextual visual, not synchronized with the
-                sound
-              </figcaption>
-            </figure>
-          }
-          explain={explainNino}
-        />
-      </div>
-    </section>
+    <TrackCard<NinoEvent>
+      anchorId="track-2"
+      cardLabel="Track 2: El Niño"
+      title="Track 2 · El Niño"
+      dateRange={`${NINO_FIRST_LABEL} – ${NINO_LAST_LABEL}`}
+      measurement="Niño 3.4 sea-surface temperature anomaly · NOAA ERSSTv6"
+      description="One note per month; cool La Niña months sound low, warm El Niño months high."
+      events={ninoEvents}
+      noteMs={NINO_NOTE_MS}
+      controls={t2}
+      presets={[
+        { label: 'Jump to La Niña 2021', index: atNinoMonth(ninoEvents, 2021, 2) },
+        { label: 'Jump to El Niño 2023', index: atNinoMonth(ninoEvents, 2023, 7) },
+      ]}
+      presetHeading="Scrub the timeline, or jump straight to a contrast moment"
+      compare={{
+        a: {
+          label: 'La Niña 2021',
+          from: nino21.from,
+          to: nino21.to,
+        },
+        b: {
+          label: 'El Niño 2023',
+          from: nino23.from,
+          to: nino23.to,
+        },
+      }}
+      guidance="Listen as each month becomes a note. Lower notes represent cooler La Niña conditions; higher notes represent warmer El Niño conditions."
+      getTap={tap}
+      stepUnit="month"
+      bigFor={(v) => v.label}
+      idleBig={ninoRange}
+      idleSub="Press Play to hear El Niño and La Niña play out month by month."
+      doneText={`Done — ${NINO_FIRST_LABEL} to ${NINO_LAST_LABEL}.`}
+      tipFor={(e) => `${e.label} · ${formatAnomaly(e.anomalyC)}`}
+      scrubLabel="Scrub El Niño timeline"
+      progressLabel="Track 2 playback progress"
+      sparkStart={NINO_FIRST_LABEL}
+      sparkEnd={NINO_LAST_LABEL}
+      sparkCaption="anomaly °C, dashed line = 0"
+      sparkDescription={`Monthly Niño 3.4 SST anomaly, ${NINO_FIRST_LABEL} to ${NINO_LAST_LABEL}`}
+      visual={
+        <figure className="mt-5">
+          <img
+            src={NINO_STILL}
+            alt="Still frame from NASA SVS 5683 showing tropical Pacific conditions in 2025 versus 2026"
+            loading="lazy"
+            className="w-full rounded border border-slate-800"
+          />
+          <figcaption className="mt-1 font-mono text-xs text-slate-400">
+            NASA SVS 5683 · contextual visual, not synchronized with the
+            sound
+          </figcaption>
+        </figure>
+      }
+      explain={explainNino}
+    />
   );
+}
+
+export type TrackPanelTrack = 'temp' | 'nino';
+
+export function TrackPanel({ track }: { track: TrackPanelTrack }) {
+  return track === 'temp' ? <TempTrackPanel /> : <NinoTrackPanel />;
 }

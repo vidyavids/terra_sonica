@@ -25,12 +25,16 @@ body {
 }
 
 [id] {
-  scroll-margin-top: 4.5rem;
+  scroll-margin-top: 5.5rem;
 }
 
 :focus-visible {
   outline: 2px solid #56c7f5;
   outline-offset: 2px;
+}
+
+.ts-fade {
+  transition: opacity 200ms ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -39,6 +43,10 @@ body {
   }
 
   .ts-progress {
+    transition: none;
+  }
+
+  .ts-fade {
     transition: none;
   }
 }
