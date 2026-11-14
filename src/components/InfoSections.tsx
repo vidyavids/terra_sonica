@@ -48,7 +48,7 @@ export default function InfoSections() {
       >
         <h2 className={headingClass}>Data &amp; Methods</h2>
         <h3 className="mt-4 font-semibold text-cloud">
-          Global Temperature citation
+          Global Surface Temperature citation
         </h3>
         <p className="mt-1 max-w-3xl text-sm text-slate-300">
           {tempData.provenance.dataset} ({tempData.provenance.column},

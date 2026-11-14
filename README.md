@@ -4,7 +4,7 @@ A NASA Space Apps Challenge 2026 entry for **The Earth Information Jukebox**:
 a polished, scientifically traceable jukebox that converts authentic Earth
 observations into sound.
 
-Two tracks, both with timeline scrubbing: Track 1, Global Temperature
+Two tracks, both with timeline scrubbing: Track 1, Global Surface Temperature
 1880–2025 — 146 year-aligned notes from the official NASA GISTEMP
 Lowess(5) series; Track 2, El Niño Jan 2020–Aug 2026 — 80 monthly notes
 from the verified Niño 3.4 SST anomaly series, shown with the NASA SVS

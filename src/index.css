@@ -42,3 +42,43 @@ body {
     transition: none;
   }
 }
+
+.ts-wave-bar {
+  animation: ts-wave 1.8s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+@keyframes ts-wave {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.ts-star-twinkle {
+  animation: ts-twinkle 4s ease-in-out infinite;
+}
+
+@keyframes ts-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ts-wave-bar {
+    animation: none;
+    transform: scaleY(0.6);
+  }
+
+  .ts-star-twinkle {
+    animation: none;
+  }
+}

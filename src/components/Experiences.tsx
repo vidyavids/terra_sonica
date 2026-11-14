@@ -9,7 +9,6 @@ interface SubExperience {
 }
 
 interface Element {
-  no: string;
   element: string;
   experience: string;
   strapline: string;
@@ -25,7 +24,6 @@ const ninoRange = `${Math.min(...ninoYears)}–${Math.max(...ninoYears)}`;
 
 const ELEMENTS: Element[] = [
   {
-    no: '1',
     element: 'AIR',
     experience: 'Hear the Atmosphere',
     strapline:
@@ -42,7 +40,6 @@ const ELEMENTS: Element[] = [
     ],
   },
   {
-    no: '2',
     element: 'WATER',
     experience: 'Hear the Ocean',
     strapline: "Listen to changes in the tropical Pacific and Earth's oceans.",
@@ -56,35 +53,23 @@ const ELEMENTS: Element[] = [
         status: 'playable',
         href: '#track-2',
       },
-      {
-        label: 'Ocean currents and other ocean observations',
-        status: 'planned',
-      },
+      { label: 'Sea Level Rise', status: 'planned' },
+      { label: 'Ocean Currents', status: 'planned' },
     ],
   },
   {
-    no: '3',
     element: 'EARTH',
     experience: 'Hear the Forest',
     strapline: 'Explore the living landscapes of our planet.',
     image: '/images/earth-forest-amazon.jpg',
     imageAlt: 'Amazon rainforest in northern Brazil, MODIS satellite image',
     subs: [
-      {
-        label: 'Annual forest loss (Hansen, 2001–2025)',
-        detail: 'sonification candidate',
-        status: 'planned',
-      },
-      {
-        label: 'Forest canopy height (GEDI)',
-        detail: 'spatial exploration experience, not a timeline track',
-        status: 'planned',
-      },
-      { label: 'Forest structure and biomass', status: 'planned' },
+      { label: 'Annual Forest Loss', status: 'planned' },
+      { label: 'Forest Canopy Height', status: 'planned' },
+      { label: 'Forest Structure and Biomass', status: 'planned' },
     ],
   },
   {
-    no: '4',
     element: 'FIRE',
     experience: 'Hear the Fire',
     strapline: "Hear the changing patterns of fire across Earth's surface.",
@@ -92,16 +77,15 @@ const ELEMENTS: Element[] = [
     imageAlt:
       'Fires in Greece with a smoke plume over the Aegean Sea, MODIS satellite image',
     subs: [
-      { label: 'Active fire detections (FIRMS)', status: 'planned' },
       {
-        label: 'Fire radiative power, FRP (FIRMS)',
-        detail: 'radiant energy output',
+        label: 'Wildfire Detections',
+        detail: 'NASA FIRMS',
         status: 'planned',
       },
+      { label: 'Fire Radiative Power', status: 'planned' },
     ],
   },
   {
-    no: '5',
     element: 'AETHER (SKY)',
     experience: 'Hear the Lights',
     strapline:
@@ -114,17 +98,14 @@ const ELEMENTS: Element[] = [
         detail: 'becomes Playable in the Sky milestone',
         status: 'planned',
       },
-      { label: 'Nighttime satellite radiance', status: 'planned' },
+      { label: 'Global Nighttime Radiance', status: 'planned' },
     ],
   },
 ];
 
 export default function Experiences() {
   return (
-    <section
-      aria-label="Experiences"
-      className="mx-auto max-w-5xl px-4 py-10"
-    >
+    <section aria-label="Experiences" className="mx-auto max-w-5xl px-4 py-10">
       <h2 className="text-2xl font-bold text-cloud">
         THE EARTH JUKEBOX — Hear Our Planet
       </h2>
@@ -165,22 +146,22 @@ export default function Experiences() {
           </span>
         </li>
       </ul>
-      <div className="mt-8 space-y-8">
-        {ELEMENTS.map((el) => (
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        {ELEMENTS.map((el, i) => (
           <article
             key={el.element}
             aria-label={`${el.element}: ${el.experience}`}
-            className="grid gap-4 rounded-lg border border-slate-800 bg-slate-900/40 p-5 sm:grid-cols-[200px_1fr]"
+            className="overflow-hidden rounded-lg border border-atmos/20 bg-slate-900/40 shadow-[0_0_18px_rgba(86,199,245,0.10)]"
           >
             <img
               src={el.image}
               alt={el.imageAlt}
               loading="lazy"
-              className="h-40 w-full rounded object-cover"
+              className="h-44 w-full object-cover"
             />
-            <div>
+            <div className="p-5">
               <h3 className="text-lg font-semibold text-cloud">
-                {el.no}. {el.element} — {el.experience}
+                {i + 1}. {el.element} — {el.experience}
               </h3>
               <p className="mt-1 text-sm text-slate-300">{el.strapline}</p>
               <ul className="mt-3 space-y-2">

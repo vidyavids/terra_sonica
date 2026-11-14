@@ -37,7 +37,7 @@ function Sparkline({
   const gid = useId().replace(/[^a-zA-Z0-9-_]/g, '');
   const geom = useMemo(() => {
     const w = 600;
-    const h = 120;
+    const h = 150;
     const pad = 10;
     const min = Math.min(...values);
     const max = Math.max(...values);
@@ -171,6 +171,7 @@ interface TrackCardProps<TEvent extends TrackEventBase> {
   title: string;
   dateRange: string;
   description: string;
+  measurement: string;
   events: TEvent[];
   noteMs: number;
   controls: TrackControls<TEvent>;
@@ -204,7 +205,7 @@ function TrackCard<TEvent extends TrackEventBase>(
     <section
       id={props.anchorId}
       aria-label={props.cardLabel}
-      className="rounded-lg border border-slate-800 bg-slate-900/40 p-5"
+      className="rounded-lg border border-atmos/20 bg-slate-900/40 p-5 shadow-[0_0_18px_rgba(86,199,245,0.10)]"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-xl font-semibold text-cloud">
@@ -215,6 +216,7 @@ function TrackCard<TEvent extends TrackEventBase>(
         </p>
       </div>
       <p className="mt-1 text-sm text-slate-300">{props.description}</p>
+      <p className="mt-1 font-mono text-xs text-atmos">{props.measurement}</p>
 
       <p
         className="mt-4 font-mono text-5xl font-bold text-atmos"
@@ -238,6 +240,22 @@ function TrackCard<TEvent extends TrackEventBase>(
           className="ts-progress h-full bg-atmos transition-[width]"
           style={{ width: `${view.progress * 100}%` }}
         />
+      </div>
+
+      <div className="mt-5 grid gap-6 md:grid-cols-5">
+        <div className="md:col-span-3 md:pt-6">
+          <Sparkline
+            values={events.map((e) => e.anomalyC)}
+            activeIndex={controls.untouched ? null : view.index}
+            startLabel={props.sparkStart}
+            endLabel={props.sparkEnd}
+            caption={props.sparkCaption}
+            description={props.sparkDescription}
+          />
+        </div>
+        <div className="md:col-span-2">
+          {props.explain(view, controls.untouched)}
+        </div>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-3">
@@ -345,19 +363,7 @@ function TrackCard<TEvent extends TrackEventBase>(
         )}
       </div>
 
-      <div className="mt-5">
-        <Sparkline
-          values={events.map((e) => e.anomalyC)}
-          activeIndex={controls.untouched ? null : view.index}
-          startLabel={props.sparkStart}
-          endLabel={props.sparkEnd}
-          caption={props.sparkCaption}
-          description={props.sparkDescription}
-        />
-      </div>
-
       {props.visual}
-      {props.explain(view, controls.untouched)}
     </section>
   );
 }
@@ -379,7 +385,7 @@ function explainTemperature(
 ): ReactNode {
   return (
     <section
-      aria-label="Explain My Sound: Global Temperature"
+      aria-label="Explain My Sound: Global Surface Temperature"
       className="mt-6 rounded-lg border border-slate-800 bg-slate-900/40 p-5"
     >
       <h4 className="text-lg font-semibold text-cloud">Explain My Sound</h4>
@@ -548,9 +554,10 @@ export default function PlayerSection() {
       <div className="mt-6 space-y-8">
         <TrackCard<TempEvent>
           anchorId="track-1"
-          cardLabel="Track 1: Global Temperature"
-          title="Track 1 · Global Temperature"
+          cardLabel="Track 1: Global Surface Temperature"
+          title="Track 1 · Global Surface Temperature"
           dateRange={tempRange}
+          measurement="Combined land–ocean surface temperature anomaly · NASA GISTEMP"
           description="One note per year; pitch rises as the planet warms."
           events={tempEvents}
           noteMs={NOTE_MS}
@@ -571,7 +578,7 @@ export default function PlayerSection() {
           idleSub={`Press Play to hear ${tempEvents.length} years of warming.`}
           doneText={`Done — ${TEMP_FIRST_YEAR} to ${TEMP_LAST_YEAR}.`}
           tipFor={(e) => `${e.year} · ${formatAnomaly(e.anomalyC)}`}
-          scrubLabel="Scrub Global Temperature timeline"
+          scrubLabel="Scrub Global Surface Temperature timeline"
           progressLabel="Track 1 playback progress"
           sparkStart={String(TEMP_FIRST_YEAR)}
           sparkEnd={String(TEMP_LAST_YEAR)}
@@ -584,6 +591,7 @@ export default function PlayerSection() {
           cardLabel="Track 2: El Niño"
           title="Track 2 · El Niño"
           dateRange={`${NINO_FIRST_LABEL} – ${NINO_LAST_LABEL}`}
+          measurement="Niño 3.4 sea-surface temperature anomaly · NOAA ERSSTv6"
           description="One note per month; cool La Niña months sound low, warm El Niño months high."
           events={ninoEvents}
           noteMs={NINO_NOTE_MS}
