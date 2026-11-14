@@ -192,19 +192,39 @@ export default function App() {
           />
         </div>
 
-        <div className="mt-4 flex gap-3">
+        <div className="mt-4 flex flex-wrap gap-3">
           <button
             type="button"
             onClick={t1.play}
             disabled={t1.status === 'playing'}
             className="rounded bg-cyan-400 px-6 py-2 font-semibold text-slate-950 hover:bg-cyan-300 disabled:opacity-40"
           >
-            {t1.status === 'done' ? '▶ Play again' : '▶ Play'}
+            {t1.status === 'done'
+              ? '▶ Play again'
+              : t1.status === 'paused'
+                ? '▶ Resume'
+                : '▶ Play'}
+          </button>
+          <button
+            type="button"
+            onClick={t1.pause}
+            disabled={t1.status !== 'playing'}
+            className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
+          >
+            ❚❚ Pause
+          </button>
+          <button
+            type="button"
+            onClick={t1.replay}
+            disabled={t1.status === 'playing'}
+            className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
+          >
+            ↺ Replay
           </button>
           <button
             type="button"
             onClick={t1.stop}
-            disabled={t1.status !== 'playing'}
+            disabled={t1.status !== 'playing' && t1.status !== 'paused'}
             className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
           >
             ■ Stop
