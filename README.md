@@ -41,6 +41,9 @@ No backend. Native Web Audio API only.
   `scripts/download_svs_media.py`).
 - `src/audio/conductor.ts`, `src/hooks/useTrackPlayer.ts` — shared
   no-overlap playback coordinator and scrub state (engines untouched).
+- `src/hooks/useComparisonPlayback.ts` + `src/components/AudioVisualizer.tsx`
+  — ranged A/B comparisons and the passive analyser waveform (UI layer;
+  engines only expose the read-only tap).
 - `src/components/` — page shell (Nav, Hero, Experiences, PlayerSection,
   InfoSections, SiteFooter). Styling and layout only; playback logic lives
   in the frozen `src/audio/` + `src/hooks/` modules.

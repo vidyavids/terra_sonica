@@ -12,7 +12,7 @@ const IMAGE_CREDITS = [
 export default function SiteFooter() {
   return (
     <footer className="border-t border-slate-800 px-4 py-8">
-      <div className="mx-auto max-w-5xl space-y-4 font-mono text-xs text-slate-500">
+      <div className="mx-auto max-w-7xl space-y-4 font-mono text-xs text-slate-500">
         <div className="space-y-1">
           <p className="font-semibold text-slate-400">Data</p>
           <p>

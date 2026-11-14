@@ -25,6 +25,7 @@ export const NINO_NOTE_MS = 500;
 export class NinoPlayer {
   private ctx: AudioContext | null = null;
   private stopped = false;
+  private analyser: AnalyserNode | null = null;
   private readonly events: NinoTrackEvent[];
 
   constructor(events: NinoTrackEvent[]) {
@@ -33,6 +34,19 @@ export class NinoPlayer {
 
   stop(): void {
     this.stopped = true;
+  }
+
+  /**
+   * Passive read-only tap for the audio-reactive visualizer. Observes the
+   * signal without altering timing, notes, gain, or playback behaviour.
+   */
+  getAnalyser(): AnalyserNode | null {
+    if (!this.ctx) return null;
+    if (!this.analyser) {
+      this.analyser = this.ctx.createAnalyser();
+      this.analyser.fftSize = 512;
+    }
+    return this.analyser;
   }
 
   async play(onTick: (tick: NinoTick) => void): Promise<'done' | 'stopped'> {
@@ -64,6 +78,9 @@ export class NinoPlayer {
         this.ctx.currentTime + NINO_NOTE_MS / 1000,
       );
       osc.connect(gain).connect(this.ctx.destination);
+      // Passive analyser tap (visualizer only; no effect on sound).
+      const tap = this.getAnalyser();
+      if (tap) gain.connect(tap);
       osc.start();
       osc.stop(this.ctx.currentTime + NINO_NOTE_MS / 1000);
 

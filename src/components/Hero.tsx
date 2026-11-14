@@ -30,23 +30,23 @@ function WaveAccent() {
 export default function Hero() {
   return (
     <header id="top" className="relative overflow-hidden">
-      <div className="relative mx-auto max-w-5xl px-4 pb-10 pt-10 sm:pt-14">
+      <div className="relative mx-auto max-w-7xl px-4 pb-10 pt-10 sm:pt-14">
         <div className="grid min-h-[80svh] items-center gap-12 md:grid-cols-12">
           <div className="md:col-span-5">
-            <h1 className="text-6xl font-bold tracking-tight text-cloud sm:text-7xl">
+            <h1 className="text-6xl font-bold tracking-tight text-cloud sm:text-7xl lg:text-8xl">
               TERRA SONICA
             </h1>
-            <p className="mt-2 text-2xl text-atmos">The Sounding Earth</p>
-            <p className="mt-4 max-w-xl text-slate-300">
+            <p className="mt-3 text-2xl text-atmos">The Sounding Earth</p>
+            <p className="mt-5 max-w-xl text-slate-300">
               Real NASA Earth observations, converted to sound — an
               accessible, artistic way to experience a changing planet.
             </p>
-            <div className="mt-6">
+            <div className="mt-8">
               <WaveAccent />
             </div>
             <a
               href="#experiences"
-              className="mt-6 inline-block rounded bg-atmos px-8 py-3 font-semibold text-slate-950 shadow-[0_0_28px_rgba(86,199,245,0.45)] hover:shadow-[0_0_36px_rgba(86,199,245,0.65)]"
+              className="mt-8 inline-block rounded bg-atmos px-8 py-3 font-semibold text-slate-950 shadow-[0_0_28px_rgba(86,199,245,0.45)] hover:shadow-[0_0_36px_rgba(86,199,245,0.65)]"
             >
               Enter the Jukebox
             </a>
@@ -58,7 +58,7 @@ export default function Hero() {
             <img
               src="/images/hero-blue-marble.jpg"
               alt="The Blue Marble: full-disk Earth showing Africa, the Atlantic Ocean, and Antarctica"
-              className="w-full rounded-lg [mask-image:radial-gradient(circle,black_60%,transparent_72%)] drop-shadow-[0_0_80px_rgba(86,199,245,0.35)]"
+              className="w-full rounded-lg [mask-image:radial-gradient(circle,black_60%,transparent_72%)] drop-shadow-[0_0_120px_rgba(86,199,245,0.55)]"
               fetchPriority="high"
             />
             <figcaption className="mt-1 text-center font-mono text-xs text-slate-400">

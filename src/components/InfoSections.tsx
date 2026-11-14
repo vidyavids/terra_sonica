@@ -4,7 +4,7 @@ import tempData from '../data/global-temperature.json';
 const PROJECT_SUMMARY =
   'Terra Sonica transforms NASA Earth observation data into interactive sound, allowing people to hear, explore, and understand our changing planet. By combining scientific sonification, paired visualizations, and accessible learning experiences, we aim to make Earth science more engaging, intuitive, and inclusive.';
 
-const sectionClass = 'mx-auto max-w-5xl px-4 py-10';
+const sectionClass = 'mx-auto max-w-7xl px-4 py-10';
 const headingClass = 'text-2xl font-bold text-cloud';
 
 export default function InfoSections() {
@@ -47,7 +47,7 @@ export default function InfoSections() {
         className={sectionClass}
       >
         <h2 className={headingClass}>Data &amp; Methods</h2>
-        <h3 className="mt-4 font-semibold text-cloud">
+        <h3 className="mt-8 border-t border-slate-800/60 pt-4 font-semibold text-cloud">
           Global Surface Temperature citation
         </h3>
         <p className="mt-1 max-w-3xl text-sm text-slate-300">
@@ -63,11 +63,11 @@ export default function InfoSections() {
             {tempData.provenance.sourceUrl}
           </a>
         </p>
-        <h3 className="mt-4 font-semibold text-cloud">El Niño citation</h3>
+        <h3 className="mt-8 border-t border-slate-800/60 pt-4 font-semibold text-cloud">El Niño citation</h3>
         <p className="mt-1 max-w-3xl text-sm text-slate-300">
           {ninoData.provenance.dataset}
         </p>
-        <h3 className="mt-4 font-semibold text-cloud">Mapping formulas</h3>
+        <h3 className="mt-8 border-t border-slate-800/60 pt-4 font-semibold text-cloud">Mapping formulas</h3>
         <p className="mt-1 font-mono text-[13px] text-slate-300">
           Track 1: f = 220 + ((T + 0.50) / 1.80) × 660, snapped to E natural
           minor.
@@ -76,7 +76,7 @@ export default function InfoSections() {
           Track 2: f = 220 + ((A + 1.5) / 4.0) × 660, A clamped to [−1.5,
           +2.5], then snapped to E natural minor.
         </p>
-        <h3 className="mt-4 font-semibold text-cloud">Limitations</h3>
+        <h3 className="mt-8 border-t border-slate-800/60 pt-4 font-semibold text-cloud">Limitations</h3>
         <ul className="mt-1 max-w-3xl list-disc space-y-1 pl-5 text-sm text-slate-300">
           <li>
             Track 1 values are Lowess(5)-smoothed annual means, so brief

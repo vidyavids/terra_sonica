@@ -33,6 +33,7 @@ export const NOTE_MS = 400;
 export class TemperaturePlayer {
   private ctx: AudioContext | null = null;
   private stopped = false;
+  private analyser: AnalyserNode | null = null;
   private readonly events: TemperatureTrackEvent[];
 
   constructor(events: TemperatureTrackEvent[]) {
@@ -41,6 +42,19 @@ export class TemperaturePlayer {
 
   stop(): void {
     this.stopped = true;
+  }
+
+  /**
+   * Passive read-only tap for the audio-reactive visualizer. Observes the
+   * signal without altering timing, notes, gain, or playback behaviour.
+   */
+  getAnalyser(): AnalyserNode | null {
+    if (!this.ctx) return null;
+    if (!this.analyser) {
+      this.analyser = this.ctx.createAnalyser();
+      this.analyser.fftSize = 512;
+    }
+    return this.analyser;
   }
 
   async play(
@@ -74,6 +88,9 @@ export class TemperaturePlayer {
         this.ctx.currentTime + NOTE_MS / 1000,
       );
       osc.connect(gain).connect(this.ctx.destination);
+      // Passive analyser tap (visualizer only; no effect on sound).
+      const tap = this.getAnalyser();
+      if (tap) gain.connect(tap);
       osc.start();
       osc.stop(this.ctx.currentTime + NOTE_MS / 1000);
 

@@ -1,4 +1,6 @@
-import { useId, useMemo, useState } from 'react';
+import { useCallback, useId, useMemo, useRef, useState } from 'react';
+import AudioVisualizer from './AudioVisualizer';
+import { useComparisonPlayback } from '../hooks/useComparisonPlayback';
 import { PlaybackConductor } from '../audio/conductor';
 import type { TrackEventBase } from '../audio/conductor';
 import { NOTE_MS, TemperaturePlayer } from '../audio/temperatureEngine';
@@ -37,7 +39,7 @@ function Sparkline({
   const gid = useId().replace(/[^a-zA-Z0-9-_]/g, '');
   const geom = useMemo(() => {
     const w = 600;
-    const h = 150;
+    const h = 180;
     const pad = 10;
     const min = Math.min(...values);
     const max = Math.max(...values);
@@ -79,14 +81,24 @@ function Sparkline({
           strokeWidth={1.5}
         />
         {activeIndex !== null && (
-          <line
-            x1={geom.x(activeIndex)}
-            x2={geom.x(activeIndex)}
-            y1={0}
-            y2={geom.h}
-            stroke="#f472b6"
-            strokeWidth={1.5}
-          />
+          <>
+            <line
+              x1={geom.x(activeIndex)}
+              x2={geom.x(activeIndex)}
+              y1={0}
+              y2={geom.h}
+              stroke="#f472b6"
+              strokeWidth={2.5}
+            />
+            <circle
+              cx={geom.x(activeIndex)}
+              cy={geom.y(values[activeIndex])}
+              r="4.5"
+              fill="#f472b6"
+              stroke="#fff"
+              strokeWidth="1.5"
+            />
+          </>
         )}
       </svg>
       <div className="mt-1 flex justify-between font-mono text-xs text-slate-400">
@@ -160,6 +172,12 @@ interface Preset {
   index: number;
 }
 
+interface CompareDef {
+  label: string;
+  from: number;
+  to: number;
+}
+
 type TickView<TEvent extends TrackEventBase> = TEvent & {
   index: number;
   progress: number;
@@ -177,8 +195,9 @@ interface TrackCardProps<TEvent extends TrackEventBase> {
   controls: TrackControls<TEvent>;
   presets: Preset[];
   presetHeading: string;
-  contrastHeading?: string;
-  contrast?: Preset[];
+  compare: { a: CompareDef; b: CompareDef };
+  guidance: string;
+  getTap: () => AnalyserNode | null;
   stepUnit: string;
   bigFor: (view: TickView<TEvent>) => string;
   idleBig: string;
@@ -198,7 +217,11 @@ interface TrackCardProps<TEvent extends TrackEventBase> {
 function TrackCard<TEvent extends TrackEventBase>(
   props: TrackCardProps<TEvent>,
 ) {
-  const { controls, events } = props;
+  const { events } = props;
+  const playback = useComparisonPlayback(props.controls, props.noteMs);
+  const controls = playback.controls;
+  const comparison = playback.comparison;
+  const [guideDismissed, setGuideDismissed] = useState(false);
   const totalSeconds = Math.round((events.length * props.noteMs) / 1000);
   const view = controls.view;
   return (
@@ -252,115 +275,142 @@ function TrackCard<TEvent extends TrackEventBase>(
             caption={props.sparkCaption}
             description={props.sparkDescription}
           />
+          <AudioVisualizer getAnalyser={props.getTap} />
+          {!guideDismissed && controls.untouched && (
+            <div className="mt-4 flex items-start justify-between gap-3 rounded border border-atmos/30 bg-atmos/10 p-3 text-sm text-slate-200">
+              <p>{props.guidance}</p>
+              <button
+                type="button"
+                onClick={() => setGuideDismissed(true)}
+                aria-label="Dismiss listening guidance"
+                className="shrink-0 rounded border border-slate-600 px-2 py-1 text-xs font-semibold text-slate-200 hover:border-slate-400"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+          <div className="mt-4 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={controls.play}
+              disabled={controls.status === 'playing'}
+              className="rounded bg-atmos px-6 py-2 font-semibold text-slate-950 hover:brightness-110 disabled:opacity-40"
+            >
+              {controls.status === 'done'
+                ? '▶ Play again'
+                : controls.status === 'paused'
+                  ? '▶ Resume'
+                  : '▶ Play'}
+            </button>
+            <button
+              type="button"
+              onClick={controls.pause}
+              disabled={controls.status !== 'playing'}
+              className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
+            >
+              ❚❚ Pause
+            </button>
+            <button
+              type="button"
+              onClick={controls.replay}
+              disabled={controls.status === 'playing'}
+              className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
+            >
+              ↺ Replay
+            </button>
+            <button
+              type="button"
+              onClick={controls.stop}
+              disabled={
+                controls.status !== 'playing' && controls.status !== 'paused'
+              }
+              className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
+            >
+              ■ Stop
+            </button>
+            <span
+              className="flex gap-2"
+              role="group"
+              aria-label={`Step one ${props.stepUnit}`}
+            >
+              <button
+                type="button"
+                onClick={() => controls.scrub(view.index - 1)}
+                disabled={view.index === 0}
+                aria-label={`Previous ${props.stepUnit}`}
+                className="rounded border border-slate-700 px-3 py-2 text-sm font-semibold text-atmos hover:border-atmos disabled:opacity-40"
+              >
+                ‹ Prev
+              </button>
+              <button
+                type="button"
+                onClick={() => controls.scrub(view.index + 1)}
+                disabled={view.index === events.length - 1}
+                aria-label={`Next ${props.stepUnit}`}
+                className="rounded border border-slate-700 px-3 py-2 text-sm font-semibold text-atmos hover:border-atmos disabled:opacity-40"
+              >
+                Next ›
+              </button>
+            </span>
+          </div>
+
+          <div className="mt-4">
+            <p className="mb-1 text-xs text-slate-400">{props.presetHeading}</p>
+            <Scrubber
+              events={events}
+              viewIndex={view.index}
+              scrub={controls.scrub}
+              tipFor={props.tipFor}
+              ariaLabel={props.scrubLabel}
+            />
+            <div className="mt-2 flex flex-wrap gap-2">
+              {props.presets.map((p) => (
+                <button
+                  key={p.label}
+                  type="button"
+                  onClick={() => controls.scrub(p.index)}
+                  className="rounded border border-slate-700 px-3 py-1 text-xs font-semibold text-atmos hover:border-atmos"
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            <div className="mt-3">
+              <p className="mb-1 text-xs text-slate-400">Compare real moments</p>
+              <div className="flex flex-wrap items-center gap-2">
+                {[props.compare.a, props.compare.b].map((d) => (
+                  <button
+                    key={d.label}
+                    type="button"
+                    onClick={() => comparison.startComparison(d)}
+                    aria-pressed={comparison.range?.label === d.label}
+                    className="rounded border border-atmos px-4 py-1.5 text-sm font-semibold text-atmos hover:bg-atmos/10 aria-pressed:bg-atmos/20"
+                  >
+                    {d.label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={comparison.playFullTrack}
+                  disabled={
+                    controls.status === 'playing' && !comparison.range
+                  }
+                  className="rounded bg-atmos px-4 py-1.5 text-sm font-semibold text-slate-950 hover:brightness-110 disabled:opacity-40"
+                >
+                  ▶ Play full track
+                </button>
+              </div>
+              {comparison.range && (
+                <p className="mt-1 font-mono text-xs text-atmos">
+                  Comparing {comparison.range.label}…
+                </p>
+              )}
+            </div>
+          </div>
         </div>
         <div className="md:col-span-2">
           {props.explain(view, controls.untouched)}
         </div>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-3">
-        <button
-          type="button"
-          onClick={controls.play}
-          disabled={controls.status === 'playing'}
-          className="rounded bg-atmos px-6 py-2 font-semibold text-slate-950 hover:brightness-110 disabled:opacity-40"
-        >
-          {controls.status === 'done'
-            ? '▶ Play again'
-            : controls.status === 'paused'
-              ? '▶ Resume'
-              : '▶ Play'}
-        </button>
-        <button
-          type="button"
-          onClick={controls.pause}
-          disabled={controls.status !== 'playing'}
-          className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
-        >
-          ❚❚ Pause
-        </button>
-        <button
-          type="button"
-          onClick={controls.replay}
-          disabled={controls.status === 'playing'}
-          className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
-        >
-          ↺ Replay
-        </button>
-        <button
-          type="button"
-          onClick={controls.stop}
-          disabled={
-            controls.status !== 'playing' && controls.status !== 'paused'
-          }
-          className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
-        >
-          ■ Stop
-        </button>
-        <span
-          className="flex gap-2"
-          role="group"
-          aria-label={`Step one ${props.stepUnit}`}
-        >
-          <button
-            type="button"
-            onClick={() => controls.scrub(view.index - 1)}
-            disabled={view.index === 0}
-            aria-label={`Previous ${props.stepUnit}`}
-            className="rounded border border-slate-700 px-3 py-2 text-sm font-semibold text-atmos hover:border-atmos disabled:opacity-40"
-          >
-            ‹ Prev
-          </button>
-          <button
-            type="button"
-            onClick={() => controls.scrub(view.index + 1)}
-            disabled={view.index === events.length - 1}
-            aria-label={`Next ${props.stepUnit}`}
-            className="rounded border border-slate-700 px-3 py-2 text-sm font-semibold text-atmos hover:border-atmos disabled:opacity-40"
-          >
-            Next ›
-          </button>
-        </span>
-      </div>
-
-      <div className="mt-4">
-        <p className="mb-1 text-xs text-slate-400">{props.presetHeading}</p>
-        <Scrubber
-          events={events}
-          viewIndex={view.index}
-          scrub={controls.scrub}
-          tipFor={props.tipFor}
-          ariaLabel={props.scrubLabel}
-        />
-        <div className="mt-2 flex flex-wrap gap-2">
-          {props.presets.map((p) => (
-            <button
-              key={p.label}
-              type="button"
-              onClick={() => controls.scrub(p.index)}
-              className="rounded border border-slate-700 px-3 py-1 text-xs font-semibold text-atmos hover:border-atmos"
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-        {props.contrast && props.contrastHeading && (
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="text-xs text-slate-400">
-              {props.contrastHeading}
-            </span>
-            {props.contrast.map((p) => (
-              <button
-                key={p.label}
-                type="button"
-                onClick={() => controls.scrub(p.index)}
-                className="rounded border border-amber/60 px-3 py-1 text-xs font-semibold text-amber hover:border-amber"
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {props.visual}
@@ -394,11 +444,15 @@ function explainTemperature(
           ? 'Press Play — live values appear here as each note sounds.'
           : `Now playing: ${view.year} · ${formatReading(view)}`}
       </p>
-      <dl className="mt-3 space-y-3 text-sm text-slate-300">
-        <div>
-          <dt className="font-semibold text-atmos">What you hear</dt>
-          <dd>
-            One {NOTE_MS} ms sine note per year from {TEMP_FIRST_YEAR} to{' '}
+      <details className="mt-3">
+        <summary className="cursor-pointer font-semibold text-atmos">
+          Scientific Details
+        </summary>
+        <dl className="mt-3 space-y-3 text-sm text-slate-300">
+          <div>
+            <dt className="font-semibold text-atmos">What you hear</dt>
+            <dd>
+              One {NOTE_MS} ms sine note per year from {TEMP_FIRST_YEAR} to{' '}
             {TEMP_LAST_YEAR}. Pitch rises as the planet warms: colder years
             sound low, hotter years high.
           </dd>
@@ -438,7 +492,8 @@ function explainTemperature(
             for the full audit.
           </dd>
         </div>
-      </dl>
+        </dl>
+      </details>
     </section>
   );
 }
@@ -458,11 +513,15 @@ function explainNino(
           ? 'Press Play — live values appear here as each note sounds.'
           : `Now playing: ${view.label} · ${formatReading(view)}`}
       </p>
-      <dl className="mt-3 space-y-3 text-sm text-slate-300">
-        <div>
-          <dt className="font-semibold text-atmos">What you hear</dt>
-          <dd>
-            One {NINO_NOTE_MS} ms sine note per month from {NINO_FIRST_LABEL}{' '}
+      <details className="mt-3">
+        <summary className="cursor-pointer font-semibold text-atmos">
+          Scientific Details
+        </summary>
+        <dl className="mt-3 space-y-3 text-sm text-slate-300">
+          <div>
+            <dt className="font-semibold text-atmos">What you hear</dt>
+            <dd>
+              One {NINO_NOTE_MS} ms sine note per month from {NINO_FIRST_LABEL}{' '}
             to {NINO_LAST_LABEL}. Pitch follows the Niño 3.4 SST anomaly:
             cool La Niña months sound low, warm El Niño months high.
           </dd>
@@ -505,7 +564,8 @@ function explainNino(
             the full audit.
           </dd>
         </div>
-      </dl>
+        </dl>
+      </details>
     </section>
   );
 }
@@ -514,14 +574,32 @@ export default function PlayerSection() {
   const conductor = useMemo(() => new PlaybackConductor(), []);
   const tempEvents = tempData.events;
   const ninoEvents = ninoData.events;
+  const t1PlayerRef = useRef<TemperaturePlayer | null>(null);
+  const t2PlayerRef = useRef<NinoPlayer | null>(null);
+  const t1Tap = useCallback(
+    () => t1PlayerRef.current?.getAnalyser() ?? null,
+    [],
+  );
+  const t2Tap = useCallback(
+    () => t2PlayerRef.current?.getAnalyser() ?? null,
+    [],
+  );
   const t1 = useTrackPlayer(
     tempEvents,
-    (evts) => new TemperaturePlayer(evts),
+    (evts) => {
+      const p = new TemperaturePlayer(evts);
+      t1PlayerRef.current = p;
+      return p;
+    },
     conductor,
   );
   const t2 = useTrackPlayer(
     ninoEvents,
-    (evts) => new NinoPlayer(evts),
+    (evts) => {
+      const p = new NinoPlayer(evts);
+      t2PlayerRef.current = p;
+      return p;
+    },
     conductor,
   );
 
@@ -530,7 +608,7 @@ export default function PlayerSection() {
       <section
         id="player"
         aria-label="The Earth Jukebox"
-        className="mx-auto max-w-5xl px-4 py-10"
+        className="mx-auto max-w-7xl px-4 py-10"
       >
         <h2 className="text-2xl font-bold text-red-300">
           Track data failed validation
@@ -545,12 +623,20 @@ export default function PlayerSection() {
     tempEvents.findIndex((e) => e.year === year);
   const atNinoMonth = (year: number, month: number) =>
     ninoEvents.findIndex((e) => e.year === year && e.month === month);
+  const ninoYearBounds = (year: number) => {
+    const idx = ninoEvents
+      .map((e, i) => (e.year === year ? i : -1))
+      .filter((i) => i >= 0);
+    return { from: idx[0], to: idx[idx.length - 1] };
+  };
+  const nino21 = ninoYearBounds(2021);
+  const nino23 = ninoYearBounds(2023);
 
   return (
     <section
       id="player"
       aria-label="The Earth Jukebox"
-      className="mx-auto max-w-5xl px-4 py-10"
+      className="mx-auto max-w-7xl px-4 py-10"
     >
       <h2 className="text-2xl font-bold text-cloud">The Earth Jukebox</h2>
       <div className="mt-6 space-y-8">
@@ -569,11 +655,20 @@ export default function PlayerSection() {
             { label: 'Jump to the 2020s', index: atTempYear(2020) },
           ]}
           presetHeading="Scrub the timeline, or jump straight to a decade"
-          contrastHeading="Contrast:"
-          contrast={[
-            { label: 'Early 1900s (cooler)', index: atTempYear(1900) },
-            { label: '2020s (hotter)', index: atTempYear(2020) },
-          ]}
+          compare={{
+            a: {
+              label: 'Early 1900s',
+              from: atTempYear(1900),
+              to: atTempYear(1909),
+            },
+            b: {
+              label: '2020–2025',
+              from: atTempYear(2020),
+              to: atTempYear(2025),
+            },
+          }}
+          guidance="Listen as each year becomes a note. Higher notes represent warmer global surface temperature anomalies."
+          getTap={t1Tap}
           stepUnit="year"
           bigFor={(v) => String(v.year)}
           idleBig={tempRange}
@@ -603,6 +698,20 @@ export default function PlayerSection() {
             { label: 'Jump to El Niño 2023', index: atNinoMonth(2023, 7) },
           ]}
           presetHeading="Scrub the timeline, or jump straight to a contrast moment"
+          compare={{
+            a: {
+              label: 'La Niña 2021',
+              from: nino21.from,
+              to: nino21.to,
+            },
+            b: {
+              label: 'El Niño 2023',
+              from: nino23.from,
+              to: nino23.to,
+            },
+          }}
+          guidance="Listen as each month becomes a note. Lower notes represent cooler La Niña conditions; higher notes represent warmer El Niño conditions."
+          getTap={t2Tap}
           stepUnit="month"
           bigFor={(v) => v.label}
           idleBig={ninoRange}

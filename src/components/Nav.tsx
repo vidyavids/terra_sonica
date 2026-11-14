@@ -4,7 +4,7 @@ export default function Nav() {
       aria-label="Primary"
       className="sticky top-0 z-10 border-b border-slate-800 bg-abyss/90 backdrop-blur"
     >
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
         <a href="#top" className="flex items-center gap-2">
           <svg
             viewBox="0 0 24 24"
@@ -22,6 +22,9 @@ export default function Nav() {
           </span>
         </a>
         <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
+          <a className="text-slate-300 hover:text-atmos" href="#experiences">
+            Jukebox
+          </a>
           <a className="text-slate-300 hover:text-atmos" href="#project">
             The Project
           </a>

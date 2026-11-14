@@ -5,6 +5,7 @@ interface SubExperience {
   label: string;
   detail?: string;
   status: 'playable' | 'planned';
+  statusLabel?: string;
   href?: string;
 }
 
@@ -94,9 +95,9 @@ const ELEMENTS: Element[] = [
     imageAlt: 'Asia and Australia at night, Black Marble composite of city lights',
     subs: [
       {
-        label: 'Earth at Night — India, 2012–2025',
-        detail: 'becomes Playable in the Sky milestone',
+        label: 'Earth at Night — India (2012–2025)',
         status: 'planned',
+        statusLabel: 'Planned experience',
       },
       { label: 'Global Nighttime Radiance', status: 'planned' },
     ],
@@ -154,7 +155,7 @@ export default function Experiences() {
     <section
       id="experiences"
       aria-label="Experiences"
-      className="mx-auto max-w-5xl px-4 py-10"
+      className="mx-auto max-w-7xl px-4 py-10"
     >
       <p className="text-sm font-semibold tracking-widest text-atmos [font-variant:small-caps]">
         The Earth Jukebox
@@ -169,17 +170,14 @@ export default function Experiences() {
       </p>
       <div className="mt-8 grid gap-6 md:grid-cols-3">
         {ELEMENTS.map((el, i) => {
-          const playable = el.subs.some((s) => s.status === 'playable');
-          return (
-            <article
-              key={el.element}
-              aria-label={`${el.element}: ${el.experience}`}
-              className={`overflow-hidden rounded-lg border bg-slate-900/40 ${
-                playable
-                  ? 'border-forest/60 shadow-[0_0_24px_rgba(54,168,134,0.25)]'
-                  : 'border-atmos/20 shadow-[0_0_18px_rgba(86,199,245,0.10)]'
-              }`}
-            >
+          const playableSub = el.subs.find((s) => s.status === 'playable');
+          const cardClass = `overflow-hidden rounded-lg border bg-slate-900/40 ${
+            playableSub
+              ? 'border-forest/60 shadow-[0_0_24px_rgba(54,168,134,0.25)] transition-colors hover:border-forest'
+              : 'border-atmos/20 shadow-[0_0_18px_rgba(86,199,245,0.10)]'
+          }`;
+          const cardBody = (
+            <>
               <div className="relative">
                 <img
                   src={el.image}
@@ -191,7 +189,7 @@ export default function Experiences() {
                   aria-hidden="true"
                   className="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/30 to-transparent"
                 />
-                <div className="absolute bottom-3 left-4 right-4 flex items-center gap-2 text-cloud">
+                <div className="absolute bottom-3 left-4 right-4 flex min-h-[3.5rem] items-center gap-2 text-cloud">
                   <ElementIcon element={el.element} />
                   <h3 className="text-lg font-bold">
                     {i + 1}. {el.element} — {el.experience}
@@ -204,13 +202,8 @@ export default function Experiences() {
                   {el.subs.map((s) =>
                     s.status === 'playable' ? (
                       <li key={s.label}>
-                        <a
-                          href={s.href}
-                          className="text-atmos hover:underline"
-                        >
-                          {s.label}
-                        </a>{' '}
-                        <span className="rounded border border-forest/50 bg-forest/20 px-2 py-0.5 font-mono text-xs text-emerald-200 shadow-[0_0_12px_rgba(54,168,134,0.35)]">
+                        <span className="text-atmos">{s.label}</span>{' '}
+                        <span className="whitespace-nowrap rounded border border-forest/50 bg-forest/20 px-2 py-0.5 font-mono text-xs text-emerald-200 shadow-[0_0_12px_rgba(54,168,134,0.35)]">
                           ▶ Playable Now
                         </span>
                       </li>
@@ -222,17 +215,35 @@ export default function Experiences() {
                       >
                         {s.label}
                         {s.detail ? ` — ${s.detail}` : ''}{' '}
-                        <span className="rounded bg-slate-700/50 px-2 py-0.5 font-mono text-xs text-slate-300">
-                          Planned — coming soon
+                        <span className="whitespace-nowrap rounded bg-slate-700/50 px-2 py-0.5 font-mono text-xs text-slate-300">
+                          {s.statusLabel ?? 'Planned — coming soon'}
                         </span>
                       </li>
                     ),
                   )}
                 </ul>
               </div>
-            </article>
-          );
-        })}
+              </>
+            );
+            const label = `${el.element}: ${el.experience}`;
+            return playableSub?.href ? (
+              <a
+                key={el.element}
+                href={playableSub.href}
+                className={`block ${cardClass}`}
+              >
+                <article aria-label={label}>{cardBody}</article>
+              </a>
+            ) : (
+              <article
+                key={el.element}
+                aria-label={label}
+                className={cardClass}
+              >
+                {cardBody}
+              </article>
+            );
+          })}
       </div>
       <ul
         className="mt-6 flex flex-wrap gap-x-6 gap-y-1 text-sm"
