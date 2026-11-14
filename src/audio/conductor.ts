@@ -24,6 +24,23 @@ export interface SlicePlayer<TEvent extends TrackEventBase> {
   stop(): void;
 }
 
+/**
+ * Remap a slice-relative engine tick to its absolute timeline position.
+ * Event data passes through untouched (the engine already plays the suffix
+ * slice); only the position fields are rebased by the scrub offset.
+ */
+export function toAbsoluteTick<TEvent extends TrackEventBase>(
+  tick: TEvent & { index: number; progress: number },
+  start: number,
+  total: number,
+): TEvent & { index: number; progress: number } {
+  return {
+    ...tick,
+    index: start + tick.index,
+    progress: (start + tick.index + 1) / total,
+  };
+}
+
 export class PlaybackConductor {
   private readonly stops = new Set<() => void>();
   private readonly runs = new Set<Promise<unknown>>();

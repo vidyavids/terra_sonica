@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { toAbsoluteTick } from '../audio/conductor';
 import type {
   PlaybackConductor,
   SlicePlayer,
@@ -21,13 +22,14 @@ export interface TrackControls<TEvent extends TrackEventBase> {
 
 /**
  * Playback + scrub state for one track. Scrubbing never touches the engine:
- * jumps play a suffix slice (events.slice(start)) with indices remapped to
- * absolute positions. Launches go through the shared conductor so tracks
- * never overlap; a generation counter drops stale ticks and outcomes.
+ * each launch builds a fresh player over events.slice(start) (engines always
+ * play from zero) and remaps ticks to absolute positions via toAbsoluteTick.
+ * Launches go through the shared conductor so tracks never overlap; a
+ * generation counter drops stale ticks and outcomes.
  */
 export function useTrackPlayer<TEvent extends TrackEventBase>(
   events: TEvent[],
-  createPlayer: () => SlicePlayer<TEvent>,
+  createPlayer: (evts: TEvent[]) => SlicePlayer<TEvent>,
   conductor: PlaybackConductor,
 ): TrackControls<TEvent> {
   type Tick = TEvent & { index: number; progress: number };
@@ -55,13 +57,6 @@ export function useTrackPlayer<TEvent extends TrackEventBase>(
     };
   }, []);
 
-  const getPlayer = (): SlicePlayer<TEvent> => {
-    if (!playerRef.current) {
-      playerRef.current = factoryRef.current();
-    }
-    return playerRef.current;
-  };
-
   const playFrom = (start: number) => {
     const gen = ++genRef.current;
     stoppedRef.current = false;
@@ -73,15 +68,15 @@ export function useTrackPlayer<TEvent extends TrackEventBase>(
       .exclusive(async () => {
         await conductor.settle();
         if (gen !== genRef.current || stoppedRef.current) return;
-        const player = getPlayer();
+        // Fresh player per launch over the suffix slice: the previous run
+        // has fully exited (settle awaited it), so replacing the ref is
+        // safe. Retired AudioContexts are released by garbage collection.
+        const player = factoryRef.current(events.slice(start));
+        playerRef.current = player;
         launched = conductor.track(
           player.play((t) => {
             if (gen !== genRef.current) return;
-            setTick({
-              ...t,
-              index: start + t.index,
-              progress: (start + t.index + 1) / events.length,
-            });
+            setTick(toAbsoluteTick(t, start, events.length));
           }),
         );
       })

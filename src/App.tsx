@@ -102,12 +102,12 @@ export default function App() {
   const ninoEvents = ninoData.events;
   const t1 = useTrackPlayer(
     tempEvents,
-    () => new TemperaturePlayer(tempEvents),
+    (evts) => new TemperaturePlayer(evts),
     conductor,
   );
   const t2 = useTrackPlayer(
     ninoEvents,
-    () => new NinoPlayer(ninoEvents),
+    (evts) => new NinoPlayer(evts),
     conductor,
   );
 
@@ -418,23 +418,31 @@ export default function App() {
         </div>
 
         <figure className="mt-5">
-          <video
+          <img
+            src={NINO_STILL}
+            alt="Still frame from NASA SVS 5683 showing tropical Pacific conditions in 2025 versus 2026"
             className="w-full rounded border border-slate-800"
-            controls
-            preload="metadata"
-            poster={NINO_STILL}
-            aria-label="NASA SVS 5683 animation comparing tropical Pacific conditions in 2025 and 2026. Contextual visual, not synchronized with the sound."
-          >
-            <source src={NINO_VIDEO} type="video/mp4" />
-            <img
-              src={NINO_STILL}
-              alt="Still frame from NASA SVS 5683 showing tropical Pacific conditions in 2025 versus 2026"
-            />
-          </video>
+          />
           <figcaption className="mt-1 font-mono text-xs text-slate-400">
             NASA SVS 5683 · contextual visual, not synchronized with the sound
           </figcaption>
         </figure>
+
+        <div className="mt-4">
+          <p className="mb-1 text-xs text-slate-400">
+            Watch the NASA animation (20 s) — covers Jan–Oct 2026 only, plays
+            independently of the track
+          </p>
+          <video
+            className="w-full rounded border border-slate-800"
+            controls
+            preload="none"
+            poster={NINO_STILL}
+            aria-label="NASA SVS 5683 animation comparing tropical Pacific conditions in 2025 and 2026. Contextual visual, not synchronized with the sound."
+          >
+            <source src={NINO_VIDEO} type="video/mp4" />
+          </video>
+        </div>
       </section>
 
       <section

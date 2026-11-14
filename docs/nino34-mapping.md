@@ -83,7 +83,7 @@ Not synchronized with the sound — shown alongside as context.
   stored at `public/media/`.
 - Still: `elnino_2026_ssta_avw_ssha_1010_nolabels.02200_preview.jpg`
   (1920×1080, observed 1,186,965 bytes; the page lists 796.2 KB),
-  used as the video poster and offline fallback.
+  used as the track's main visual and the video poster.
 - Verified coverage: the animations run Jan 29–Oct 10 of 2025 vs
   2026 (same months compared; "1010" = Oct 10). The sound covers
   Jan 2020–Aug 2026 monthly. Products shown: SSTA, AVW (ocean
