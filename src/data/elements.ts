@@ -2,7 +2,7 @@ import ninoData from './nino34.json';
 import tempData from './global-temperature.json';
 
 export type ElementSlug = 'air' | 'water' | 'earth' | 'fire' | 'aether';
-export type PanelTrack = 'temp' | 'nino' | 'fire' | 'sky';
+export type PanelTrack = 'temp' | 'nino' | 'fire' | 'sky' | 'forest';
 
 export interface SubExperience {
   label: string;
@@ -83,12 +83,18 @@ export const ELEMENTS: Element[] = [
     experience: 'Hear the Forest',
     strapline: 'Explore the living landscapes of our planet.',
     description:
-      'Earth will listen to the world\u2019s forests — how tall they stand, how they are structured, and where they are being lost.',
+      'Earth listens to the Amazon: twenty-four years of MODIS tree-cover estimates over the Brazilian Legal Amazon, one year per note; denser-canopy years sound high.',
     context:
-      'Three planned sonifications: annual forest loss, forest canopy height, and forest structure and biomass.',
+      'Hear the Forest is driven only by verified annual mean canopy-cover percentages — satellite estimates of canopy, not a measure of clearing. The NASA visualization beside the player is contextual, not synchronized with the sound.',
     image: '/images/earth-forest-amazon.jpg',
     imageAlt: 'Amazon rainforest in northern Brazil, MODIS satellite image',
     subs: [
+      {
+        label: 'Hear the Forest — Amazon Tree Cover (2001–2024)',
+        status: 'playable',
+        href: '#/earth',
+        track: 'forest',
+      },
       { label: 'Annual Forest Loss', status: 'planned' },
       { label: 'Forest Canopy Height', status: 'planned' },
       { label: 'Forest Structure and Biomass', status: 'planned' },
@@ -145,15 +151,17 @@ export const TRACK_TITLES: Record<PanelTrack, string> = {
   nino: 'El Niño',
   fire: 'Hear the Fire — Brazil (2020–2025)',
   sky: 'Hear the Lights — Earth at Night — India (2012–2025)',
+  forest: 'Hear the Forest — Amazon Tree Cover (2001–2024)',
 };
 
 export function trackRouteId(
   track: PanelTrack,
-): 'track-1' | 'track-2' | 'track-3' | 'track-4' {
+): 'track-1' | 'track-2' | 'track-3' | 'track-4' | 'track-5' {
   if (track === 'temp') return 'track-1';
   if (track === 'nino') return 'track-2';
   if (track === 'fire') return 'track-3';
-  return 'track-4';
+  if (track === 'sky') return 'track-4';
+  return 'track-5';
 }
 
 export function trackFromRouteId(id: string): PanelTrack | null {
@@ -161,6 +169,7 @@ export function trackFromRouteId(id: string): PanelTrack | null {
   if (id === 'track-2') return 'nino';
   if (id === 'track-3') return 'fire';
   if (id === 'track-4') return 'sky';
+  if (id === 'track-5') return 'forest';
   return null;
 }
 

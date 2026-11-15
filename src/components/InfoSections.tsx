@@ -1,4 +1,5 @@
 import fireData from '../data/fire-brazil.json';
+import forestData from '../data/forest-amazon.json';
 import ninoData from '../data/nino34.json';
 import skyData from '../data/nightlights-india.json';
 import tempData from '../data/global-temperature.json';
@@ -40,6 +41,7 @@ export default function InfoSections() {
   const tempEvents = tempData.events;
   const ninoEvents = ninoData.events;
   const fireEvents = fireData.events;
+  const forestEvents = forestData.events;
   const skyEvents = skyData.events;
   return (
     <>
@@ -239,6 +241,38 @@ export default function InfoSections() {
                 mean radiance; 220–880 Hz, E natural minor; growth fifth
                 gain follows year-over-year growth.{' '}
                 <DocLink file="sky-mapping.md">Mapping audit</DocLink>.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold text-cloud">
+              Track 5 · Hear the Forest — Amazon Tree Cover
+            </h4>
+            <ul className="mt-1 list-disc space-y-1 pl-5">
+              <li>
+                Provider: NASA MODIS. Product: MOD44B Collection 6.1,
+                Percent_Tree_Cover.
+              </li>
+              <li>
+                Range: {forestEvents[0].year}–
+                {forestEvents[forestEvents.length - 1].year} yearly (24
+                values). Region: Brazilian Legal Amazon (IBGE 2024
+                boundary per provider). Units: % mean tree-cover.
+              </li>
+              <li>
+                Input snapshot: terrasonica_modis_forest_2001_2024.csv
+                (Nov 2026); quality filtering undocumented, none
+                claimed.
+              </li>
+              <li>
+                Aggregation: area-weighted annual mean at 2000 m; valid
+                area stable within 0.1%.
+              </li>
+              <li>
+                Sound mapping: each year one note; higher pitch = denser
+                mean canopy; narrow 220–660 Hz span, E natural minor;
+                pitch is stretched to keep small differences audible.{' '}
+                <DocLink file="forest-mapping.md">Mapping audit</DocLink>.
               </li>
             </ul>
           </div>

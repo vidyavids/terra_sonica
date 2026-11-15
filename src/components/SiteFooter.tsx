@@ -1,4 +1,5 @@
 import fireData from '../data/fire-brazil.json';
+import forestData from '../data/forest-amazon.json';
 import ninoData from '../data/nino34.json';
 import skyData from '../data/nightlights-india.json';
 import tempData from '../data/global-temperature.json';
@@ -45,6 +46,9 @@ export default function SiteFooter() {
           </p>
           <p>
             {skyData.provenance.dataset} (<MethodLink file="sky-mapping.md" />)
+          </p>
+          <p>
+            {forestData.provenance.dataset} (<MethodLink file="forest-mapping.md" />)
           </p>
         </div>
         <div className="space-y-1">

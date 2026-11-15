@@ -1,0 +1,237 @@
+{
+  "provenance": {
+    "dataset": "Annual mean Percent_Tree_Cover over the Brazilian Legal Amazon (IBGE 2024 boundary per provider), NASA MODIS MOD44B Collection 6.1, area-weighted annual mean at 2000 m analysis scale, provided as terrasonica_modis_forest_2001_2024.csv (accessed Nov 2026). Quality filtering: none documented in the supplied CSV -- no quality columns and no export script were provided, so no quality claim is made.",
+    "visual": "Amazon rainforest, northern Brazil, MODIS, 1 Jul 2002. Credit: NASA Earth Observatory image by Jacques Descloitres, MODIS Land Rapid Response Team, NASA/GSFC.",
+    "visualCoverage": "Amazon rainforest, northern Brazil, single MODIS still, 1 Jul 2002. The visual is contextual, not synchronized with the sound.",
+    "soundCoverage": "2001-2024 yearly (24 values).",
+    "sourceFile": "terrasonica_modis_forest_2001_2024.csv",
+    "column": "mean_tree_cover_pct (annual mean Percent_Tree_Cover in %, full precision as supplied)",
+    "referencePeriod": "n/a (raw annual means, no baseline).",
+    "sensorCheck": "Single product (MOD44B C6.1), single region, single 2000 m analysis scale on every row; no quality-bit information supplied with the CSV.",
+    "region": "Brazilian Legal Amazon (IBGE 2024 boundary per provider; CSV labels the region 'Brazilian Legal Amazon').",
+    "eventCount": 24,
+    "missingValuePolicy": "No year is missing. Missing years would fail validation, never be interpolated.",
+    "generatedBy": "scripts/validate_forest.py",
+    "mappingDoc": "docs/forest-mapping.md"
+  },
+  "mapping": {
+    "linearHz": "clamp(value, 54.496, 57.705); 220 + (value - 54.496) / (57.705 - 54.496) * 440",
+    "quantization": "nearest E-natural-minor note by ABS(LOG(raw/note, 2)); ties resolve to the higher note; raw frequencies clamp to [E3, B5].",
+    "noteMs": 700,
+    "pitchSetHz": {
+      "E3": 164.81,
+      "F#3": 185.0,
+      "G3": 196.0,
+      "A3": 220.0,
+      "B3": 246.94,
+      "C4": 261.63,
+      "D4": 293.66,
+      "E4": 329.63,
+      "F#4": 369.99,
+      "G4": 392.0,
+      "A4": 440.0,
+      "B4": 493.88,
+      "C5": 523.25,
+      "D5": 587.33,
+      "E5": 659.25,
+      "F#5": 739.99,
+      "G5": 783.99,
+      "A5": 880.0,
+      "B5": 987.77
+    }
+  },
+  "events": [
+    {
+      "year": 2001,
+      "treeCoverPct": 56.42917174515476,
+      "anomalyC": 56.42917174515476,
+      "linearHz": 485.0656,
+      "note": "B4",
+      "quantizedHz": 493.88
+    },
+    {
+      "year": 2002,
+      "treeCoverPct": 57.60617903158169,
+      "anomalyC": 57.60617903158169,
+      "linearHz": 646.4502,
+      "note": "E5",
+      "quantizedHz": 659.25
+    },
+    {
+      "year": 2003,
+      "treeCoverPct": 56.50488082588996,
+      "anomalyC": 56.50488082588996,
+      "linearHz": 495.4464,
+      "note": "B4",
+      "quantizedHz": 493.88
+    },
+    {
+      "year": 2004,
+      "treeCoverPct": 57.331079285902554,
+      "anomalyC": 57.331079285902554,
+      "linearHz": 608.7301,
+      "note": "D5",
+      "quantizedHz": 587.33
+    },
+    {
+      "year": 2005,
+      "treeCoverPct": 57.06802389183117,
+      "anomalyC": 57.06802389183117,
+      "linearHz": 572.6614,
+      "note": "D5",
+      "quantizedHz": 587.33
+    },
+    {
+      "year": 2006,
+      "treeCoverPct": 55.99263597732245,
+      "anomalyC": 55.99263597732245,
+      "linearHz": 425.2103,
+      "note": "A4",
+      "quantizedHz": 440.0
+    },
+    {
+      "year": 2007,
+      "treeCoverPct": 56.364743506021654,
+      "anomalyC": 56.364743506021654,
+      "linearHz": 476.2316,
+      "note": "B4",
+      "quantizedHz": 493.88
+    },
+    {
+      "year": 2008,
+      "treeCoverPct": 56.78049381697216,
+      "anomalyC": 56.78049381697216,
+      "linearHz": 533.2369,
+      "note": "C5",
+      "quantizedHz": 523.25
+    },
+    {
+      "year": 2009,
+      "treeCoverPct": 55.95257342266909,
+      "anomalyC": 55.95257342266909,
+      "linearHz": 419.7171,
+      "note": "A4",
+      "quantizedHz": 440.0
+    },
+    {
+      "year": 2010,
+      "treeCoverPct": 57.107233452065266,
+      "anomalyC": 57.107233452065266,
+      "linearHz": 578.0376,
+      "note": "D5",
+      "quantizedHz": 587.33
+    },
+    {
+      "year": 2011,
+      "treeCoverPct": 57.70492650068356,
+      "anomalyC": 57.70492650068356,
+      "linearHz": 659.9899,
+      "note": "E5",
+      "quantizedHz": 659.25
+    },
+    {
+      "year": 2012,
+      "treeCoverPct": 55.949144546334985,
+      "anomalyC": 55.949144546334985,
+      "linearHz": 419.247,
+      "note": "A4",
+      "quantizedHz": 440.0
+    },
+    {
+      "year": 2013,
+      "treeCoverPct": 56.111610659551914,
+      "anomalyC": 56.111610659551914,
+      "linearHz": 441.5234,
+      "note": "A4",
+      "quantizedHz": 440.0
+    },
+    {
+      "year": 2014,
+      "treeCoverPct": 54.812814172623334,
+      "anomalyC": 54.812814172623334,
+      "linearHz": 263.4398,
+      "note": "C4",
+      "quantizedHz": 261.63
+    },
+    {
+      "year": 2015,
+      "treeCoverPct": 54.88325764766088,
+      "anomalyC": 54.88325764766088,
+      "linearHz": 273.0986,
+      "note": "C4",
+      "quantizedHz": 261.63
+    },
+    {
+      "year": 2016,
+      "treeCoverPct": 54.49622758650215,
+      "anomalyC": 54.49622758650215,
+      "linearHz": 220.0312,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2017,
+      "treeCoverPct": 56.239821539314875,
+      "anomalyC": 56.239821539314875,
+      "linearHz": 459.103,
+      "note": "A4",
+      "quantizedHz": 440.0
+    },
+    {
+      "year": 2018,
+      "treeCoverPct": 55.569392537558734,
+      "anomalyC": 55.569392537558734,
+      "linearHz": 367.1775,
+      "note": "F#4",
+      "quantizedHz": 369.99
+    },
+    {
+      "year": 2019,
+      "treeCoverPct": 55.96858474862351,
+      "anomalyC": 55.96858474862351,
+      "linearHz": 421.9125,
+      "note": "A4",
+      "quantizedHz": 440.0
+    },
+    {
+      "year": 2020,
+      "treeCoverPct": 55.82933163913472,
+      "anomalyC": 55.82933163913472,
+      "linearHz": 402.8189,
+      "note": "G4",
+      "quantizedHz": 392.0
+    },
+    {
+      "year": 2021,
+      "treeCoverPct": 55.39065984736517,
+      "anomalyC": 55.39065984736517,
+      "linearHz": 342.6707,
+      "note": "E4",
+      "quantizedHz": 329.63
+    },
+    {
+      "year": 2022,
+      "treeCoverPct": 55.27061059102601,
+      "anomalyC": 55.27061059102601,
+      "linearHz": 326.2102,
+      "note": "E4",
+      "quantizedHz": 329.63
+    },
+    {
+      "year": 2023,
+      "treeCoverPct": 55.14607071849285,
+      "anomalyC": 55.14607071849285,
+      "linearHz": 309.134,
+      "note": "D4",
+      "quantizedHz": 293.66
+    },
+    {
+      "year": 2024,
+      "treeCoverPct": 55.24488792297522,
+      "anomalyC": 55.24488792297522,
+      "linearHz": 322.6833,
+      "note": "E4",
+      "quantizedHz": 329.63
+    }
+  ]
+}

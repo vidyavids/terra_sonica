@@ -48,3 +48,23 @@ on any missing or inconsistent input.
   not synchronized with the sound.
 - Audit: `docs/sky-mapping.md`. Validator: `scripts/validate_sky.py`.
   Aggregation: `scripts/aggregate_nightlights.py`.
+
+## Track 5 — Hear the Forest — Amazon Tree Cover (2001–2024)
+
+- Annual mean Percent_Tree_Cover over the Brazilian Legal Amazon
+  (IBGE 2024 boundary per provider), NASA MODIS MOD44B Collection
+  6.1, area-weighted annual mean at 2000 m analysis scale, provided
+  as `terrasonica_modis_forest_2001_2024.csv`; 24 yearly values
+  (accessed Nov 2026).
+- Quality filtering: none documented in the supplied file, none
+  claimed. Boundary and area figures verified (area stable within
+  0.1%).
+- Mean canopy-cover %, not a share of the Amazon that is forest and
+  not a measure of clearing; the 1.18-point 2001–2024 change is a
+  change in mean cover. Narrow 220–660 Hz pitch span with an
+  on-page disclosure that pitch is stretched to keep small
+  differences audible.
+- Visual: MODIS Amazon rainforest still (1 Jul 2002), contextual,
+  not synchronized with the sound.
+- Audit: `docs/forest-mapping.md`. Validator:
+  `scripts/validate_forest.py`.

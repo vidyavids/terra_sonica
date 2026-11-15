@@ -2,6 +2,7 @@ import { elementHash, findElement, playerHash } from '../data/elements';
 import type { ElementSlug, PanelTrack } from '../data/elements';
 import { Legend } from './Experiences';
 import { FireTrackPanel } from './FirePanel';
+import { ForestTrackPanel } from './ForestPanel';
 import { TrackPanel } from './PlayerSection';
 import { SkyTrackPanel } from './SkyPanel';
 
@@ -57,6 +58,8 @@ export default function ElementPage({ slug, track }: ElementPageProps) {
                   <FireTrackPanel />
                 ) : track === 'sky' ? (
                   <SkyTrackPanel />
+                ) : track === 'forest' ? (
+                  <ForestTrackPanel />
                 ) : (
                   <TrackPanel track={track} />
                 )}
