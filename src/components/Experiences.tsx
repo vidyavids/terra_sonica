@@ -205,6 +205,24 @@ export default function Experiences() {
           );
         })}
       </div>
+      <div
+        data-planned="true"
+        className="mt-6 rounded-lg border border-slate-800 bg-slate-900/40 p-5"
+      >
+        <p className="text-slate-200">
+          <span className="font-semibold text-cloud">
+            A second documented musical layer for each element.
+          </span>{' '}
+          <span className="whitespace-nowrap rounded-full bg-slate-700/50 px-2 py-0.5 font-mono text-xs text-slate-200">
+            Planned — coming soon
+          </span>
+        </p>
+        <p className="mt-1 text-sm text-slate-300">
+          Fire and Sky already have a second data-driven voice (the FRP
+          drone and the growth voice). Air, Water, and Earth will each
+          get one too, documented the same way in Explain My Sound.
+        </p>
+      </div>
       <Legend />
     </section>
   );
