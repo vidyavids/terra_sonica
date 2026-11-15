@@ -85,7 +85,7 @@ export const ELEMENTS: Element[] = [
     description:
       'Earth listens to the Amazon: twenty-four years of MODIS tree-cover estimates over the Brazilian Legal Amazon, one year per note; denser-canopy years sound high.',
     context:
-      'Hear the Forest is driven only by verified annual mean canopy-cover percentages — satellite estimates of canopy, not a measure of clearing. The NASA visualization beside the player is contextual, not synchronized with the sound.',
+      'Hear the Forest is driven only by annual means from the supplied export — mean canopy-cover percentages, satellite estimates of canopy, not a measure of clearing. The NASA visualization beside the player is contextual, not synchronized with the sound.',
     image: '/images/earth-forest-amazon.jpg',
     imageAlt: 'Amazon rainforest in northern Brazil, MODIS satellite image',
     subs: [

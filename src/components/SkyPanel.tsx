@@ -3,6 +3,7 @@ import { PlaybackConductor } from '../audio/conductor';
 import { SKY_NOTE_MS, SkyPlayer } from '../audio/skyEngine';
 import type { SkyTick } from '../audio/skyEngine';
 import { useTrackPlayer } from '../hooks/useTrackPlayer';
+import type { TrackStatus } from '../hooks/useTrackPlayer';
 import type { ReactNode } from 'react';
 import skyData from '../data/nightlights-india.json';
 import { TrackCard } from './PlayerSection';
@@ -28,7 +29,11 @@ function skyGrowthText(view: SkyTick): string | null {
   return `Growth vs previous year: ${sign}${(view.growthRate * 100).toFixed(1)}%`;
 }
 
-function explainSky(view: SkyTick, untouched: boolean): ReactNode {
+function explainSky(
+  view: SkyTick,
+  untouched: boolean,
+  status: TrackStatus,
+): ReactNode {
   const growthText = !untouched ? skyGrowthText(view) : null;
   return (
     <section
@@ -39,7 +44,13 @@ function explainSky(view: SkyTick, untouched: boolean): ReactNode {
       <p className="mt-1 font-mono text-sm text-atmos">
         {untouched
           ? 'Press Play — live values appear here as each note sounds.'
-          : `Now playing: ${view.year} · ${skyReading(view)}`}
+          : status === 'playing'
+            ? `Now playing: ${view.year} · ${skyReading(view)}`
+            : status === 'paused'
+              ? `Paused: ${view.year} · ${skyReading(view)}`
+              : status === 'done'
+                ? `Done — ${view.year} · ${skyReading(view)}`
+                : `Selected: ${view.year} · ${skyReading(view)}`}
       </p>
       {growthText && (
         <p className="mt-1 font-mono text-sm text-atmos">{growthText}</p>
@@ -201,6 +212,18 @@ export function SkyTrackPanel() {
       idleBig={skyRange}
       idleSub="Press Play to hear fourteen years of city lights brighten."
       doneText={`Done — ${SKY_FIRST_YEAR} to ${SKY_LAST_YEAR}.`}
+      dataTable={{
+        caption:
+          'Each row is one sounded year. Brighter radiance maps to higher pitches, 220–880 Hz snapped to E natural minor.',
+        head: ['Year', 'Radiance', 'Unit', 'Note', 'Frequency'],
+        row: (e) => [
+          String(e.year),
+          e.radianceC.toFixed(4),
+          'nW/(cm²·sr)',
+          e.note,
+          `${e.quantizedHz} Hz`,
+        ],
+      }}
       tipFor={(e) => `${e.year} · ${e.radianceC.toFixed(4)} nW/(cm²·sr)`}
       readingFor={(v) => skyReading(v)}
       readingExtra={(v) => skyGrowthText(v)}
@@ -220,7 +243,7 @@ export function SkyTrackPanel() {
               loading="lazy"
               className="w-full rounded border border-slate-800"
             />
-            <figcaption className="mt-1 font-mono text-xs text-slate-400">
+            <figcaption className="mt-1 font-mono text-sm text-slate-300">
               NASA Black Marble Asia, 2012 · contextual visual, not
               synchronized with the sound
             </figcaption>
@@ -236,7 +259,7 @@ export function SkyTrackPanel() {
               2012–2023 (SVS 5475) ↗
             </a>
           </p>
-          <p className="mt-1 font-mono text-xs text-slate-400">
+          <p className="mt-1 font-mono text-sm text-slate-300">
             Covers 2012–2023 while the sound covers 2012–2025;
             contextual, not synchronized with the sound.
           </p>

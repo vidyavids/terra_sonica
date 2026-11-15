@@ -30,8 +30,8 @@ function MethodLink({ file }: { file: string }) {
 export default function SiteFooter() {
   return (
     <footer className="border-t border-slate-800 px-4 py-8">
-      <div className="mx-auto max-w-7xl space-y-4 font-mono text-xs text-slate-500">
-        <div className="space-y-1">
+      <div className="mx-auto max-w-7xl space-y-4 font-mono text-sm text-slate-400">
+        <div className="space-y-1 break-words">
           <p className="font-semibold text-slate-400">Data</p>
           <p>
             {tempData.provenance.dataset} · {tempData.provenance.sourceFile}{' '}

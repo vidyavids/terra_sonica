@@ -99,7 +99,7 @@ export default function InfoSections() {
           </a>
         </p>
         <h3 className="mt-8 border-t border-slate-800/60 pt-4 font-semibold text-cloud">El Niño citation</h3>
-        <p className="mt-1 max-w-3xl text-sm text-slate-300 md:text-base">
+        <p className="mt-1 max-w-3xl break-words text-sm text-slate-300 md:text-base">
           {ninoData.provenance.dataset}
         </p>
         <h3 className="mt-8 border-t border-slate-800/60 pt-4 font-semibold text-cloud">Mapping formulas</h3>
@@ -154,7 +154,8 @@ export default function InfoSections() {
                 <ProviderLink href="https://bmcnoldy.earth.miami.edu/tropics/oni/ONI_NINO34_v6.txt">
                   ONI_NINO34_v6.txt
                 </ProviderLink>
-                . Product: monthly NINO34_ANOM column.
+                . Product: monthly NINO34_ANOM column — the monthly
+                series, not the three-month ONI running mean.
               </li>
               <li>
                 Range: {ninoEvents[0].label} –{' '}
@@ -251,7 +252,11 @@ export default function InfoSections() {
             <ul className="mt-1 list-disc space-y-1 pl-5">
               <li>
                 Provider: NASA MODIS. Product: MOD44B Collection 6.1,
-                Percent_Tree_Cover.
+                Percent_Tree_Cover —{' '}
+                <ProviderLink href="https://lpdaac.usgs.gov/products/mod44bv061/">
+                  NASA product page
+                </ProviderLink>
+                .
               </li>
               <li>
                 Range: {forestEvents[0].year}–
@@ -259,8 +264,11 @@ export default function InfoSections() {
                 values). Region: Brazilian Legal Amazon (IBGE 2024
                 boundary per provider). Units: % mean tree-cover.
               </li>
-              <li>
-                Input snapshot: terrasonica_modis_forest_2001_2024.csv
+              <li className="break-words">
+                Input snapshot:{' '}
+                <ProviderLink href="https://github.com/vidyavids/terra_sonica/blob/main/data/terrasonica_modis_forest_2001_2024.csv">
+                  terrasonica_modis_forest_2001_2024.csv
+                </ProviderLink>{' '}
                 (Nov 2026); quality filtering undocumented, none
                 claimed.
               </li>

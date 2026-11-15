@@ -67,4 +67,5 @@ on any missing or inconsistent input.
 - Visual: MODIS Amazon rainforest still (1 Jul 2002), contextual,
   not synchronized with the sound.
 - Audit: `docs/forest-mapping.md`. Validator:
-  `scripts/validate_forest.py`.
+  `scripts/validate_forest.py`. Reproducibility record:
+  `docs/forest-reproducibility.md`.

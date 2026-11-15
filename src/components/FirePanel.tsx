@@ -3,6 +3,7 @@ import { PlaybackConductor } from '../audio/conductor';
 import { FIRE_NOTE_MS, FirePlayer } from '../audio/fireEngine';
 import type { FireTick } from '../audio/fireEngine';
 import { useTrackPlayer } from '../hooks/useTrackPlayer';
+import type { TrackStatus } from '../hooks/useTrackPlayer';
 import type { ReactNode } from 'react';
 import fireData from '../data/fire-brazil.json';
 import { TrackCard } from './PlayerSection';
@@ -30,7 +31,11 @@ function fireFRPText(view: FireTick): string {
   return `Mean FRP: ${view.meanFRP_MW.toFixed(1)} MW`;
 }
 
-function explainFire(view: FireTick, untouched: boolean): ReactNode {
+function explainFire(
+  view: FireTick,
+  untouched: boolean,
+  status: TrackStatus,
+): ReactNode {
   const frpText = !untouched ? fireFRPText(view) : null;
   return (
     <section
@@ -41,7 +46,13 @@ function explainFire(view: FireTick, untouched: boolean): ReactNode {
       <p className="mt-1 font-mono text-sm text-atmos">
         {untouched
           ? 'Press Play — live values appear here as each note sounds.'
-          : `Now playing: ${view.label} · ${fireReading(view)}`}
+          : status === 'playing'
+            ? `Now playing: ${view.label} · ${fireReading(view)}`
+            : status === 'paused'
+              ? `Paused: ${view.label} · ${fireReading(view)}`
+              : status === 'done'
+                ? `Done — ${view.label} · ${fireReading(view)}`
+                : `Selected: ${view.label} · ${fireReading(view)}`}
       </p>
       {frpText && (
         <p className="mt-1 font-mono text-sm text-atmos">{frpText}</p>
@@ -204,6 +215,18 @@ export function FireTrackPanel() {
       idleBig={fireRange}
       idleSub="Press Play to hear six fire seasons play out month by month."
       doneText={`Done — ${FIRE_FIRST_LABEL} to ${FIRE_LAST_LABEL}.`}
+      dataTable={{
+        caption:
+          'Each row is one sounded month. More detections map to higher pitches, 220–880 Hz snapped to E natural minor.',
+        head: ['Month', 'Detections', 'Unit', 'Note', 'Frequency'],
+        row: (e) => [
+          e.label,
+          e.count.toLocaleString('en-US'),
+          'detections',
+          e.note,
+          `${e.quantizedHz} Hz`,
+        ],
+      }}
       tipFor={(e) => `${e.label} · ${e.count.toLocaleString('en-US')} detections`}
       readingFor={(v) => fireReading(v)}
       readingExtra={(v) => fireFRPText(v)}
@@ -223,7 +246,7 @@ export function FireTrackPanel() {
               loading="lazy"
               className="w-full rounded border border-slate-800"
             />
-            <figcaption className="mt-1 font-mono text-xs text-slate-400">
+            <figcaption className="mt-1 font-mono text-sm text-slate-300">
               NASA MODIS Greece fires, Aug 2009 · contextual visual, not
               synchronized with the sound
             </figcaption>
@@ -239,7 +262,7 @@ export function FireTrackPanel() {
               10831) ↗
             </a>
           </p>
-          <p className="mt-1 font-mono text-xs text-slate-400">
+          <p className="mt-1 font-mono text-sm text-slate-300">
             A global MODIS fire tour from 2002–2011 — earlier years than
             this track (2020–2025), shown for context. Opens in a new tab,
             not synchronized with the sound.

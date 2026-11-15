@@ -6,7 +6,7 @@ import type { TrackEventBase } from '../audio/conductor';
 import { NOTE_MS, TemperaturePlayer } from '../audio/temperatureEngine';
 import { NINO_NOTE_MS, NinoPlayer } from '../audio/ninoEngine';
 import { useTrackPlayer } from '../hooks/useTrackPlayer';
-import type { TrackControls } from '../hooks/useTrackPlayer';
+import type { TrackControls, TrackStatus } from '../hooks/useTrackPlayer';
 import type { ReactNode } from 'react';
 import ninoData from '../data/nino34.json';
 import tempData from '../data/global-temperature.json';
@@ -103,7 +103,7 @@ function Sparkline({
           </>
         )}
       </svg>
-      <div className="mt-1 flex justify-between font-mono text-xs text-slate-400">
+      <div className="mt-1 flex justify-between font-mono text-sm text-slate-300">
         <span>{startLabel}</span>
         <span>{caption}</span>
         <span>{endLabel}</span>
@@ -192,6 +192,12 @@ interface DidYouHearThat {
   action: DidYouHearThatAction;
 }
 
+interface DataTable<TEvent extends TrackEventBase> {
+  caption: string;
+  head: string[];
+  row: (event: TEvent) => string[];
+}
+
 type TickView<TEvent extends TrackEventBase> = TEvent & {
   index: number;
   progress: number;
@@ -225,8 +231,13 @@ interface TrackCardProps<TEvent extends TrackEventBase> {
   sparkCaption: string;
   sparkDescription: string;
   visual?: ReactNode;
+  dataTable?: DataTable<TEvent>;
   didYouHearThat?: DidYouHearThat;
-  explain: (view: TickView<TEvent>, untouched: boolean) => ReactNode;
+  explain: (
+    view: TickView<TEvent>,
+    untouched: boolean,
+    status: TrackStatus,
+  ) => ReactNode;
   readingFor?: (view: TickView<TEvent>) => string;
   sparkUnit?: string;
   readingExtra?: (view: TickView<TEvent>) => string | null;
@@ -236,12 +247,41 @@ export function TrackCard<TEvent extends TrackEventBase>(
   props: TrackCardProps<TEvent>,
 ) {
   const { events } = props;
+  const table = props.dataTable;
   const playback = useComparisonPlayback(props.controls, props.noteMs);
   const controls = playback.controls;
   const comparison = playback.comparison;
   const [guideDismissed, setGuideDismissed] = useState(false);
   const totalSeconds = Math.round((events.length * props.noteMs) / 1000);
   const view = controls.view;
+  const headerPrefix =
+    controls.status === 'playing'
+      ? 'Playing, '
+      : controls.status === 'paused'
+        ? 'Paused, '
+        : controls.status === 'done' || controls.untouched
+          ? ''
+          : 'Selected, ';
+  const headerText = `${headerPrefix}${controls.untouched ? props.idleBig : props.bigFor(view)}`;
+  const [srStatus, setSrStatus] = useState(props.idleBig);
+  const lastAnnounced = useRef({ status: 'idle', index: 0, untouched: true });
+  useEffect(() => {
+    const cur = {
+      status: controls.status,
+      index: view.index,
+      untouched: controls.untouched,
+    };
+    const prev = lastAnnounced.current;
+    const transitioned = cur.status !== prev.status;
+    const reselected =
+      cur.status !== 'playing' &&
+      (cur.index !== prev.index || cur.untouched !== prev.untouched);
+    if (transitioned || reselected) {
+      lastAnnounced.current = cur;
+      // oxlint-disable-next-line react/set-state-in-effect
+      setSrStatus(headerText);
+    }
+  }, [controls.status, view.index, controls.untouched, headerText]);
   const chainRef = useRef({ status: '', index: 0, range: '' as string | null });
   useEffect(() => {
     chainRef.current = {
@@ -259,6 +299,29 @@ export function TrackCard<TEvent extends TrackEventBase>(
     },
     [],
   );
+  const focusTransport = (name: string) => {
+    const origin = document.activeElement;
+    let attempts = 0;
+    const tick = () => {
+      const el = document
+        .getElementById(props.anchorId)
+        ?.querySelector(`button[data-transport="${name}"]`);
+      const stillOurs =
+        document.activeElement === document.body ||
+        document.activeElement === origin;
+      if (
+        el instanceof HTMLElement &&
+        !el.hasAttribute('disabled') &&
+        stillOurs
+      ) {
+        el.focus({ preventScroll: true });
+        return;
+      }
+      attempts += 1;
+      if (attempts < 20 && stillOurs) window.setTimeout(tick, 50);
+    };
+    window.setTimeout(tick, 0);
+  };
   const runDidYouHearThat = () => {
     const spec = props.didYouHearThat;
     if (!spec) return;
@@ -301,25 +364,18 @@ export function TrackCard<TEvent extends TrackEventBase>(
         <h3 tabIndex={-1} className="text-xl font-semibold text-cloud">
           {props.title}, {props.dateRange}
         </h3>
-        <p className="font-mono text-xs text-slate-400">
+        <p className="font-mono text-sm text-slate-300">
           {events.length} notes · about {totalSeconds} seconds
         </p>
       </div>
       <p className="mt-1 text-sm text-slate-300">{props.description}</p>
-      <p className="mt-1 font-mono text-xs text-atmos">{props.measurement}</p>
+      <p className="mt-1 font-mono text-sm text-atmos">{props.measurement}</p>
 
-      <p
-        className="mt-4 font-mono text-5xl font-bold text-atmos"
-        aria-live="polite"
-      >
-        {controls.status === 'playing'
-          ? 'Playing, '
-          : controls.status === 'paused'
-            ? 'Paused, '
-            : controls.status === 'done' || controls.untouched
-              ? ''
-              : 'Selected, '}
-        {controls.untouched ? props.idleBig : props.bigFor(view)}
+      <p aria-hidden="true" className="mt-4 font-mono text-5xl font-bold text-atmos">
+        {headerText}
+      </p>
+      <p aria-live="polite" className="sr-only">
+        {srStatus}
       </p>
       <p className="mt-1 font-mono text-sm text-slate-300">
         {controls.untouched
@@ -367,7 +423,7 @@ export function TrackCard<TEvent extends TrackEventBase>(
                 type="button"
                 onClick={() => setGuideDismissed(true)}
                 aria-label="Dismiss listening guidance"
-                className="shrink-0 rounded border border-slate-600 px-2 py-1 text-xs font-semibold text-slate-200 hover:border-slate-400"
+                className="shrink-0 rounded border border-slate-600 px-2 py-1 text-sm font-semibold text-slate-200 hover:border-slate-400"
               >
                 Dismiss
               </button>
@@ -376,7 +432,11 @@ export function TrackCard<TEvent extends TrackEventBase>(
           <div className="mt-4 flex flex-wrap gap-3">
             <button
               type="button"
-              onClick={controls.play}
+              data-transport="play"
+              onClick={() => {
+                controls.play();
+                focusTransport('pause');
+              }}
               disabled={controls.status === 'playing'}
               className="rounded bg-atmos px-6 py-2 font-semibold text-slate-950 hover:brightness-110 disabled:opacity-40"
             >
@@ -388,7 +448,11 @@ export function TrackCard<TEvent extends TrackEventBase>(
             </button>
             <button
               type="button"
-              onClick={controls.pause}
+              data-transport="pause"
+              onClick={() => {
+                controls.pause();
+                focusTransport('play');
+              }}
               disabled={controls.status !== 'playing'}
               className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
             >
@@ -396,7 +460,11 @@ export function TrackCard<TEvent extends TrackEventBase>(
             </button>
             <button
               type="button"
-              onClick={controls.replay}
+              data-transport="replay"
+              onClick={() => {
+                controls.replay();
+                focusTransport('pause');
+              }}
               disabled={controls.status === 'playing'}
               className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
             >
@@ -404,7 +472,11 @@ export function TrackCard<TEvent extends TrackEventBase>(
             </button>
             <button
               type="button"
-              onClick={controls.stop}
+              data-transport="stop"
+              onClick={() => {
+                controls.stop();
+                focusTransport('play');
+              }}
               disabled={
                 controls.status !== 'playing' && controls.status !== 'paused'
               }
@@ -419,7 +491,12 @@ export function TrackCard<TEvent extends TrackEventBase>(
             >
               <button
                 type="button"
-                onClick={() => controls.scrub(view.index - 1)}
+                data-transport="prev"
+                onClick={() => {
+                  const atStart = view.index - 1 <= 0;
+                  controls.scrub(view.index - 1);
+                  if (atStart) focusTransport('next');
+                }}
                 disabled={view.index === 0}
                 aria-label={`Previous ${props.stepUnit}`}
                 className="rounded border border-slate-700 px-3 py-2 text-sm font-semibold text-atmos hover:border-atmos disabled:opacity-40"
@@ -428,7 +505,12 @@ export function TrackCard<TEvent extends TrackEventBase>(
               </button>
               <button
                 type="button"
-                onClick={() => controls.scrub(view.index + 1)}
+                data-transport="next"
+                onClick={() => {
+                  const atEnd = view.index + 1 >= events.length - 1;
+                  controls.scrub(view.index + 1);
+                  if (atEnd) focusTransport('prev');
+                }}
                 disabled={view.index === events.length - 1}
                 aria-label={`Next ${props.stepUnit}`}
                 className="rounded border border-slate-700 px-3 py-2 text-sm font-semibold text-atmos hover:border-atmos disabled:opacity-40"
@@ -439,7 +521,45 @@ export function TrackCard<TEvent extends TrackEventBase>(
           </div>
 
           <div className="mt-4">
-            <p className="mb-1 text-xs text-slate-400">{props.presetHeading}</p>
+            <p className="mb-1 text-sm text-slate-300">Compare real moments</p>
+            <div className="flex flex-wrap items-center gap-2">
+              {[props.compare.a, props.compare.b].map((d) => (
+                <button
+                  key={d.label}
+                  type="button"
+                  onClick={() => comparison.startComparison(d)}
+                  aria-pressed={
+                    comparison.range?.label === d.label &&
+                    (controls.status === 'playing' ||
+                      controls.status === 'paused')
+                  }
+                  className="rounded border border-atmos px-4 py-1.5 text-sm font-semibold text-atmos hover:bg-atmos/10 aria-pressed:bg-atmos/20"
+                >
+                  {d.label}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={comparison.playFullTrack}
+                disabled={
+                  controls.status === 'playing' && !comparison.range
+                }
+                className="rounded bg-atmos px-4 py-1.5 text-sm font-semibold text-slate-950 hover:brightness-110 disabled:opacity-40"
+              >
+                ▶ Play full track
+              </button>
+            </div>
+            {comparison.range &&
+              (controls.status === 'playing' ||
+                controls.status === 'paused') && (
+                <p className="mt-1 font-mono text-sm text-atmos">
+                  Comparing {comparison.range.label}…
+                </p>
+              )}
+          </div>
+
+          <div className="mt-4">
+            <p className="mb-1 text-sm text-slate-300">{props.presetHeading}</p>
             <Scrubber
               events={events}
               viewIndex={view.index}
@@ -453,47 +573,16 @@ export function TrackCard<TEvent extends TrackEventBase>(
                   key={p.label}
                   type="button"
                   onClick={() => controls.scrub(p.index)}
-                  className="rounded border border-slate-700 px-3 py-1 text-xs font-semibold text-atmos hover:border-atmos"
+                  className="rounded border border-slate-700 px-3 py-1 text-sm font-semibold text-atmos hover:border-atmos"
                 >
                   {p.label}
                 </button>
               ))}
             </div>
-            <div className="mt-3">
-              <p className="mb-1 text-xs text-slate-400">Compare real moments</p>
-              <div className="flex flex-wrap items-center gap-2">
-                {[props.compare.a, props.compare.b].map((d) => (
-                  <button
-                    key={d.label}
-                    type="button"
-                    onClick={() => comparison.startComparison(d)}
-                    aria-pressed={comparison.range?.label === d.label}
-                    className="rounded border border-atmos px-4 py-1.5 text-sm font-semibold text-atmos hover:bg-atmos/10 aria-pressed:bg-atmos/20"
-                  >
-                    {d.label}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={comparison.playFullTrack}
-                  disabled={
-                    controls.status === 'playing' && !comparison.range
-                  }
-                  className="rounded bg-atmos px-4 py-1.5 text-sm font-semibold text-slate-950 hover:brightness-110 disabled:opacity-40"
-                >
-                  ▶ Play full track
-                </button>
-              </div>
-              {comparison.range && (
-                <p className="mt-1 font-mono text-xs text-atmos">
-                  Comparing {comparison.range.label}…
-                </p>
-              )}
-            </div>
           </div>
         </div>
         <div className="md:col-span-2">
-          {props.explain(view, controls.untouched)}
+          {props.explain(view, controls.untouched, controls.status)}
         </div>
       </div>
 
@@ -520,6 +609,47 @@ export function TrackCard<TEvent extends TrackEventBase>(
           </details>
         </section>
       )}
+      {table && (
+        <details className="mt-6 rounded-lg border border-slate-800 bg-slate-900/40 p-5">
+          <summary className="cursor-pointer font-semibold text-atmos">
+            Observation table ({events.length} observations)
+          </summary>
+          <div className="mt-3 max-h-96 overflow-auto">
+            <table className="w-full border-collapse font-mono text-xs text-slate-300">
+              <caption className="mb-2 text-left font-sans text-sm text-slate-300">
+                {table.caption}
+              </caption>
+              <thead className="sticky top-0 bg-slate-900">
+                <tr>
+                  {table.head.map((h) => (
+                    <th
+                      key={h}
+                      scope="col"
+                      className="border-b border-slate-700 px-2 py-1 text-left font-semibold text-cloud"
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {events.map((e) => {
+                  const cells = table.row(e);
+                  return (
+                    <tr key={cells[0]} className="border-b border-slate-800/60">
+                      {cells.map((c, j) => (
+                        <td key={`${cells[0]}-${j}`} className="px-2 py-1">
+                          {c}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </details>
+      )}
     </section>
   );
 }
@@ -538,6 +668,7 @@ const NINO_STILL =
 function explainTemperature(
   view: TickView<TempEvent>,
   untouched: boolean,
+  status: TrackStatus,
 ): ReactNode {
   return (
     <section
@@ -548,7 +679,13 @@ function explainTemperature(
       <p className="mt-1 font-mono text-sm text-atmos">
         {untouched
           ? 'Press Play — live values appear here as each note sounds.'
-          : `Now playing: ${view.year} · ${formatReading(view)}`}
+          : status === 'playing'
+            ? `Now playing: ${view.year} · ${formatReading(view)}`
+            : status === 'paused'
+              ? `Paused: ${view.year} · ${formatReading(view)}`
+              : status === 'done'
+                ? `Done — ${view.year} · ${formatReading(view)}`
+                : `Selected: ${view.year} · ${formatReading(view)}`}
       </p>
       <details className="mt-3">
         <summary className="cursor-pointer font-semibold text-atmos">
@@ -616,6 +753,7 @@ function explainTemperature(
 function explainNino(
   view: TickView<NinoEvent>,
   untouched: boolean,
+  status: TrackStatus,
 ): ReactNode {
   return (
     <section
@@ -626,7 +764,13 @@ function explainNino(
       <p className="mt-1 font-mono text-sm text-atmos">
         {untouched
           ? 'Press Play — live values appear here as each note sounds.'
-          : `Now playing: ${view.label} · ${formatReading(view)}`}
+          : status === 'playing'
+            ? `Now playing: ${view.label} · ${formatReading(view)}`
+            : status === 'paused'
+              ? `Paused: ${view.label} · ${formatReading(view)}`
+              : status === 'done'
+                ? `Done — ${view.label} · ${formatReading(view)}`
+                : `Selected: ${view.label} · ${formatReading(view)}`}
       </p>
       <details className="mt-3">
         <summary className="cursor-pointer font-semibold text-atmos">
@@ -784,6 +928,18 @@ function TempTrackPanel() {
       idleBig={tempRange}
       idleSub={`Press Play to hear ${tempEvents.length} years of warming.`}
       doneText={`Done — ${TEMP_FIRST_YEAR} to ${TEMP_LAST_YEAR}.`}
+      dataTable={{
+        caption:
+          'Each row is one sounded year. Higher anomalies map to higher pitches, 220–880 Hz snapped to E natural minor.',
+        head: ['Year', 'Anomaly', 'Unit', 'Note', 'Frequency'],
+        row: (e) => [
+          String(e.year),
+          `${e.anomalyC >= 0 ? '+' : ''}${e.anomalyC.toFixed(2)}`,
+          '°C',
+          e.note,
+          `${e.quantizedHz} Hz`,
+        ],
+      }}
       tipFor={(e) => `${e.year} · ${formatAnomaly(e.anomalyC)}`}
       scrubLabel="Scrub Global Surface Temperature timeline"
       progressLabel="Track 1 playback progress"
@@ -868,6 +1024,18 @@ function NinoTrackPanel() {
       idleBig={ninoRange}
       idleSub="Press Play to hear El Niño and La Niña play out month by month."
       doneText={`Done — ${NINO_FIRST_LABEL} to ${NINO_LAST_LABEL}.`}
+      dataTable={{
+        caption:
+          'Each row is one sounded month. Higher anomalies map to higher pitches, 220–880 Hz snapped to E natural minor.',
+        head: ['Month', 'Anomaly', 'Unit', 'Note', 'Frequency'],
+        row: (e) => [
+          e.label,
+          `${e.anomalyC >= 0 ? '+' : ''}${e.anomalyC.toFixed(2)}`,
+          '°C',
+          e.note,
+          `${e.quantizedHz} Hz`,
+        ],
+      }}
       tipFor={(e) => `${e.label} · ${formatAnomaly(e.anomalyC)}`}
       scrubLabel="Scrub El Niño timeline"
       progressLabel="Track 2 playback progress"
@@ -883,7 +1051,7 @@ function NinoTrackPanel() {
             loading="lazy"
             className="w-full rounded border border-slate-800"
           />
-          <figcaption className="mt-1 font-mono text-xs text-slate-400">
+          <figcaption className="mt-1 font-mono text-sm text-slate-300">
             NASA SVS 5683 · contextual visual, not synchronized with the
             sound
           </figcaption>

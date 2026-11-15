@@ -4,6 +4,7 @@ import type { PlaybackConductor as Conductor } from '../audio/conductor';
 import { FOREST_NOTE_MS, ForestPlayer } from '../audio/forestEngine';
 import type { ForestTick } from '../audio/forestEngine';
 import { useTrackPlayer } from '../hooks/useTrackPlayer';
+import type { TrackStatus } from '../hooks/useTrackPlayer';
 import type { ReactNode } from 'react';
 import forestData from '../data/forest-amazon.json';
 import { TrackCard } from './PlayerSection';
@@ -23,7 +24,11 @@ function forestReading(view: ForestTick): string {
   return `${view.treeCoverPct.toFixed(3)}% tree cover · ${view.note} · ${view.quantizedHz} Hz (raw ${view.linearHz.toFixed(1)} Hz)`;
 }
 
-function explainForest(view: ForestTick, untouched: boolean): ReactNode {
+function explainForest(
+  view: ForestTick,
+  untouched: boolean,
+  status: TrackStatus,
+): ReactNode {
   return (
     <section
       aria-label="Explain My Sound: Hear the Forest — Amazon Tree Cover"
@@ -33,7 +38,13 @@ function explainForest(view: ForestTick, untouched: boolean): ReactNode {
       <p className="mt-1 font-mono text-sm text-atmos">
         {untouched
           ? 'Press Play — live values appear here as each note sounds.'
-          : `Now playing: ${view.year} · ${forestReading(view)}`}
+          : status === 'playing'
+            ? `Now playing: ${view.year} · ${forestReading(view)}`
+            : status === 'paused'
+              ? `Paused: ${view.year} · ${forestReading(view)}`
+              : status === 'done'
+                ? `Done — ${view.year} · ${forestReading(view)}`
+                : `Selected: ${view.year} · ${forestReading(view)}`}
       </p>
       <details className="mt-3">
         <summary className="cursor-pointer font-semibold text-atmos">
@@ -71,9 +82,17 @@ function explainForest(view: ForestTick, untouched: boolean): ReactNode {
           </div>
           <div>
             <dt className="font-semibold text-atmos">The data</dt>
-            <dd>
-              Provided as terrasonica_modis_forest_2001_2024.csv:{' '}
-              {forestData.events.length} authentic yearly values,
+            <dd className="break-words">
+              Provided as{' '}
+              <a
+                className="text-atmos hover:underline"
+                href="https://github.com/vidyavids/terra_sonica/blob/main/data/terrasonica_modis_forest_2001_2024.csv"
+                target="_blank"
+                rel="noreferrer"
+              >
+                terrasonica_modis_forest_2001_2024.csv
+              </a>
+              : {forestData.events.length} authentic yearly values,
               area-weighted annual means at 2000 m analysis scale over
               the Brazilian Legal Amazon (IBGE 2024 boundary per the
               provider). Valid land area ~4.99M km², stable within 0.1%.
@@ -113,7 +132,7 @@ function explainForest(view: ForestTick, untouched: boolean): ReactNode {
           <div>
             <dt className="font-semibold text-atmos">Limitations</dt>
             <dd>
-              Only the verified mean cover drives the sound. Annual means
+              Only the supplied mean cover drives the sound. Annual means
               smooth over short events, and one regional mean collapses
               local variation; the still shows one day of one year. The
               1.18-point 2001–2024 change is a change in mean canopy
@@ -394,6 +413,18 @@ export function ForestTrackPanel() {
       idleBig={forestRange}
       idleSub="Press Play to hear twenty-four years of Amazon canopy."
       doneText={`Done — ${FOREST_FIRST_YEAR} to ${FOREST_LAST_YEAR}.`}
+      dataTable={{
+        caption:
+          'Each row is one sounded year. Denser canopy maps to higher pitches over a narrow 220–660 Hz span, snapped to E natural minor; pitch is stretched to keep small differences audible.',
+        head: ['Year', 'Tree cover', 'Unit', 'Note', 'Frequency'],
+        row: (e) => [
+          String(e.year),
+          e.treeCoverPct.toFixed(3),
+          '%',
+          e.note,
+          `${e.quantizedHz} Hz`,
+        ],
+      }}
       tipFor={(e) => `${e.year} · ${e.treeCoverPct.toFixed(3)}%`}
       readingFor={(v) => forestReading(v)}
       scrubLabel="Scrub tree-cover timeline"
@@ -411,7 +442,7 @@ export function ForestTrackPanel() {
             loading="lazy"
             className="w-full rounded border border-slate-800"
           />
-          <figcaption className="mt-1 font-mono text-xs text-slate-400">
+          <figcaption className="mt-1 font-mono text-sm text-slate-300">
             Amazon rainforest, northern Brazil, MODIS, 1 Jul 2002 ·
             contextual visual, not synchronized with the sound
           </figcaption>

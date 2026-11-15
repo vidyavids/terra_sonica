@@ -81,7 +81,7 @@ export default function Hero() {
             </p>
           </div>
           <div>
-            <h2 className="font-semibold text-cloud">Real NASA Data</h2>
+            <h2 className="font-semibold text-cloud">Real NASA & NOAA Data</h2>
             <p className="mt-1 text-sm text-slate-300">
               Trusted, open observations.
             </p>

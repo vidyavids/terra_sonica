@@ -4,13 +4,16 @@ Fifth playable track. Annual mean Percent_Tree_Cover over the Brazilian
 Legal Amazon, 2001–2024 (24 values), sonified one year per note at
 700 ms per note (~16.8 s).
 
-## Source (verified)
+## Source (as supplied)
 
 - NASA MODIS MOD44B (Vegetation Continuous Fields Yearly L3 Global),
   Collection 6.1, variable Percent_Tree_Cover, units %.
+  Product page: https://lpdaac.usgs.gov/products/mod44bv061/ (verified
+  live, Nov 2026).
 - Provided as `terrasonica_modis_forest_2001_2024.csv` (24 rows,
   accessed Nov 2026): area-weighted annual mean at 2000 m analysis
-  scale. Every row carries the same product, region, and scale.
+  scale. Every row carries the same product, region, and scale. Exact
+  file: https://github.com/vidyavids/terra_sonica/blob/main/data/terrasonica_modis_forest_2001_2024.csv
 - Boundary: Brazilian Legal Amazon, IBGE 2024 boundary per the
   provider; the CSV labels the region "Brazilian Legal Amazon".
 - Valid land area 4,987,428–4,990,883 km² across the 24 rows

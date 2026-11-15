@@ -59,7 +59,7 @@ export default function AudioVisualizer({
         role="img"
         aria-label="Live audio waveform. Decorative: it moves with the sound; all values appear as text."
       />
-      <figcaption className="mt-1 font-mono text-xs text-slate-400">
+      <figcaption className="mt-1 font-mono text-sm text-slate-300">
         Live waveform — moves with the sound (decorative; values are in the
         text readouts)
       </figcaption>

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Terra Sonica track 5: validate Forest data and finalize the Forest JSON.
 
-Reads ``data/terrasonica_modis_forest_2001_2024.csv`` (verified annual
-mean Percent_Tree_Cover over the Brazilian Legal Amazon, 2001-2024),
+Reads ``data/terrasonica_modis_forest_2001_2024.csv`` (annual mean
+Percent_Tree_Cover over the Brazilian Legal Amazon, 2001-2024, from
+the supplied export),
 validates gates (24 contiguous years, exact values, constant product /
 region / scale columns, valid-area band and stability, unique min/max,
 year-on-year step bound), applies the finalized frequency mapping, and
