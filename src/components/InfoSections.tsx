@@ -82,9 +82,14 @@ export default function InfoSections() {
         className={sectionClass}
       >
         <h2 className={headingClass}>Data &amp; Methods</h2>
-        <h3 className="mt-8 border-t border-slate-800/60 pt-4 font-semibold text-cloud">
-          Global Surface Temperature citation
-        </h3>
+        <p className="mt-3 max-w-3xl text-slate-300">
+          Sources, methods, mapping formulas, and limitations for all five
+          tracks — expand a section for detail.
+        </p>
+        <details className="mt-6 border-t border-slate-800/60 pt-4">
+          <summary className="cursor-pointer font-semibold text-atmos">
+            Global Surface Temperature citation
+          </summary>
         <p className="mt-1 max-w-3xl text-sm text-slate-300 md:text-base">
           {tempData.provenance.dataset} ({tempData.provenance.column},
           source {tempData.provenance.sourceFile}).{' '}
@@ -98,11 +103,19 @@ export default function InfoSections() {
             {tempData.provenance.sourceUrl}
           </a>
         </p>
-        <h3 className="mt-8 border-t border-slate-800/60 pt-4 font-semibold text-cloud">El Niño citation</h3>
+        </details>
+        <details className="mt-6 border-t border-slate-800/60 pt-4">
+          <summary className="cursor-pointer font-semibold text-atmos">
+            El Niño citation
+          </summary>
         <p className="mt-1 max-w-3xl break-words text-sm text-slate-300 md:text-base">
           {ninoData.provenance.dataset}
         </p>
-        <h3 className="mt-8 border-t border-slate-800/60 pt-4 font-semibold text-cloud">Mapping formulas</h3>
+        </details>
+        <details className="mt-6 border-t border-slate-800/60 pt-4">
+          <summary className="cursor-pointer font-semibold text-atmos">
+            Mapping formulas
+          </summary>
         <p className="mt-1 font-mono text-[13px] text-slate-300 md:text-sm">
           Track 1: f = 220 + ((T + 0.50) / 1.80) × 660, snapped to E natural
           minor.
@@ -111,14 +124,13 @@ export default function InfoSections() {
           Track 2: f = 220 + ((A + 1.5) / 4.0) × 660, A clamped to [−1.5,
           +2.5], then snapped to E natural minor.
         </p>
+        </details>
         <h3 className="mt-8 border-t border-slate-800/60 pt-4 font-semibold text-cloud">
           Track sources and methods
         </h3>
         <div className="mt-2 max-w-3xl space-y-5 text-sm text-slate-300">
-          <div>
-            <h4 className="font-semibold text-cloud">
-              Track 1 · Global Surface Temperature
-            </h4>
+          <details>
+            <summary className="cursor-pointer font-semibold text-atmos">Track 1 · Global Surface Temperature</summary>
             <ul className="mt-1 list-disc space-y-1 pl-5">
               <li>
                 Provider:{' '}
@@ -145,9 +157,9 @@ export default function InfoSections() {
                 <DocLink file="temperature-mapping.md">Mapping audit</DocLink>.
               </li>
             </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold text-cloud">Track 2 · El Niño</h4>
+          </details>
+          <details>
+            <summary className="cursor-pointer font-semibold text-atmos">Track 2 · El Niño</summary>
             <ul className="mt-1 list-disc space-y-1 pl-5">
               <li>
                 Provider: NOAA ERSSTv6 via McNoldy (Univ. of Miami),{' '}
@@ -176,11 +188,9 @@ export default function InfoSections() {
                 <DocLink file="nino34-mapping.md">Mapping audit</DocLink>.
               </li>
             </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold text-cloud">
-              Track 3 · Hear the Fire — Brazil
-            </h4>
+          </details>
+          <details>
+            <summary className="cursor-pointer font-semibold text-atmos">Track 3 · Hear the Fire — Brazil</summary>
             <ul className="mt-1 list-disc space-y-1 pl-5">
               <li>
                 Provider:{' '}
@@ -211,11 +221,9 @@ export default function InfoSections() {
                 <DocLink file="fire-mapping.md">Mapping audit</DocLink>.
               </li>
             </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold text-cloud">
-              Track 4 · Hear the Lights — India
-            </h4>
+          </details>
+          <details>
+            <summary className="cursor-pointer font-semibold text-atmos">Track 4 · Hear the Lights — India</summary>
             <ul className="mt-1 list-disc space-y-1 pl-5">
               <li>
                 Provider: NASA Black Marble (LAADS DAAC). Product: VNP46A4
@@ -244,11 +252,9 @@ export default function InfoSections() {
                 <DocLink file="sky-mapping.md">Mapping audit</DocLink>.
               </li>
             </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold text-cloud">
-              Track 5 · Hear the Forest — Amazon Tree Cover
-            </h4>
+          </details>
+          <details>
+            <summary className="cursor-pointer font-semibold text-atmos">Track 5 · Hear the Forest — Amazon Tree Cover</summary>
             <ul className="mt-1 list-disc space-y-1 pl-5">
               <li>
                 Provider: NASA MODIS. Product: MOD44B Collection 6.1,
@@ -283,9 +289,12 @@ export default function InfoSections() {
                 <DocLink file="forest-mapping.md">Mapping audit</DocLink>.
               </li>
             </ul>
-          </div>
+          </details>
         </div>
-        <h3 className="mt-8 border-t border-slate-800/60 pt-4 font-semibold text-cloud">Limitations</h3>
+        <details className="mt-6 border-t border-slate-800/60 pt-4">
+          <summary className="cursor-pointer font-semibold text-atmos">
+            Limitations
+          </summary>
         <ul className="mt-1 max-w-3xl list-disc space-y-1 pl-5 text-sm text-slate-300 md:text-base">
           <li>
             Track 1 values are Lowess(5)-smoothed annual means, so brief
@@ -307,6 +316,7 @@ export default function InfoSections() {
             {ninoData.provenance.referencePeriod}).
           </li>
         </ul>
+        </details>
       </section>
 
       <section
