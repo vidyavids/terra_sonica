@@ -26,6 +26,7 @@ interface SparklineProps {
   endLabel: string;
   caption: string;
   description: string;
+  unit?: string;
 }
 
 function Sparkline({
@@ -35,6 +36,7 @@ function Sparkline({
   endLabel,
   caption,
   description,
+  unit = 'degrees C',
 }: SparklineProps) {
   const gid = useId().replace(/[^a-zA-Z0-9-_]/g, '');
   const geom = useMemo(() => {
@@ -58,7 +60,7 @@ function Sparkline({
         viewBox={`0 0 ${geom.w} ${geom.h}`}
         className="h-auto w-full"
         role="img"
-        aria-label={`${description}, ranging from ${geom.min.toFixed(2)} to ${geom.max.toFixed(2)} degrees C`}
+        aria-label={`${description}, ranging from ${geom.min.toFixed(2)} to ${geom.max.toFixed(2)} ${unit}`}
       >
         <defs>
           <linearGradient id={gid} x1="0" y1="0" x2="1" y2="0">
@@ -212,9 +214,11 @@ interface TrackCardProps<TEvent extends TrackEventBase> {
   sparkDescription: string;
   visual?: ReactNode;
   explain: (view: TickView<TEvent>, untouched: boolean) => ReactNode;
+  readingFor?: (view: TickView<TEvent>) => string;
+  sparkUnit?: string;
 }
 
-function TrackCard<TEvent extends TrackEventBase>(
+export function TrackCard<TEvent extends TrackEventBase>(
   props: TrackCardProps<TEvent>,
 ) {
   const { events } = props;
@@ -248,7 +252,11 @@ function TrackCard<TEvent extends TrackEventBase>(
         {controls.untouched ? props.idleBig : props.bigFor(view)}
       </p>
       <p className="mt-1 font-mono text-sm text-slate-300">
-        {controls.untouched ? props.idleSub : formatReading(view)}
+        {controls.untouched
+          ? props.idleSub
+          : props.readingFor
+            ? props.readingFor(view)
+            : formatReading(view)}
       </p>
 
       <div
@@ -274,6 +282,7 @@ function TrackCard<TEvent extends TrackEventBase>(
             endLabel={props.sparkEnd}
             caption={props.sparkCaption}
             description={props.sparkDescription}
+            unit={props.sparkUnit}
           />
           <AudioVisualizer getAnalyser={props.getTap} />
           {!guideDismissed && controls.untouched && (

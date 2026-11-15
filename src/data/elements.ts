@@ -2,7 +2,7 @@ import ninoData from './nino34.json';
 import tempData from './global-temperature.json';
 
 export type ElementSlug = 'air' | 'water' | 'earth' | 'fire' | 'aether';
-export type PanelTrack = 'temp' | 'nino';
+export type PanelTrack = 'temp' | 'nino' | 'fire';
 
 export interface SubExperience {
   label: string;
@@ -100,17 +100,18 @@ export const ELEMENTS: Element[] = [
     experience: 'Hear the Fire',
     strapline: "Hear the changing patterns of fire across Earth's surface.",
     description:
-      'Fire will listen to burning: where wildfires are detected across Earth\u2019s surface, and how much energy they release.',
+      'Fire listens to burning: six years of MODIS active-fire detections over Brazil, one month per note, from quiet wet months to fierce burning seasons.',
     context:
-      'Two planned listens: wildfire detections from NASA FIRMS, and fire radiative power.',
+      'Hear the Fire is driven only by verified monthly detection counts. The NASA visualization beside the player is contextual, not synchronized with the sound.',
     image: '/images/fire-greece-modis.jpg',
     imageAlt:
       'Fires in Greece with a smoke plume over the Aegean Sea, MODIS satellite image',
     subs: [
       {
-        label: 'Wildfire Detections',
-        detail: 'NASA FIRMS',
-        status: 'planned',
+        label: 'Hear the Fire — Amazon (2020–2025)',
+        status: 'playable',
+        href: '#/fire',
+        track: 'fire',
       },
       { label: 'Fire Radiative Power', status: 'planned' },
     ],
@@ -141,15 +142,21 @@ export const ELEMENTS: Element[] = [
 export const TRACK_TITLES: Record<PanelTrack, string> = {
   temp: 'Global Surface Temperature',
   nino: 'El Niño',
+  fire: 'Hear the Fire — Amazon (2020–2025)',
 };
 
-export function trackRouteId(track: PanelTrack): 'track-1' | 'track-2' {
-  return track === 'temp' ? 'track-1' : 'track-2';
+export function trackRouteId(
+  track: PanelTrack,
+): 'track-1' | 'track-2' | 'track-3' {
+  if (track === 'temp') return 'track-1';
+  if (track === 'nino') return 'track-2';
+  return 'track-3';
 }
 
 export function trackFromRouteId(id: string): PanelTrack | null {
   if (id === 'track-1') return 'temp';
   if (id === 'track-2') return 'nino';
+  if (id === 'track-3') return 'fire';
   return null;
 }
 

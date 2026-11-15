@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Python environment and satellite-data scratch (tool-generated, not deliverables)
+.venv/
+.uv-cache/
+__pycache__/
+*.h5
+data/raw/
+.env
+.env.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

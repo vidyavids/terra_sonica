@@ -1,6 +1,7 @@
 import { elementHash, findElement, playerHash } from '../data/elements';
 import type { ElementSlug, PanelTrack } from '../data/elements';
 import { Legend } from './Experiences';
+import { FireTrackPanel } from './FirePanel';
 import { TrackPanel } from './PlayerSection';
 
 interface ElementPageProps {
@@ -51,7 +52,11 @@ export default function ElementPage({ slug, track }: ElementPageProps) {
                 ← {el.element} tracks
               </a>
               <div className="mt-4">
-                <TrackPanel track={track} />
+                {track === 'fire' ? (
+                  <FireTrackPanel />
+                ) : (
+                  <TrackPanel track={track} />
+                )}
               </div>
             </>
           ) : (

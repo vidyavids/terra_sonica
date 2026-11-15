@@ -1,0 +1,766 @@
+{
+  "provenance": {
+    "dataset": "Monthly counts of MODIS active-fire detections over Brazil, NASA FIRMS API (product MODIS_SP, area query), masked to the GADM 4.1 Brazil level-0 boundary (accessed Nov 2026). Counts are detection observations, not unique wildfires or area burned.",
+    "visual": "Fires in Greece, MODIS on Aqua, 22 Aug 2009. Credit: NASA Earth Observatory image by Jeff Schmaltz, MODIS Rapid Response Team, NASA GSFC.",
+    "visualCoverage": "Fires in Greece, Aug 2009 (single MODIS still). The visual is contextual, not synchronized with the sound.",
+    "soundCoverage": "Jan 2020-Dec 2025 monthly (72 months).",
+    "sourceFile": "fire-brazil-monthly-2020-2025.csv",
+    "fetchLog": "fire-brazil-fetch-log.json",
+    "column": "count (monthly MODIS active-fire detections, integer)",
+    "referencePeriod": "n/a (raw detection counts, no baseline).",
+    "satelliteCheck": "Terra and Aqua both present in all 72 months; no sensor dropout.",
+    "region": "Brazil, GADM 4.1 level-0 dissolved polygon (bbox approx -74,-34,-28,6).",
+    "eventCount": 72,
+    "missingValuePolicy": "No month is missing. Missing months would fail validation, never be interpolated or zero-filled.",
+    "generatedBy": "scripts/validate_fire.py",
+    "mappingDoc": "docs/fire-mapping.md"
+  },
+  "mapping": {
+    "linearHz": "clamp(C, 2914, 164682); 220 + (C - 2914) / (164682 - 2914) * 660",
+    "quantization": "nearest E-natural-minor note by ABS(LOG(raw/note, 2)); ties resolve to the higher note; raw frequencies clamp to [E3, B5].",
+    "noteMs": 500,
+    "pitchSetHz": {
+      "E3": 164.81,
+      "F#3": 185.0,
+      "G3": 196.0,
+      "A3": 220.0,
+      "B3": 246.94,
+      "C4": 261.63,
+      "D4": 293.66,
+      "E4": 329.63,
+      "F#4": 369.99,
+      "G4": 392.0,
+      "A4": 440.0,
+      "B4": 493.88,
+      "C5": 523.25,
+      "D5": 587.33,
+      "E5": 659.25,
+      "F#5": 739.99,
+      "G5": 783.99,
+      "A5": 880.0,
+      "B5": 987.77
+    }
+  },
+  "events": [
+    {
+      "year": 2020,
+      "month": 1,
+      "label": "Jan 2020",
+      "count": 6172,
+      "anomalyC": 6172,
+      "linearHz": 233.2924,
+      "note": "B3",
+      "quantizedHz": 246.94
+    },
+    {
+      "year": 2020,
+      "month": 2,
+      "label": "Feb 2020",
+      "count": 5065,
+      "anomalyC": 5065,
+      "linearHz": 228.7759,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2020,
+      "month": 3,
+      "label": "Mar 2020",
+      "count": 9054,
+      "anomalyC": 9054,
+      "linearHz": 245.0507,
+      "note": "B3",
+      "quantizedHz": 246.94
+    },
+    {
+      "year": 2020,
+      "month": 4,
+      "label": "Apr 2020",
+      "count": 8224,
+      "anomalyC": 8224,
+      "linearHz": 241.6644,
+      "note": "B3",
+      "quantizedHz": 246.94
+    },
+    {
+      "year": 2020,
+      "month": 5,
+      "label": "May 2020",
+      "count": 7614,
+      "anomalyC": 7614,
+      "linearHz": 239.1756,
+      "note": "B3",
+      "quantizedHz": 246.94
+    },
+    {
+      "year": 2020,
+      "month": 6,
+      "label": "Jun 2020",
+      "count": 13970,
+      "anomalyC": 13970,
+      "linearHz": 265.1076,
+      "note": "C4",
+      "quantizedHz": 261.63
+    },
+    {
+      "year": 2020,
+      "month": 7,
+      "label": "Jul 2020",
+      "count": 27342,
+      "anomalyC": 27342,
+      "linearHz": 319.6642,
+      "note": "E4",
+      "quantizedHz": 329.63
+    },
+    {
+      "year": 2020,
+      "month": 8,
+      "label": "Aug 2020",
+      "count": 72415,
+      "anomalyC": 72415,
+      "linearHz": 503.5583,
+      "note": "B4",
+      "quantizedHz": 493.88
+    },
+    {
+      "year": 2020,
+      "month": 9,
+      "label": "Sep 2020",
+      "count": 138598,
+      "anomalyC": 138598,
+      "linearHz": 773.5794,
+      "note": "G5",
+      "quantizedHz": 783.99
+    },
+    {
+      "year": 2020,
+      "month": 10,
+      "label": "Oct 2020",
+      "count": 81331,
+      "anomalyC": 81331,
+      "linearHz": 539.9348,
+      "note": "C5",
+      "quantizedHz": 523.25
+    },
+    {
+      "year": 2020,
+      "month": 11,
+      "label": "Nov 2020",
+      "count": 23081,
+      "anomalyC": 23081,
+      "linearHz": 302.2797,
+      "note": "D4",
+      "quantizedHz": 293.66
+    },
+    {
+      "year": 2020,
+      "month": 12,
+      "label": "Dec 2020",
+      "count": 12409,
+      "anomalyC": 12409,
+      "linearHz": 258.7388,
+      "note": "C4",
+      "quantizedHz": 261.63
+    },
+    {
+      "year": 2021,
+      "month": 1,
+      "label": "Jan 2021",
+      "count": 4764,
+      "anomalyC": 4764,
+      "linearHz": 227.5478,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2021,
+      "month": 2,
+      "label": "Feb 2021",
+      "count": 4591,
+      "anomalyC": 4591,
+      "linearHz": 226.842,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2021,
+      "month": 3,
+      "label": "Mar 2021",
+      "count": 5327,
+      "anomalyC": 5327,
+      "linearHz": 229.8448,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2021,
+      "month": 4,
+      "label": "Apr 2021",
+      "count": 5342,
+      "anomalyC": 5342,
+      "linearHz": 229.906,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2021,
+      "month": 5,
+      "label": "May 2021",
+      "count": 10262,
+      "anomalyC": 10262,
+      "linearHz": 249.9792,
+      "note": "B3",
+      "quantizedHz": 246.94
+    },
+    {
+      "year": 2021,
+      "month": 6,
+      "label": "Jun 2021",
+      "count": 15518,
+      "anomalyC": 15518,
+      "linearHz": 271.4233,
+      "note": "C4",
+      "quantizedHz": 261.63
+    },
+    {
+      "year": 2021,
+      "month": 7,
+      "label": "Jul 2021",
+      "count": 27950,
+      "anomalyC": 27950,
+      "linearHz": 322.1448,
+      "note": "E4",
+      "quantizedHz": 329.63
+    },
+    {
+      "year": 2021,
+      "month": 8,
+      "label": "Aug 2021",
+      "count": 97692,
+      "anomalyC": 97692,
+      "linearHz": 606.6864,
+      "note": "D5",
+      "quantizedHz": 587.33
+    },
+    {
+      "year": 2021,
+      "month": 9,
+      "label": "Sep 2021",
+      "count": 93555,
+      "anomalyC": 93555,
+      "linearHz": 589.8077,
+      "note": "D5",
+      "quantizedHz": 587.33
+    },
+    {
+      "year": 2021,
+      "month": 10,
+      "label": "Oct 2021",
+      "count": 51966,
+      "anomalyC": 51966,
+      "linearHz": 420.1281,
+      "note": "A4",
+      "quantizedHz": 440.0
+    },
+    {
+      "year": 2021,
+      "month": 11,
+      "label": "Nov 2021",
+      "count": 16410,
+      "anomalyC": 16410,
+      "linearHz": 275.0626,
+      "note": "C4",
+      "quantizedHz": 261.63
+    },
+    {
+      "year": 2021,
+      "month": 12,
+      "label": "Dec 2021",
+      "count": 7101,
+      "anomalyC": 7101,
+      "linearHz": 237.0826,
+      "note": "B3",
+      "quantizedHz": 246.94
+    },
+    {
+      "year": 2022,
+      "month": 1,
+      "label": "Jan 2022",
+      "count": 6122,
+      "anomalyC": 6122,
+      "linearHz": 233.0884,
+      "note": "B3",
+      "quantizedHz": 246.94
+    },
+    {
+      "year": 2022,
+      "month": 2,
+      "label": "Feb 2022",
+      "count": 4520,
+      "anomalyC": 4520,
+      "linearHz": 226.5523,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2022,
+      "month": 3,
+      "label": "Mar 2022",
+      "count": 4032,
+      "anomalyC": 4032,
+      "linearHz": 224.5613,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2022,
+      "month": 4,
+      "label": "Apr 2022",
+      "count": 5809,
+      "anomalyC": 5809,
+      "linearHz": 231.8114,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2022,
+      "month": 5,
+      "label": "May 2022",
+      "count": 13935,
+      "anomalyC": 13935,
+      "linearHz": 264.9648,
+      "note": "C4",
+      "quantizedHz": 261.63
+    },
+    {
+      "year": 2022,
+      "month": 6,
+      "label": "Jun 2022",
+      "count": 16454,
+      "anomalyC": 16454,
+      "linearHz": 275.2421,
+      "note": "C4",
+      "quantizedHz": 261.63
+    },
+    {
+      "year": 2022,
+      "month": 7,
+      "label": "Jul 2022",
+      "count": 26686,
+      "anomalyC": 26686,
+      "linearHz": 316.9878,
+      "note": "E4",
+      "quantizedHz": 329.63
+    },
+    {
+      "year": 2022,
+      "month": 8,
+      "label": "Aug 2022",
+      "count": 85891,
+      "anomalyC": 85891,
+      "linearHz": 558.5393,
+      "note": "D5",
+      "quantizedHz": 587.33
+    },
+    {
+      "year": 2022,
+      "month": 9,
+      "label": "Sep 2022",
+      "count": 110942,
+      "anomalyC": 110942,
+      "linearHz": 660.7453,
+      "note": "E5",
+      "quantizedHz": 659.25
+    },
+    {
+      "year": 2022,
+      "month": 10,
+      "label": "Oct 2022",
+      "count": 50198,
+      "anomalyC": 50198,
+      "linearHz": 412.9148,
+      "note": "G4",
+      "quantizedHz": 392.0
+    },
+    {
+      "year": 2022,
+      "month": 11,
+      "label": "Nov 2022",
+      "count": 27366,
+      "anomalyC": 27366,
+      "linearHz": 319.7621,
+      "note": "E4",
+      "quantizedHz": 329.63
+    },
+    {
+      "year": 2022,
+      "month": 12,
+      "label": "Dec 2022",
+      "count": 10846,
+      "anomalyC": 10846,
+      "linearHz": 252.3619,
+      "note": "B3",
+      "quantizedHz": 246.94
+    },
+    {
+      "year": 2023,
+      "month": 1,
+      "label": "Jan 2023",
+      "count": 4434,
+      "anomalyC": 4434,
+      "linearHz": 226.2015,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2023,
+      "month": 2,
+      "label": "Feb 2023",
+      "count": 4086,
+      "anomalyC": 4086,
+      "linearHz": 224.7817,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2023,
+      "month": 3,
+      "label": "Mar 2023",
+      "count": 5275,
+      "anomalyC": 5275,
+      "linearHz": 229.6327,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2023,
+      "month": 4,
+      "label": "Apr 2023",
+      "count": 5151,
+      "anomalyC": 5151,
+      "linearHz": 229.1268,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2023,
+      "month": 5,
+      "label": "May 2023",
+      "count": 11362,
+      "anomalyC": 11362,
+      "linearHz": 254.4671,
+      "note": "C4",
+      "quantizedHz": 261.63
+    },
+    {
+      "year": 2023,
+      "month": 6,
+      "label": "Jun 2023",
+      "count": 18580,
+      "anomalyC": 18580,
+      "linearHz": 283.916,
+      "note": "D4",
+      "quantizedHz": 293.66
+    },
+    {
+      "year": 2023,
+      "month": 7,
+      "label": "Jul 2023",
+      "count": 24496,
+      "anomalyC": 24496,
+      "linearHz": 308.0528,
+      "note": "D4",
+      "quantizedHz": 293.66
+    },
+    {
+      "year": 2023,
+      "month": 8,
+      "label": "Aug 2023",
+      "count": 49913,
+      "anomalyC": 49913,
+      "linearHz": 411.752,
+      "note": "G4",
+      "quantizedHz": 392.0
+    },
+    {
+      "year": 2023,
+      "month": 9,
+      "label": "Sep 2023",
+      "count": 81217,
+      "anomalyC": 81217,
+      "linearHz": 539.4697,
+      "note": "C5",
+      "quantizedHz": 523.25
+    },
+    {
+      "year": 2023,
+      "month": 10,
+      "label": "Oct 2023",
+      "count": 73590,
+      "anomalyC": 73590,
+      "linearHz": 508.3522,
+      "note": "B4",
+      "quantizedHz": 493.88
+    },
+    {
+      "year": 2023,
+      "month": 11,
+      "label": "Nov 2023",
+      "count": 58580,
+      "anomalyC": 58580,
+      "linearHz": 447.1127,
+      "note": "A4",
+      "quantizedHz": 440.0
+    },
+    {
+      "year": 2023,
+      "month": 12,
+      "label": "Dec 2023",
+      "count": 21251,
+      "anomalyC": 21251,
+      "linearHz": 294.8134,
+      "note": "D4",
+      "quantizedHz": 293.66
+    },
+    {
+      "year": 2024,
+      "month": 1,
+      "label": "Jan 2024",
+      "count": 9188,
+      "anomalyC": 9188,
+      "linearHz": 245.5974,
+      "note": "B3",
+      "quantizedHz": 246.94
+    },
+    {
+      "year": 2024,
+      "month": 2,
+      "label": "Feb 2024",
+      "count": 9851,
+      "anomalyC": 9851,
+      "linearHz": 248.3024,
+      "note": "B3",
+      "quantizedHz": 246.94
+    },
+    {
+      "year": 2024,
+      "month": 3,
+      "label": "Mar 2024",
+      "count": 11920,
+      "anomalyC": 11920,
+      "linearHz": 256.7437,
+      "note": "C4",
+      "quantizedHz": 261.63
+    },
+    {
+      "year": 2024,
+      "month": 4,
+      "label": "Apr 2024",
+      "count": 4889,
+      "anomalyC": 4889,
+      "linearHz": 228.0578,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2024,
+      "month": 5,
+      "label": "May 2024",
+      "count": 12383,
+      "anomalyC": 12383,
+      "linearHz": 258.6327,
+      "note": "C4",
+      "quantizedHz": 261.63
+    },
+    {
+      "year": 2024,
+      "month": 6,
+      "label": "Jun 2024",
+      "count": 24837,
+      "anomalyC": 24837,
+      "linearHz": 309.444,
+      "note": "D4",
+      "quantizedHz": 293.66
+    },
+    {
+      "year": 2024,
+      "month": 7,
+      "label": "Jul 2024",
+      "count": 37211,
+      "anomalyC": 37211,
+      "linearHz": 359.9289,
+      "note": "F#4",
+      "quantizedHz": 369.99
+    },
+    {
+      "year": 2024,
+      "month": 8,
+      "label": "Aug 2024",
+      "count": 126365,
+      "anomalyC": 126365,
+      "linearHz": 723.6698,
+      "note": "F#5",
+      "quantizedHz": 739.99
+    },
+    {
+      "year": 2024,
+      "month": 9,
+      "label": "Sep 2024",
+      "count": 164682,
+      "anomalyC": 164682,
+      "linearHz": 880.0,
+      "note": "A5",
+      "quantizedHz": 880.0
+    },
+    {
+      "year": 2024,
+      "month": 10,
+      "label": "Oct 2024",
+      "count": 63910,
+      "anomalyC": 63910,
+      "linearHz": 468.8586,
+      "note": "B4",
+      "quantizedHz": 493.88
+    },
+    {
+      "year": 2024,
+      "month": 11,
+      "label": "Nov 2024",
+      "count": 42800,
+      "anomalyC": 42800,
+      "linearHz": 382.7316,
+      "note": "G4",
+      "quantizedHz": 392.0
+    },
+    {
+      "year": 2024,
+      "month": 12,
+      "label": "Dec 2024",
+      "count": 19499,
+      "anomalyC": 19499,
+      "linearHz": 287.6654,
+      "note": "D4",
+      "quantizedHz": 293.66
+    },
+    {
+      "year": 2025,
+      "month": 1,
+      "label": "Jan 2025",
+      "count": 5150,
+      "anomalyC": 5150,
+      "linearHz": 229.1227,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2025,
+      "month": 2,
+      "label": "Feb 2025",
+      "count": 3326,
+      "anomalyC": 3326,
+      "linearHz": 221.6809,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2025,
+      "month": 3,
+      "label": "Mar 2025",
+      "count": 4173,
+      "anomalyC": 4173,
+      "linearHz": 225.1366,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2025,
+      "month": 4,
+      "label": "Apr 2025",
+      "count": 2914,
+      "anomalyC": 2914,
+      "linearHz": 220.0,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2025,
+      "month": 5,
+      "label": "May 2025",
+      "count": 8355,
+      "anomalyC": 8355,
+      "linearHz": 242.1988,
+      "note": "B3",
+      "quantizedHz": 246.94
+    },
+    {
+      "year": 2025,
+      "month": 6,
+      "label": "Jun 2025",
+      "count": 12074,
+      "anomalyC": 12074,
+      "linearHz": 257.372,
+      "note": "C4",
+      "quantizedHz": 261.63
+    },
+    {
+      "year": 2025,
+      "month": 7,
+      "label": "Jul 2025",
+      "count": 16740,
+      "anomalyC": 16740,
+      "linearHz": 276.4089,
+      "note": "C4",
+      "quantizedHz": 261.63
+    },
+    {
+      "year": 2025,
+      "month": 8,
+      "label": "Aug 2025",
+      "count": 32418,
+      "anomalyC": 32418,
+      "linearHz": 340.3739,
+      "note": "E4",
+      "quantizedHz": 329.63
+    },
+    {
+      "year": 2025,
+      "month": 9,
+      "label": "Sep 2025",
+      "count": 50006,
+      "anomalyC": 50006,
+      "linearHz": 412.1314,
+      "note": "G4",
+      "quantizedHz": 392.0
+    },
+    {
+      "year": 2025,
+      "month": 10,
+      "label": "Oct 2025",
+      "count": 52695,
+      "anomalyC": 52695,
+      "linearHz": 423.1023,
+      "note": "A4",
+      "quantizedHz": 440.0
+    },
+    {
+      "year": 2025,
+      "month": 11,
+      "label": "Nov 2025",
+      "count": 33001,
+      "anomalyC": 33001,
+      "linearHz": 342.7525,
+      "note": "E4",
+      "quantizedHz": 329.63
+    },
+    {
+      "year": 2025,
+      "month": 12,
+      "label": "Dec 2025",
+      "count": 15846,
+      "anomalyC": 15846,
+      "linearHz": 272.7615,
+      "note": "C4",
+      "quantizedHz": 261.63
+    }
+  ]
+}
