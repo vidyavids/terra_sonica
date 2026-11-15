@@ -473,6 +473,15 @@ function explainTemperature(
         </summary>
         <dl className="mt-3 space-y-3 text-sm text-slate-300">
           <div>
+            <dt className="font-semibold text-atmos">The story</dt>
+            <dd>
+              The track opens in the cool early 1900s (−0.41 °C around
+              1910, its lowest notes), climbs gently for decades, then
+              rises steeply after 1980 (+0.20 °C) to the record +1.23 °C
+              of 2025 — the highest note you will hear.
+            </dd>
+          </div>
+          <div>
             <dt className="font-semibold text-atmos">What you hear</dt>
             <dd>
               One {NOTE_MS} ms sine note per year from {TEMP_FIRST_YEAR} to{' '}
@@ -541,6 +550,15 @@ function explainNino(
           Scientific Details
         </summary>
         <dl className="mt-3 space-y-3 text-sm text-slate-300">
+          <div>
+            <dt className="font-semibold text-atmos">The story</dt>
+            <dd>
+              The track opens in a deep La Niña (−1.13 °C in Nov 2020,
+              its lowest note), swings to El Niño in mid-2023 (+0.95 °C
+              that July), and ends at +2.17 °C in Aug 2026 — the
+              strongest warm anomaly in the data.
+            </dd>
+          </div>
           <div>
             <dt className="font-semibold text-atmos">What you hear</dt>
             <dd>

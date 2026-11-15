@@ -50,6 +50,15 @@ function explainSky(view: SkyTick, untouched: boolean): ReactNode {
         </summary>
         <dl className="mt-3 space-y-3 text-sm text-slate-300">
           <div>
+            <dt className="font-semibold text-atmos">The story</dt>
+            <dd>
+              India brightens in almost every year of the track, with a
+              small dip in 2020 (−3.9%, during the pandemic lockdowns)
+              and the fastest growth in 2022 (+25.5%). 2025 is the
+              brightest year, at two and a half times the 2013 level.
+            </dd>
+          </div>
+          <div>
             <dt className="font-semibold text-atmos">What you hear</dt>
             <dd>
               One {SKY_NOTE_MS} ms sine note per year from {SKY_FIRST_YEAR} to{' '}
@@ -92,7 +101,11 @@ function explainSky(view: SkyTick, untouched: boolean): ReactNode {
             <dd>
               Black Marble night lights over Asia, Apr–Oct 2012. It is a
               single contextual still, not synchronized with the sound,
-              while the sound covers 2012–2025 yearly (14 values).
+              while the sound covers 2012–2025 yearly (14 values). Frame
+              and data share one measurement: every glowing pixel here is
+              nighttime radiance of the kind averaged into this track —
+              the still shows one season of 2012, the track's first year,
+              while the sound plays yearly means through 2025.
             </dd>
           </div>
           <div>

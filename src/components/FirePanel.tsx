@@ -52,6 +52,16 @@ function explainFire(view: FireTick, untouched: boolean): ReactNode {
         </summary>
         <dl className="mt-3 space-y-3 text-sm text-slate-300">
           <div>
+            <dt className="font-semibold text-atmos">The story</dt>
+            <dd>
+              2024 brings the two highest months in the data — 126,365
+              detections in August and 164,682 in September — then the
+              count falls to 2,914 by April 2025, the lowest month.
+              Listen for the 2024 peak towering over the rest of the
+              track.
+            </dd>
+          </div>
+          <div>
             <dt className="font-semibold text-atmos">What you hear</dt>
             <dd>
               One {FIRE_NOTE_MS} ms sine note per month from {FIRE_FIRST_LABEL}{' '}
@@ -95,7 +105,11 @@ function explainFire(view: FireTick, untouched: boolean): ReactNode {
             <dd>
               Fires in Greece, MODIS on Aqua, Aug 2009. It is a single
               contextual still, not synchronized with the sound, while the
-              sound covers Jan 2020–Dec 2025 monthly (72 months).
+              sound covers Jan 2020–Dec 2025 monthly (72 months). Frame
+              and data share one sensor: every red marker here is a MODIS
+              active-fire detection of the kind counted into this track —
+              the still shows Greece in 2009, while the sound counts
+              Brazil from 2020 to 2025.
             </dd>
           </div>
           <div>
