@@ -6,6 +6,7 @@
     "soundCoverage": "Jan 2020-Dec 2025 monthly (72 months).",
     "sourceFile": "fire-brazil-monthly-2020-2025.csv",
     "fetchLog": "fire-brazil-fetch-log.json",
+    "frpSource": "Same FIRMS MODIS_SP detections; monthly mean FRP (MW), accessed 2026-11-15.",
     "column": "count (monthly MODIS active-fire detections, integer)",
     "referencePeriod": "n/a (raw detection counts, no baseline).",
     "satelliteCheck": "Terra and Aqua both present in all 72 months; no sensor dropout.",
@@ -18,6 +19,7 @@
   "mapping": {
     "linearHz": "clamp(C, 2914, 164682); 220 + (C - 2914) / (164682 - 2914) * 660",
     "quantization": "nearest E-natural-minor note by ABS(LOG(raw/note, 2)); ties resolve to the higher note; raw frequencies clamp to [E3, B5].",
+    "droneGain": "0.03 + 0.09 * (FRP - 21.6736) / (63.2162 - 21.6736); fixed E3 drone.",
     "noteMs": 500,
     "pitchSetHz": {
       "E3": 164.81,
@@ -50,7 +52,9 @@
       "anomalyC": 6172,
       "linearHz": 233.2924,
       "note": "B3",
-      "quantizedHz": 246.94
+      "quantizedHz": 246.94,
+      "meanFRP_MW": 24.9005,
+      "droneGain": 0.037
     },
     {
       "year": 2020,
@@ -60,7 +64,9 @@
       "anomalyC": 5065,
       "linearHz": 228.7759,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 22.9263,
+      "droneGain": 0.0327
     },
     {
       "year": 2020,
@@ -70,7 +76,9 @@
       "anomalyC": 9054,
       "linearHz": 245.0507,
       "note": "B3",
-      "quantizedHz": 246.94
+      "quantizedHz": 246.94,
+      "meanFRP_MW": 27.8759,
+      "droneGain": 0.0434
     },
     {
       "year": 2020,
@@ -80,7 +88,9 @@
       "anomalyC": 8224,
       "linearHz": 241.6644,
       "note": "B3",
-      "quantizedHz": 246.94
+      "quantizedHz": 246.94,
+      "meanFRP_MW": 26.3692,
+      "droneGain": 0.0402
     },
     {
       "year": 2020,
@@ -90,7 +100,9 @@
       "anomalyC": 7614,
       "linearHz": 239.1756,
       "note": "B3",
-      "quantizedHz": 246.94
+      "quantizedHz": 246.94,
+      "meanFRP_MW": 28.2339,
+      "droneGain": 0.0442
     },
     {
       "year": 2020,
@@ -100,7 +112,9 @@
       "anomalyC": 13970,
       "linearHz": 265.1076,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "meanFRP_MW": 35.1448,
+      "droneGain": 0.0592
     },
     {
       "year": 2020,
@@ -110,7 +124,9 @@
       "anomalyC": 27342,
       "linearHz": 319.6642,
       "note": "E4",
-      "quantizedHz": 329.63
+      "quantizedHz": 329.63,
+      "meanFRP_MW": 47.4173,
+      "droneGain": 0.0858
     },
     {
       "year": 2020,
@@ -120,7 +136,9 @@
       "anomalyC": 72415,
       "linearHz": 503.5583,
       "note": "B4",
-      "quantizedHz": 493.88
+      "quantizedHz": 493.88,
+      "meanFRP_MW": 61.4439,
+      "droneGain": 0.1162
     },
     {
       "year": 2020,
@@ -130,7 +148,9 @@
       "anomalyC": 138598,
       "linearHz": 773.5794,
       "note": "G5",
-      "quantizedHz": 783.99
+      "quantizedHz": 783.99,
+      "meanFRP_MW": 62.2247,
+      "droneGain": 0.1179
     },
     {
       "year": 2020,
@@ -140,7 +160,9 @@
       "anomalyC": 81331,
       "linearHz": 539.9348,
       "note": "C5",
-      "quantizedHz": 523.25
+      "quantizedHz": 523.25,
+      "meanFRP_MW": 53.3543,
+      "droneGain": 0.0986
     },
     {
       "year": 2020,
@@ -150,7 +172,9 @@
       "anomalyC": 23081,
       "linearHz": 302.2797,
       "note": "D4",
-      "quantizedHz": 293.66
+      "quantizedHz": 293.66,
+      "meanFRP_MW": 38.9116,
+      "droneGain": 0.0673
     },
     {
       "year": 2020,
@@ -160,7 +184,9 @@
       "anomalyC": 12409,
       "linearHz": 258.7388,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "meanFRP_MW": 31.4892,
+      "droneGain": 0.0513
     },
     {
       "year": 2021,
@@ -170,7 +196,9 @@
       "anomalyC": 4764,
       "linearHz": 227.5478,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 23.722,
+      "droneGain": 0.0344
     },
     {
       "year": 2021,
@@ -180,7 +208,9 @@
       "anomalyC": 4591,
       "linearHz": 226.842,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 22.8553,
+      "droneGain": 0.0326
     },
     {
       "year": 2021,
@@ -190,7 +220,9 @@
       "anomalyC": 5327,
       "linearHz": 229.8448,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 23.5269,
+      "droneGain": 0.034
     },
     {
       "year": 2021,
@@ -200,7 +232,9 @@
       "anomalyC": 5342,
       "linearHz": 229.906,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 22.334,
+      "droneGain": 0.0314
     },
     {
       "year": 2021,
@@ -210,7 +244,9 @@
       "anomalyC": 10262,
       "linearHz": 249.9792,
       "note": "B3",
-      "quantizedHz": 246.94
+      "quantizedHz": 246.94,
+      "meanFRP_MW": 31.0954,
+      "droneGain": 0.0504
     },
     {
       "year": 2021,
@@ -220,7 +256,9 @@
       "anomalyC": 15518,
       "linearHz": 271.4233,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "meanFRP_MW": 41.5905,
+      "droneGain": 0.0731
     },
     {
       "year": 2021,
@@ -230,7 +268,9 @@
       "anomalyC": 27950,
       "linearHz": 322.1448,
       "note": "E4",
-      "quantizedHz": 329.63
+      "quantizedHz": 329.63,
+      "meanFRP_MW": 45.4167,
+      "droneGain": 0.0814
     },
     {
       "year": 2021,
@@ -240,7 +280,9 @@
       "anomalyC": 97692,
       "linearHz": 606.6864,
       "note": "D5",
-      "quantizedHz": 587.33
+      "quantizedHz": 587.33,
+      "meanFRP_MW": 62.5451,
+      "droneGain": 0.1185
     },
     {
       "year": 2021,
@@ -250,7 +292,9 @@
       "anomalyC": 93555,
       "linearHz": 589.8077,
       "note": "D5",
-      "quantizedHz": 587.33
+      "quantizedHz": 587.33,
+      "meanFRP_MW": 62.8719,
+      "droneGain": 0.1193
     },
     {
       "year": 2021,
@@ -260,7 +304,9 @@
       "anomalyC": 51966,
       "linearHz": 420.1281,
       "note": "A4",
-      "quantizedHz": 440.0
+      "quantizedHz": 440.0,
+      "meanFRP_MW": 56.4246,
+      "droneGain": 0.1053
     },
     {
       "year": 2021,
@@ -270,7 +316,9 @@
       "anomalyC": 16410,
       "linearHz": 275.0626,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "meanFRP_MW": 35.9289,
+      "droneGain": 0.0609
     },
     {
       "year": 2021,
@@ -280,7 +328,9 @@
       "anomalyC": 7101,
       "linearHz": 237.0826,
       "note": "B3",
-      "quantizedHz": 246.94
+      "quantizedHz": 246.94,
+      "meanFRP_MW": 31.0755,
+      "droneGain": 0.0504
     },
     {
       "year": 2022,
@@ -290,7 +340,9 @@
       "anomalyC": 6122,
       "linearHz": 233.0884,
       "note": "B3",
-      "quantizedHz": 246.94
+      "quantizedHz": 246.94,
+      "meanFRP_MW": 28.6919,
+      "droneGain": 0.0452
     },
     {
       "year": 2022,
@@ -300,7 +352,9 @@
       "anomalyC": 4520,
       "linearHz": 226.5523,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 23.4521,
+      "droneGain": 0.0339
     },
     {
       "year": 2022,
@@ -310,7 +364,9 @@
       "anomalyC": 4032,
       "linearHz": 224.5613,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 22.4214,
+      "droneGain": 0.0316
     },
     {
       "year": 2022,
@@ -320,7 +376,9 @@
       "anomalyC": 5809,
       "linearHz": 231.8114,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 28.1481,
+      "droneGain": 0.044
     },
     {
       "year": 2022,
@@ -330,7 +388,9 @@
       "anomalyC": 13935,
       "linearHz": 264.9648,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "meanFRP_MW": 36.1175,
+      "droneGain": 0.0613
     },
     {
       "year": 2022,
@@ -340,7 +400,9 @@
       "anomalyC": 16454,
       "linearHz": 275.2421,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "meanFRP_MW": 41.4204,
+      "droneGain": 0.0728
     },
     {
       "year": 2022,
@@ -350,7 +412,9 @@
       "anomalyC": 26686,
       "linearHz": 316.9878,
       "note": "E4",
-      "quantizedHz": 329.63
+      "quantizedHz": 329.63,
+      "meanFRP_MW": 43.81,
+      "droneGain": 0.078
     },
     {
       "year": 2022,
@@ -360,7 +424,9 @@
       "anomalyC": 85891,
       "linearHz": 558.5393,
       "note": "D5",
-      "quantizedHz": 587.33
+      "quantizedHz": 587.33,
+      "meanFRP_MW": 57.1563,
+      "droneGain": 0.1069
     },
     {
       "year": 2022,
@@ -370,7 +436,9 @@
       "anomalyC": 110942,
       "linearHz": 660.7453,
       "note": "E5",
-      "quantizedHz": 659.25
+      "quantizedHz": 659.25,
+      "meanFRP_MW": 50.647,
+      "droneGain": 0.0928
     },
     {
       "year": 2022,
@@ -380,7 +448,9 @@
       "anomalyC": 50198,
       "linearHz": 412.9148,
       "note": "G4",
-      "quantizedHz": 392.0
+      "quantizedHz": 392.0,
+      "meanFRP_MW": 49.9716,
+      "droneGain": 0.0913
     },
     {
       "year": 2022,
@@ -390,7 +460,9 @@
       "anomalyC": 27366,
       "linearHz": 319.7621,
       "note": "E4",
-      "quantizedHz": 329.63
+      "quantizedHz": 329.63,
+      "meanFRP_MW": 36.5423,
+      "droneGain": 0.0622
     },
     {
       "year": 2022,
@@ -400,7 +472,9 @@
       "anomalyC": 10846,
       "linearHz": 252.3619,
       "note": "B3",
-      "quantizedHz": 246.94
+      "quantizedHz": 246.94,
+      "meanFRP_MW": 31.2798,
+      "droneGain": 0.0508
     },
     {
       "year": 2023,
@@ -410,7 +484,9 @@
       "anomalyC": 4434,
       "linearHz": 226.2015,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 25.3726,
+      "droneGain": 0.038
     },
     {
       "year": 2023,
@@ -420,7 +496,9 @@
       "anomalyC": 4086,
       "linearHz": 224.7817,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 23.91,
+      "droneGain": 0.0348
     },
     {
       "year": 2023,
@@ -430,7 +508,9 @@
       "anomalyC": 5275,
       "linearHz": 229.6327,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 21.6736,
+      "droneGain": 0.03
     },
     {
       "year": 2023,
@@ -440,7 +520,9 @@
       "anomalyC": 5151,
       "linearHz": 229.1268,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 22.4851,
+      "droneGain": 0.0318
     },
     {
       "year": 2023,
@@ -450,7 +532,9 @@
       "anomalyC": 11362,
       "linearHz": 254.4671,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "meanFRP_MW": 32.5339,
+      "droneGain": 0.0535
     },
     {
       "year": 2023,
@@ -460,7 +544,9 @@
       "anomalyC": 18580,
       "linearHz": 283.916,
       "note": "D4",
-      "quantizedHz": 293.66
+      "quantizedHz": 293.66,
+      "meanFRP_MW": 41.4436,
+      "droneGain": 0.0728
     },
     {
       "year": 2023,
@@ -470,7 +556,9 @@
       "anomalyC": 24496,
       "linearHz": 308.0528,
       "note": "D4",
-      "quantizedHz": 293.66
+      "quantizedHz": 293.66,
+      "meanFRP_MW": 40.9792,
+      "droneGain": 0.0718
     },
     {
       "year": 2023,
@@ -480,7 +568,9 @@
       "anomalyC": 49913,
       "linearHz": 411.752,
       "note": "G4",
-      "quantizedHz": 392.0
+      "quantizedHz": 392.0,
+      "meanFRP_MW": 46.8107,
+      "droneGain": 0.0845
     },
     {
       "year": 2023,
@@ -490,7 +580,9 @@
       "anomalyC": 81217,
       "linearHz": 539.4697,
       "note": "C5",
-      "quantizedHz": 523.25
+      "quantizedHz": 523.25,
+      "meanFRP_MW": 44.7454,
+      "droneGain": 0.08
     },
     {
       "year": 2023,
@@ -500,7 +592,9 @@
       "anomalyC": 73590,
       "linearHz": 508.3522,
       "note": "B4",
-      "quantizedHz": 493.88
+      "quantizedHz": 493.88,
+      "meanFRP_MW": 45.4272,
+      "droneGain": 0.0815
     },
     {
       "year": 2023,
@@ -510,7 +604,9 @@
       "anomalyC": 58580,
       "linearHz": 447.1127,
       "note": "A4",
-      "quantizedHz": 440.0
+      "quantizedHz": 440.0,
+      "meanFRP_MW": 43.9874,
+      "droneGain": 0.0783
     },
     {
       "year": 2023,
@@ -520,7 +616,9 @@
       "anomalyC": 21251,
       "linearHz": 294.8134,
       "note": "D4",
-      "quantizedHz": 293.66
+      "quantizedHz": 293.66,
+      "meanFRP_MW": 33.6409,
+      "droneGain": 0.0559
     },
     {
       "year": 2024,
@@ -530,7 +628,9 @@
       "anomalyC": 9188,
       "linearHz": 245.5974,
       "note": "B3",
-      "quantizedHz": 246.94
+      "quantizedHz": 246.94,
+      "meanFRP_MW": 27.5673,
+      "droneGain": 0.0428
     },
     {
       "year": 2024,
@@ -540,7 +640,9 @@
       "anomalyC": 9851,
       "linearHz": 248.3024,
       "note": "B3",
-      "quantizedHz": 246.94
+      "quantizedHz": 246.94,
+      "meanFRP_MW": 33.5551,
+      "droneGain": 0.0557
     },
     {
       "year": 2024,
@@ -550,7 +652,9 @@
       "anomalyC": 11920,
       "linearHz": 256.7437,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "meanFRP_MW": 24.292,
+      "droneGain": 0.0357
     },
     {
       "year": 2024,
@@ -560,7 +664,9 @@
       "anomalyC": 4889,
       "linearHz": 228.0578,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 24.5722,
+      "droneGain": 0.0363
     },
     {
       "year": 2024,
@@ -570,7 +676,9 @@
       "anomalyC": 12383,
       "linearHz": 258.6327,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "meanFRP_MW": 34.6697,
+      "droneGain": 0.0582
     },
     {
       "year": 2024,
@@ -580,7 +688,9 @@
       "anomalyC": 24837,
       "linearHz": 309.444,
       "note": "D4",
-      "quantizedHz": 293.66
+      "quantizedHz": 293.66,
+      "meanFRP_MW": 49.4017,
+      "droneGain": 0.0901
     },
     {
       "year": 2024,
@@ -590,7 +700,9 @@
       "anomalyC": 37211,
       "linearHz": 359.9289,
       "note": "F#4",
-      "quantizedHz": 369.99
+      "quantizedHz": 369.99,
+      "meanFRP_MW": 55.7799,
+      "droneGain": 0.1039
     },
     {
       "year": 2024,
@@ -600,7 +712,9 @@
       "anomalyC": 126365,
       "linearHz": 723.6698,
       "note": "F#5",
-      "quantizedHz": 739.99
+      "quantizedHz": 739.99,
+      "meanFRP_MW": 63.2162,
+      "droneGain": 0.12
     },
     {
       "year": 2024,
@@ -610,7 +724,9 @@
       "anomalyC": 164682,
       "linearHz": 880.0,
       "note": "A5",
-      "quantizedHz": 880.0
+      "quantizedHz": 880.0,
+      "meanFRP_MW": 57.0746,
+      "droneGain": 0.1067
     },
     {
       "year": 2024,
@@ -620,7 +736,9 @@
       "anomalyC": 63910,
       "linearHz": 468.8586,
       "note": "B4",
-      "quantizedHz": 493.88
+      "quantizedHz": 493.88,
+      "meanFRP_MW": 49.3949,
+      "droneGain": 0.0901
     },
     {
       "year": 2024,
@@ -630,7 +748,9 @@
       "anomalyC": 42800,
       "linearHz": 382.7316,
       "note": "G4",
-      "quantizedHz": 392.0
+      "quantizedHz": 392.0,
+      "meanFRP_MW": 35.3651,
+      "droneGain": 0.0597
     },
     {
       "year": 2024,
@@ -640,7 +760,9 @@
       "anomalyC": 19499,
       "linearHz": 287.6654,
       "note": "D4",
-      "quantizedHz": 293.66
+      "quantizedHz": 293.66,
+      "meanFRP_MW": 33.4698,
+      "droneGain": 0.0556
     },
     {
       "year": 2025,
@@ -650,7 +772,9 @@
       "anomalyC": 5150,
       "linearHz": 229.1227,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 27.8117,
+      "droneGain": 0.0433
     },
     {
       "year": 2025,
@@ -660,7 +784,9 @@
       "anomalyC": 3326,
       "linearHz": 221.6809,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 21.9862,
+      "droneGain": 0.0307
     },
     {
       "year": 2025,
@@ -670,7 +796,9 @@
       "anomalyC": 4173,
       "linearHz": 225.1366,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 25.9936,
+      "droneGain": 0.0394
     },
     {
       "year": 2025,
@@ -680,7 +808,9 @@
       "anomalyC": 2914,
       "linearHz": 220.0,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "meanFRP_MW": 22.493,
+      "droneGain": 0.0318
     },
     {
       "year": 2025,
@@ -690,7 +820,9 @@
       "anomalyC": 8355,
       "linearHz": 242.1988,
       "note": "B3",
-      "quantizedHz": 246.94
+      "quantizedHz": 246.94,
+      "meanFRP_MW": 33.38,
+      "droneGain": 0.0554
     },
     {
       "year": 2025,
@@ -700,7 +832,9 @@
       "anomalyC": 12074,
       "linearHz": 257.372,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "meanFRP_MW": 34.2183,
+      "droneGain": 0.0572
     },
     {
       "year": 2025,
@@ -710,7 +844,9 @@
       "anomalyC": 16740,
       "linearHz": 276.4089,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "meanFRP_MW": 36.6831,
+      "droneGain": 0.0625
     },
     {
       "year": 2025,
@@ -720,7 +856,9 @@
       "anomalyC": 32418,
       "linearHz": 340.3739,
       "note": "E4",
-      "quantizedHz": 329.63
+      "quantizedHz": 329.63,
+      "meanFRP_MW": 49.2688,
+      "droneGain": 0.0898
     },
     {
       "year": 2025,
@@ -730,7 +868,9 @@
       "anomalyC": 50006,
       "linearHz": 412.1314,
       "note": "G4",
-      "quantizedHz": 392.0
+      "quantizedHz": 392.0,
+      "meanFRP_MW": 45.7695,
+      "droneGain": 0.0822
     },
     {
       "year": 2025,
@@ -740,7 +880,9 @@
       "anomalyC": 52695,
       "linearHz": 423.1023,
       "note": "A4",
-      "quantizedHz": 440.0
+      "quantizedHz": 440.0,
+      "meanFRP_MW": 41.9238,
+      "droneGain": 0.0739
     },
     {
       "year": 2025,
@@ -750,7 +892,9 @@
       "anomalyC": 33001,
       "linearHz": 342.7525,
       "note": "E4",
-      "quantizedHz": 329.63
+      "quantizedHz": 329.63,
+      "meanFRP_MW": 40.5445,
+      "droneGain": 0.0709
     },
     {
       "year": 2025,
@@ -760,7 +904,9 @@
       "anomalyC": 15846,
       "linearHz": 272.7615,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "meanFRP_MW": 31.3106,
+      "droneGain": 0.0509
     }
   ]
 }

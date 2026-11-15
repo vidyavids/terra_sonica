@@ -4,8 +4,8 @@
 Reads ``data/india-nightlights-2012-2025.json`` (verified annual mean
 nighttime radiance over India, 2012-2025), validates gates (14
 contiguous years, exact range, single platform, full tile set,
-year-on-year bound), applies the finalized frequency mapping, and
-writes ``src/data/nightlights-india.json``.
+year-on-year bound), derives the growth layer, applies the finalized
+frequency mapping, and writes ``src/data/nightlights-india.json``.
 
 Fails (exit 1) on any gap, range violation, or failed spot-check.
 """
@@ -24,6 +24,8 @@ LAST_YEAR = 2025
 EXPECTED_YEARS = 14
 MIN_RADIANCE = 0.4417  # 2013, verified (rounded to 4 decimals)
 MAX_RADIANCE = 1.1153  # 2025, verified (rounded to 4 decimals)
+GROWTH_MIN = -0.039167  # 2020, verified (rounded to 6 decimals)
+GROWTH_MAX = 0.255388  # 2022, verified (rounded to 6 decimals)
 
 DATA_CITATION = ("Annual mean corrected nighttime radiance over India, "
                  "NASA Black Marble VNP46A4 Collection 002, DOI "
@@ -51,6 +53,14 @@ def linear_freq(radiance: float) -> float:
     220 + (R - 0.4417) / (1.1153 - 0.4417) * 660 (Hz)."""
     clamped = min(MAX_RADIANCE, max(MIN_RADIANCE, radiance))
     return 220.0 + (clamped - MIN_RADIANCE) / (MAX_RADIANCE - MIN_RADIANCE) * 660.0
+
+
+def growth_gain(growth: float | None, lo: float, hi: float) -> float:
+    """Growth-voice gain: 2012 (no previous year) is silent; otherwise
+    0.02 + 0.08 * (growth - lo) / (hi - lo), well under the 0.3 main peak."""
+    if growth is None:
+        return 0.0
+    return 0.02 + 0.08 * (growth - lo) / (hi - lo)
 
 
 def quantize(raw: float) -> tuple[str, float]:
@@ -90,12 +100,17 @@ LINEAR_CASES: list[tuple[float, float]] = [
 ]
 
 # (year, radiance, raw Hz, note): end-to-end pins on built events.
-# Mid values verified by independent recomputation (nearest-3 distances).
 EVENT_CASES: list[tuple[int, float, float, str]] = [
     (2013, 0.4417, 220.0, "A3"),
     (2021, 0.6774, 450.9412, "A4"),
     (2024, 1.0258, 792.307, "G5"),
     (2025, 1.1153, 880.0, "A5"),
+]
+
+# (year, growth rate): pins for the derived growth layer.
+GROWTH_CASES: list[tuple[int, float]] = [
+    (2020, -0.039167),
+    (2022, 0.255388),
 ]
 
 
@@ -110,6 +125,9 @@ def run_self_tests() -> None:
     for radiance, want in LINEAR_CASES:
         got = linear_freq(radiance)
         assert abs(got - want) < 1e-9, f"linear({radiance}) = {got}, want {want}"
+    assert growth_gain(None, -1.0, 1.0) == 0.0, "2012 must be silent"
+    assert growth_gain(1.0, 0.0, 1.0) == 0.10, "max growth gain must be 0.10"
+    assert growth_gain(0.0, 0.0, 1.0) == 0.02, "min growth gain must be 0.02"
 
 
 def main() -> int:
@@ -119,8 +137,8 @@ def main() -> int:
     except AssertionError as err:
         print(f"FATAL: {err}", file=sys.stderr)
         return 1
-    print(f"  {len(QUANTIZE_CASES) + len(LINEAR_CASES)}/"
-          f"{len(QUANTIZE_CASES) + len(LINEAR_CASES)} cases pass")
+    print(f"  {len(QUANTIZE_CASES) + len(LINEAR_CASES) + 3}/"
+          f"{len(QUANTIZE_CASES) + len(LINEAR_CASES) + 3} cases pass")
 
     doc = json.loads(SRC.read_text(encoding="utf-8"))
     values = doc["values"]
@@ -158,8 +176,15 @@ def main() -> int:
     if lo != MIN_RADIANCE or hi != MAX_RADIANCE:
         print("FATAL: range mismatch; refusing to finalize.", file=sys.stderr)
         return 1
-    means = [rounded[y] for y in want_years]
-    ratios = [b / a for a, b in zip(means, means[1:])]
+    growth = {y: (rounded[y] - rounded[y - 1]) / rounded[y - 1]
+              for y in want_years[1:]}
+    glo, ghi = min(growth.values()), max(growth.values())
+    print(f"  growth range: {glo:.4f}..{ghi:.4f} "
+          f"(verified {GROWTH_MIN}..{GROWTH_MAX})")
+    if round(glo, 6) != GROWTH_MIN or round(ghi, 6) != GROWTH_MAX:
+        print("FATAL: growth range mismatch.", file=sys.stderr)
+        return 1
+    ratios = [1 + g for g in growth.values()]
     print(f"  max YoY ratio: {max(ratios):.3f}")
     if max(ratios) >= 1.5 or min(ratios) <= 0.5:
         print("FATAL: YoY jump outside [0.5, 1.5).", file=sys.stderr)
@@ -170,6 +195,8 @@ def main() -> int:
         radiance = rounded[year]
         raw = linear_freq(radiance)
         note, quantized = quantize(raw)
+        rate = growth.get(year)
+        gain = growth_gain(rate, glo, ghi)
         events.append({
             "year": year,
             "radianceC": radiance,
@@ -177,6 +204,8 @@ def main() -> int:
             "linearHz": round(raw, 4),
             "note": note,
             "quantizedHz": quantized,
+            "growthRate": None if rate is None else round(rate, 6),
+            "growthGain": round(gain, 4),
         })
     by_ev = {e["year"]: e for e in events}
     for year, radiance, raw, note in EVENT_CASES:
@@ -185,6 +214,10 @@ def main() -> int:
         assert event["anomalyC"] == radiance, (year, event["anomalyC"])
         assert abs(event["linearHz"] - raw) < 1e-9, (year, event["linearHz"])
         assert event["note"] == note, (year, event["note"])
+    for year, rate in GROWTH_CASES:
+        assert by_ev[year]["growthRate"] == rate, (year, by_ev[year]["growthRate"])
+    assert by_ev[2012]["growthRate"] is None, "2012 must have no growth rate"
+    assert by_ev[2012]["growthGain"] == 0.0, "2012 growth voice must be silent"
     print("  event spot-checks pass: "
           + ", ".join(f"{y} {n}" for y, _, _, n in EVENT_CASES))
 
@@ -216,6 +249,9 @@ def main() -> int:
             "quantization": "nearest E-natural-minor note by "
                             "ABS(LOG(raw/note, 2)); ties resolve to the higher "
                             "note; raw frequencies clamp to [E3, B5].",
+            "growthVoice": "second voice at quantizedHz * 1.5; gain "
+                           "0.02 + 0.08 * (growth - lo) / (hi - lo) over "
+                           "2013-2025 growth range; 2012 silent (gain 0.0).",
             "noteMs": 700,
             "pitchSetHz": {name: freq for name, freq in NOTES},
         },

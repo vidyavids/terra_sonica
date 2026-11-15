@@ -48,6 +48,23 @@ Snap to the nearest E-natural-minor note by log-frequency distance
 By construction the minimum maps to 220 Hz (A3) and the maximum to
 880 Hz (A5).
 
+## Second layer: FRP drone (user decision)
+
+Under every main note, a fixed low E3 drone (164.81 Hz, sine) sounds
+for the same 500 ms. Its gain follows the monthly mean FRP (MW),
+min–max normalized across the 72 verified months:
+
+```
+gain = 0.03 + 0.09 × (FRP − 21.6736) / (63.2162 − 21.6736)
+```
+
+with verified min 21.6736 MW (Mar 2023) and max 63.2162 MW (Aug 2024).
+The main note is unchanged and stays dominant (peak gain 0.3 vs drone
+≤ 0.12). FRP values come from the same FIRMS rows as the counts
+(`scripts/firms_frp.py`, validated by
+`scripts/validate_fire_frp.py`); per-month detection counts were
+asserted identical between the two fetches.
+
 ## Structural note (read before touching the JSON)
 
 `TrackEventBase` requires an `anomalyC` number, which the shared chart

@@ -47,8 +47,10 @@ function explainFire(view: FireTick, untouched: boolean): ReactNode {
             <dt className="font-semibold text-atmos">What you hear</dt>
             <dd>
               One {FIRE_NOTE_MS} ms sine note per month from {FIRE_FIRST_LABEL}{' '}
-              to {FIRE_LAST_LABEL}. Pitch follows the monthly detection
-              count: quiet months sound low, fierce fire months high.
+              to {FIRE_LAST_LABEL}. The main note is the detection count
+              (how many fires): quiet months sound low, fierce fire months
+              high. Under every note, a low fixed drone swells with the
+              monthly mean FRP (how intensely they burned, in MW).
             </dd>
           </div>
           <div>
@@ -57,7 +59,9 @@ function explainFire(view: FireTick, untouched: boolean): ReactNode {
               MODIS active-fire detections over Brazil, from NASA FIRMS
               (Terra and Aqua). Counts are detection observations, not
               unique wildfires and not area burned: burned area is a
-              different product (MCD64A1).
+              different product (MCD64A1). FRP is fire radiative power, a
+              measure of radiant energy output — not burned area, not a
+              wildfire count.
             </dd>
           </div>
           <div>
@@ -73,7 +77,8 @@ function explainFire(view: FireTick, untouched: boolean): ReactNode {
             <dd className="font-mono text-[13px]">
               220 + (count − 2,914) / (164,682 − 2,914) × 660 → nearest
               E-minor note by log-frequency distance (ties up, clamped
-              E3–B5).
+              E3–B5). Drone gain: 0.03 + 0.09 × (FRP − 21.6736) /
+              (63.2162 − 21.6736); fixed E3 (164.81 Hz).
             </dd>
           </div>
           <div>
@@ -87,8 +92,9 @@ function explainFire(view: FireTick, untouched: boolean): ReactNode {
           <div>
             <dt className="font-semibold text-atmos">Limitations</dt>
             <dd>
-              Only the verified detection count drives the sound. Fire
-              radiative power is a different variable and is not sonified.
+              Only verified observations drive the sound: counts set the
+              pitch, mean FRP sets the drone&apos;s loudness. Burned area
+              (MCD64A1) is a different product and is not sonified.
               Detection counts vary with cloud and smoke cover, and the
               Greece still shows a different place and day than the data.
               See <span className="font-mono">docs/fire-mapping.md</span> for
@@ -180,18 +186,36 @@ export function FireTrackPanel() {
       sparkDescription={`Monthly MODIS active-fire detections, ${FIRE_FIRST_LABEL} to ${FIRE_LAST_LABEL}`}
       sparkUnit="detections"
       visual={
-        <figure className="mt-5">
-          <img
-            src={FIRE_STILL}
-            alt="Fires in Greece with a smoke plume over the Aegean Sea, MODIS satellite image"
-            loading="lazy"
-            className="w-full rounded border border-slate-800"
-          />
-          <figcaption className="mt-1 font-mono text-xs text-slate-400">
-            NASA MODIS Greece fires, Aug 2009 · contextual visual, not
-            synchronized with the sound
-          </figcaption>
-        </figure>
+        <>
+          <figure className="mt-5">
+            <img
+              src={FIRE_STILL}
+              alt="Fires in Greece with a smoke plume over the Aegean Sea, MODIS satellite image"
+              loading="lazy"
+              className="w-full rounded border border-slate-800"
+            />
+            <figcaption className="mt-1 font-mono text-xs text-slate-400">
+              NASA MODIS Greece fires, Aug 2009 · contextual visual, not
+              synchronized with the sound
+            </figcaption>
+          </figure>
+          <p className="mt-3 text-sm">
+            <a
+              href="https://svs.gsfc.nasa.gov/10831/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-atmos hover:text-cloud hover:underline"
+            >
+              Watch the NASA visualisation: The Geography of Fire (SVS
+              10831) ↗
+            </a>
+          </p>
+          <p className="mt-1 font-mono text-xs text-slate-400">
+            A global MODIS fire tour from 2002–2011 — earlier years than
+            this track (2020–2025), shown for context. Opens in a new tab,
+            not synchronized with the sound.
+          </p>
+        </>
       }
       explain={explainFire}
     />

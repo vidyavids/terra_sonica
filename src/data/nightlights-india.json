@@ -17,6 +17,7 @@
   "mapping": {
     "linearHz": "clamp(R, 0.4417, 1.1153); 220 + (R - 0.4417) / (1.1153 - 0.4417) * 660",
     "quantization": "nearest E-natural-minor note by ABS(LOG(raw/note, 2)); ties resolve to the higher note; raw frequencies clamp to [E3, B5].",
+    "growthVoice": "second voice at quantizedHz * 1.5; gain 0.02 + 0.08 * (growth - lo) / (hi - lo) over 2013-2025 growth range; 2012 silent (gain 0.0).",
     "noteMs": 700,
     "pitchSetHz": {
       "E3": 164.81,
@@ -47,7 +48,9 @@
       "anomalyC": 0.4513,
       "linearHz": 229.4062,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "growthRate": null,
+      "growthGain": 0.0
     },
     {
       "year": 2013,
@@ -55,7 +58,9 @@
       "anomalyC": 0.4417,
       "linearHz": 220.0,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "growthRate": -0.021272,
+      "growthGain": 0.0249
     },
     {
       "year": 2014,
@@ -63,7 +68,9 @@
       "anomalyC": 0.5049,
       "linearHz": 281.924,
       "note": "D4",
-      "quantizedHz": 293.66
+      "quantizedHz": 293.66,
+      "growthRate": 0.143084,
+      "growthGain": 0.0695
     },
     {
       "year": 2015,
@@ -71,7 +78,9 @@
       "anomalyC": 0.5043,
       "linearHz": 281.3361,
       "note": "D4",
-      "quantizedHz": 293.66
+      "quantizedHz": 293.66,
+      "growthRate": -0.001188,
+      "growthGain": 0.0303
     },
     {
       "year": 2016,
@@ -79,7 +88,9 @@
       "anomalyC": 0.5212,
       "linearHz": 297.8949,
       "note": "D4",
-      "quantizedHz": 293.66
+      "quantizedHz": 293.66,
+      "growthRate": 0.033512,
+      "growthGain": 0.0397
     },
     {
       "year": 2017,
@@ -87,7 +98,9 @@
       "anomalyC": 0.5354,
       "linearHz": 311.8082,
       "note": "E4",
-      "quantizedHz": 329.63
+      "quantizedHz": 329.63,
+      "growthRate": 0.027245,
+      "growthGain": 0.038
     },
     {
       "year": 2018,
@@ -95,7 +108,9 @@
       "anomalyC": 0.581,
       "linearHz": 356.4875,
       "note": "F#4",
-      "quantizedHz": 369.99
+      "quantizedHz": 369.99,
+      "growthRate": 0.08517,
+      "growthGain": 0.0538
     },
     {
       "year": 2019,
@@ -103,7 +118,9 @@
       "anomalyC": 0.6051,
       "linearHz": 380.101,
       "note": "F#4",
-      "quantizedHz": 369.99
+      "quantizedHz": 369.99,
+      "growthRate": 0.04148,
+      "growthGain": 0.0419
     },
     {
       "year": 2020,
@@ -111,7 +128,9 @@
       "anomalyC": 0.5814,
       "linearHz": 356.8795,
       "note": "F#4",
-      "quantizedHz": 369.99
+      "quantizedHz": 369.99,
+      "growthRate": -0.039167,
+      "growthGain": 0.02
     },
     {
       "year": 2021,
@@ -119,7 +138,9 @@
       "anomalyC": 0.6774,
       "linearHz": 450.9412,
       "note": "A4",
-      "quantizedHz": 440.0
+      "quantizedHz": 440.0,
+      "growthRate": 0.165119,
+      "growthGain": 0.0755
     },
     {
       "year": 2022,
@@ -127,7 +148,9 @@
       "anomalyC": 0.8504,
       "linearHz": 620.4483,
       "note": "D5",
-      "quantizedHz": 587.33
+      "quantizedHz": 587.33,
+      "growthRate": 0.255388,
+      "growthGain": 0.1
     },
     {
       "year": 2023,
@@ -135,7 +158,9 @@
       "anomalyC": 0.9693,
       "linearHz": 736.9477,
       "note": "F#5",
-      "quantizedHz": 739.99
+      "quantizedHz": 739.99,
+      "growthRate": 0.139817,
+      "growthGain": 0.0686
     },
     {
       "year": 2024,
@@ -143,7 +168,9 @@
       "anomalyC": 1.0258,
       "linearHz": 792.307,
       "note": "G5",
-      "quantizedHz": 783.99
+      "quantizedHz": 783.99,
+      "growthRate": 0.058289,
+      "growthGain": 0.0465
     },
     {
       "year": 2025,
@@ -151,7 +178,9 @@
       "anomalyC": 1.1153,
       "linearHz": 880.0,
       "note": "A5",
-      "quantizedHz": 880.0
+      "quantizedHz": 880.0,
+      "growthRate": 0.087249,
+      "growthGain": 0.0543
     }
   ]
 }

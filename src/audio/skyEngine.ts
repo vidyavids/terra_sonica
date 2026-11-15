@@ -5,12 +5,18 @@
  * sine oscillator, exponential gain envelope, one onTick per note.
  * NOTE_MS is 700 (yearly observations); events carry the yearly mean
  * radiance. Oscillator type and envelope match.
+ *
+ * Second layer (user decision): a second voice a perfect fifth above
+ * the main note whose gain follows the derived growth field. The main
+ * note block below is byte-identical to the single-voice version.
  */
 
 import type { TrackEventBase } from './conductor';
 
 export interface SkyTrackEvent extends TrackEventBase {
   radianceC: number;
+  growthRate: number | null;
+  growthGain: number;
 }
 
 export interface SkyTick extends SkyTrackEvent {
@@ -82,6 +88,26 @@ export class SkyPlayer {
       if (tap) gain.connect(tap);
       osc.start();
       osc.stop(this.ctx.currentTime + SKY_NOTE_MS / 1000);
+
+      if (entry.growthGain > 0) {
+        const osc2 = this.ctx.createOscillator();
+        const gain2 = this.ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.value = entry.quantizedHz * 1.5;
+        gain2.gain.setValueAtTime(0.0001, this.ctx.currentTime);
+        gain2.gain.exponentialRampToValueAtTime(
+          entry.growthGain,
+          this.ctx.currentTime + 0.05,
+        );
+        gain2.gain.exponentialRampToValueAtTime(
+          0.0001,
+          this.ctx.currentTime + SKY_NOTE_MS / 1000,
+        );
+        osc2.connect(gain2).connect(this.ctx.destination);
+        if (tap) gain2.connect(tap);
+        osc2.start();
+        osc2.stop(this.ctx.currentTime + SKY_NOTE_MS / 1000);
+      }
 
       await new Promise((r) => setTimeout(r, SKY_NOTE_MS));
     }

@@ -5,6 +5,10 @@
  * sine oscillator, exponential gain envelope, one onTick per note.
  * NOTE_MS is 500 (monthly observations); events carry year/month/label
  * plus the monthly detection count. Oscillator type and envelope match.
+ *
+ * Second layer (user decision): a fixed low E3 drone whose gain follows
+ * the monthly mean FRP. The main note block below is byte-identical to
+ * the single-voice version.
  */
 
 import type { TrackEventBase } from './conductor';
@@ -13,6 +17,8 @@ export interface FireTrackEvent extends TrackEventBase {
   month: number;
   label: string;
   count: number;
+  meanFRP_MW: number;
+  droneGain: number;
 }
 
 export interface FireTick extends FireTrackEvent {
@@ -22,6 +28,9 @@ export interface FireTick extends FireTrackEvent {
 }
 
 export const FIRE_NOTE_MS = 500;
+
+/** Fixed drone pitch: E3, the lowest scale pitch (stays audible). */
+export const DRONE_HZ = 164.81;
 
 export class FirePlayer {
   private ctx: AudioContext | null = null;
@@ -84,6 +93,24 @@ export class FirePlayer {
       if (tap) gain.connect(tap);
       osc.start();
       osc.stop(this.ctx.currentTime + FIRE_NOTE_MS / 1000);
+
+      const drone = this.ctx.createOscillator();
+      const droneGain = this.ctx.createGain();
+      drone.type = 'sine';
+      drone.frequency.value = DRONE_HZ;
+      droneGain.gain.setValueAtTime(0.0001, this.ctx.currentTime);
+      droneGain.gain.exponentialRampToValueAtTime(
+        entry.droneGain,
+        this.ctx.currentTime + 0.05,
+      );
+      droneGain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        this.ctx.currentTime + FIRE_NOTE_MS / 1000,
+      );
+      drone.connect(droneGain).connect(this.ctx.destination);
+      if (tap) droneGain.connect(tap);
+      drone.start();
+      drone.stop(this.ctx.currentTime + FIRE_NOTE_MS / 1000);
 
       await new Promise((r) => setTimeout(r, FIRE_NOTE_MS));
     }

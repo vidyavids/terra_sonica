@@ -49,6 +49,22 @@ Snap to the nearest E-natural-minor note by log-frequency distance
 By construction the minimum maps to 220 Hz (A3) and the maximum to
 880 Hz (A5).
 
+## Second layer: growth voice (user decision)
+
+A second voice sounds a perfect fifth above the main note
+(quantizedHz × 1.5). Its gain follows year-over-year growth
+g = (R_year − R_prev) / R_prev, min–max normalized across 2013–2025:
+
+```
+gain = 0.02 + 0.08 × (g − gmin) / (gmax − gmin)
+```
+
+with verified gmin −0.039167 (2020) and gmax 0.255388 (2022). 2012 has
+no previous year, so its growth voice is silent (gain 0.0) — no
+invented baseline. Growth is DERIVED from the same 14 accepted
+radiance values, not a second measurement. The main note is unchanged
+and stays dominant (peak gain 0.3 vs growth voice ≤ 0.10).
+
 ## Structural note (read before touching the JSON)
 
 `TrackEventBase` requires an `anomalyC` number, which the shared chart
@@ -65,5 +81,5 @@ event.
 `scripts/validate_sky.py` asserts: 14 contiguous years; exact range
 0.4417–1.1153 on rounded values; single platform code 0 and full tile
 set every year; pixel counts in band; YoY ratio below 1.5; the
-min/max/tie/clamp mapping pins; and writes
-`src/data/nightlights-india.json`.
+min/max/tie/clamp mapping pins; growth bounds and the 2012 silence;
+and writes `src/data/nightlights-india.json`.

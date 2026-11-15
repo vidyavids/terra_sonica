@@ -32,6 +32,9 @@ on any missing or inconsistent input.
   synchronized with the sound.
 - Audit: `docs/fire-mapping.md`. Validator:
   `scripts/validate_fire.py`. Fetch: `scripts/firms_brazil.py`.
+- Drone layer: monthly mean FRP (MW) from the same FIRMS rows
+  (`scripts/firms_frp.py`, accessed Nov 2026, validated by
+  `scripts/validate_fire_frp.py`).
 
 ## Track 4 — Hear the Lights — Earth at Night — India (2012–2025)
 

@@ -4,8 +4,9 @@
 Reads ``data/fire-brazil-monthly-2020-2025.csv`` (verified FIRMS MODIS
 monthly detection counts for Brazil, Jan 2020-Dec 2025) plus the fetch
 log, validates gates (72 contiguous months, exact range, full day
-coverage, MODIS-only with both satellites every month), applies the
-finalized frequency mapping, and writes ``src/data/fire-amazon.json``.
+coverage, MODIS-only with both satellites every month), merges the
+verified monthly mean FRP layer, applies the finalized frequency
+mapping, and writes ``src/data/fire-amazon.json``.
 
 Fails (exit 1) on any gap, range violation, or failed spot-check.
 """
@@ -19,6 +20,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 CSV = ROOT / "data" / "fire-brazil-monthly-2020-2025.csv"
 LOG = ROOT / "data" / "fire-brazil-fetch-log.json"
+FRP_CSV = ROOT / "data" / "fire-brazil-frp-monthly-2020-2025.csv"
+FRP_LOG = ROOT / "data" / "fire-brazil-frp-fetch-log.json"
 OUT = ROOT / "src" / "data" / "fire-amazon.json"
 
 FIRST = (2020, 1)
@@ -26,6 +29,8 @@ LAST = (2025, 12)
 EXPECTED_MONTHS = 72
 MIN_COUNT = 2914  # Apr 2025, verified
 MAX_COUNT = 164682  # Sep 2024, verified
+FRP_MIN = 21.6736  # Mar 2023, verified (rounded to 4 decimals)
+FRP_MAX = 63.2162  # Aug 2024, verified (rounded to 4 decimals)
 
 DATA_CITATION = ("Monthly counts of MODIS active-fire detections over "
                  "Brazil, NASA FIRMS API (product MODIS_SP, area query), "
@@ -54,6 +59,13 @@ def linear_freq(count: float) -> float:
     220 + (C - 2914) / (164682 - 2914) * 660 (Hz)."""
     clamped = min(MAX_COUNT, max(MIN_COUNT, count))
     return 220.0 + (clamped - MIN_COUNT) / (MAX_COUNT - MIN_COUNT) * 660.0
+
+
+def drone_gain(frp: float) -> float:
+    """FRP drone gain: 0.03 + 0.09 * (FRP - lo) / (hi - lo), well under
+    the 0.3 main-note peak at every month."""
+    clamped = min(FRP_MAX, max(FRP_MIN, frp))
+    return 0.03 + 0.09 * (clamped - FRP_MIN) / (FRP_MAX - FRP_MIN)
 
 
 def quantize(raw: float) -> tuple[str, float]:
@@ -92,6 +104,14 @@ LINEAR_CASES: list[tuple[float, float]] = [
     (999999, 880.0),  # above MAX_COUNT clamps to 880 Hz
 ]
 
+# (frp, expected drone gain): pins for the FRP drone mapping.
+DRONE_CASES: list[tuple[float, float]] = [
+    (21.6736, 0.03),
+    (63.2162, 0.12),
+    (0.0, 0.03),  # below FRP_MIN clamps to 0.03
+    (999.0, 0.12),  # above FRP_MAX clamps to 0.12
+]
+
 # ((year, month), count, raw Hz, note): end-to-end pins on built events.
 # Mid values verified by independent recomputation (nearest-3 distances).
 EVENT_CASES: list[tuple[tuple[int, int], int, float, str]] = [
@@ -99,6 +119,12 @@ EVENT_CASES: list[tuple[tuple[int, int], int, float, str]] = [
     ((2024, 9), 164682, 880.0, "A5"),
     ((2020, 1), 6172, 233.2924, "B3"),
     ((2020, 9), 138598, 773.5794, "G5"),
+]
+
+# ((year, month), meanFRP, drone gain): pins on the merged FRP layer.
+FRP_EVENT_CASES: list[tuple[tuple[int, int], float, float]] = [
+    ((2023, 3), 21.6736, 0.03),
+    ((2024, 8), 63.2162, 0.12),
 ]
 
 
@@ -113,6 +139,9 @@ def run_self_tests() -> None:
     for count, want in LINEAR_CASES:
         got = linear_freq(count)
         assert abs(got - want) < 1e-9, f"linear({count}) = {got}, want {want}"
+    for frp, want in DRONE_CASES:
+        got = drone_gain(frp)
+        assert abs(got - want) < 1e-9, f"drone({frp}) = {got}, want {want}"
 
 
 def month_range():
@@ -141,8 +170,8 @@ def main() -> int:
     except AssertionError as err:
         print(f"FATAL: {err}", file=sys.stderr)
         return 1
-    print(f"  {len(QUANTIZE_CASES) + len(LINEAR_CASES)}/"
-          f"{len(QUANTIZE_CASES) + len(LINEAR_CASES)} cases pass")
+    total = len(QUANTIZE_CASES) + len(LINEAR_CASES) + len(DRONE_CASES)
+    print(f"  {total}/{total} cases pass")
 
     with open(CSV, encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
@@ -194,11 +223,36 @@ def main() -> int:
     print("  fetch log: MODIS-only, Terra+Aqua, full day coverage, "
           "log/CSV agree, all 72 months")
 
+    with open(FRP_CSV, encoding="utf-8", newline="") as handle:
+        frp_rows = list(csv.DictReader(handle))
+    if len(frp_rows) != EXPECTED_MONTHS:
+        print(f"FATAL: FRP CSV has {len(frp_rows)} rows, want 72.",
+              file=sys.stderr)
+        return 1
+    frp: dict[tuple[int, int], float] = {}
+    for frp_row, ym in zip(frp_rows, window):
+        if (int(frp_row["year"]), int(frp_row["month"])) != ym:
+            print(f"FATAL: FRP CSV row out of order: {frp_row}.",
+                  file=sys.stderr)
+            return 1
+        if int(frp_row["nDetections"]) != counts[ym]:
+            print(f"FATAL: {ym} FRP n != counts n.", file=sys.stderr)
+            return 1
+        frp[ym] = round(float(frp_row["meanFRP_MW"]), 4)
+    flo, fhi = min(frp.values()), max(frp.values())
+    print(f"FRP range: {flo}..{fhi} MW (verified {FRP_MIN}..{FRP_MAX})")
+    if flo != FRP_MIN or fhi != FRP_MAX:
+        print("FATAL: FRP range mismatch.", file=sys.stderr)
+        return 1
+    frp_log = json.loads(FRP_LOG.read_text(encoding="utf-8"))
+    frp_access = frp_log.get("access_date", "unknown")
+
     events = []
     for ym in window:
         count = counts[ym]
         raw = linear_freq(count)
         note, quantized = quantize(raw)
+        frp_mean = frp[ym]
         events.append({
             "year": ym[0],
             "month": ym[1],
@@ -208,6 +262,8 @@ def main() -> int:
             "linearHz": round(raw, 4),
             "note": note,
             "quantizedHz": quantized,
+            "meanFRP_MW": frp_mean,
+            "droneGain": round(drone_gain(frp_mean), 4),
         })
     by_ym = {(e["year"], e["month"]): e for e in events}
     for ym, count, raw, note in EVENT_CASES:
@@ -216,6 +272,10 @@ def main() -> int:
         assert event["anomalyC"] == count, (ym, event["anomalyC"])
         assert abs(event["linearHz"] - raw) < 1e-9, (ym, event["linearHz"])
         assert event["note"] == note, (ym, event["note"])
+    for ym, frp_mean, gain in FRP_EVENT_CASES:
+        event = by_ym[ym]
+        assert event["meanFRP_MW"] == frp_mean, (ym, event["meanFRP_MW"])
+        assert abs(event["droneGain"] - gain) < 1e-9, (ym, event["droneGain"])
     print("  event spot-checks pass: "
           + ", ".join(f"{ym[0]}-{ym[1]:02d} {note}"
                       for ym, _, _, note in EVENT_CASES))
@@ -230,6 +290,8 @@ def main() -> int:
             "soundCoverage": "Jan 2020-Dec 2025 monthly (72 months).",
             "sourceFile": CSV.name,
             "fetchLog": LOG.name,
+            "frpSource": "Same FIRMS MODIS_SP detections; monthly mean FRP "
+                         f"(MW), accessed {frp_access}.",
             "column": "count (monthly MODIS active-fire detections, integer)",
             "referencePeriod": "n/a (raw detection counts, no baseline).",
             "satelliteCheck": "Terra and Aqua both present in all 72 "
@@ -249,6 +311,8 @@ def main() -> int:
             "quantization": "nearest E-natural-minor note by "
                             "ABS(LOG(raw/note, 2)); ties resolve to the higher "
                             "note; raw frequencies clamp to [E3, B5].",
+            "droneGain": f"0.03 + 0.09 * (FRP - {FRP_MIN}) / "
+                         f"({FRP_MAX} - {FRP_MIN}); fixed E3 drone.",
             "noteMs": 500,
             "pitchSetHz": {name: freq for name, freq in NOTES},
         },

@@ -44,7 +44,9 @@ function explainSky(view: SkyTick, untouched: boolean): ReactNode {
             <dd>
               One {SKY_NOTE_MS} ms sine note per year from {SKY_FIRST_YEAR} to{' '}
               {SKY_LAST_YEAR}. Pitch follows mean nighttime radiance:
-              dimmer years sound low, brighter years high.
+              dimmer years sound low, brighter years high. A second voice
+              a fifth above follows year-over-year growth — derived from
+              the same values, not a second measurement.
             </dd>
           </div>
           <div>
@@ -58,7 +60,7 @@ function explainSky(view: SkyTick, untouched: boolean): ReactNode {
             </dd>
           </div>
           <div>
-            <dt className="font-semibold text-at-mos">The data</dt>
+            <dt className="font-semibold text-atmos">The data</dt>
             <dd>
               NASA Black Marble VNP46A4, Collection 002, DOI
               10.5067/VIIRS/VNP46A4.002, Suomi NPP only, single collection
@@ -176,18 +178,35 @@ export function SkyTrackPanel() {
       sparkDescription={`Annual mean nighttime radiance over India, ${SKY_FIRST_YEAR} to ${SKY_LAST_YEAR}`}
       sparkUnit="nW/(cm²·sr)"
       visual={
-        <figure className="mt-5">
-          <img
-            src={SKY_STILL}
-            alt="Asia and Australia at night, Black Marble composite of city lights"
-            loading="lazy"
-            className="w-full rounded border border-slate-800"
-          />
-          <figcaption className="mt-1 font-mono text-xs text-slate-400">
-            NASA Black Marble Asia, 2012 · contextual visual, not
-            synchronized with the sound
-          </figcaption>
-        </figure>
+        <>
+          <figure className="mt-5">
+            <img
+              src={SKY_STILL}
+              alt="Asia and Australia at night, Black Marble composite of city lights"
+              loading="lazy"
+              className="w-full rounded border border-slate-800"
+            />
+            <figcaption className="mt-1 font-mono text-xs text-slate-400">
+              NASA Black Marble Asia, 2012 · contextual visual, not
+              synchronized with the sound
+            </figcaption>
+          </figure>
+          <p className="mt-3 text-sm">
+            <a
+              href="https://svs.gsfc.nasa.gov/5475/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-atmos hover:text-cloud hover:underline"
+            >
+              Watch the NASA visualisation: Change in Night Lights,
+              2012–2023 (SVS 5475) ↗
+            </a>
+          </p>
+          <p className="mt-1 font-mono text-xs text-slate-400">
+            Covers 2012–2023 while the sound covers 2012–2025;
+            contextual, not synchronized with the sound.
+          </p>
+        </>
       }
       explain={explainSky}
     />
