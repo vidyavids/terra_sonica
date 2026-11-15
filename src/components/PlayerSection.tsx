@@ -216,6 +216,7 @@ interface TrackCardProps<TEvent extends TrackEventBase> {
   explain: (view: TickView<TEvent>, untouched: boolean) => ReactNode;
   readingFor?: (view: TickView<TEvent>) => string;
   sparkUnit?: string;
+  readingExtra?: (view: TickView<TEvent>) => string | null;
 }
 
 export function TrackCard<TEvent extends TrackEventBase>(
@@ -258,6 +259,11 @@ export function TrackCard<TEvent extends TrackEventBase>(
             ? props.readingFor(view)
             : formatReading(view)}
       </p>
+      {!controls.untouched && props.readingExtra?.(view) && (
+        <p className="mt-1 font-mono text-sm text-slate-300">
+          {props.readingExtra(view)}
+        </p>
+      )}
 
       <div
         className="mt-4 h-2 w-full overflow-hidden rounded bg-slate-800"

@@ -22,7 +22,14 @@ function skyReading(view: SkyTick): string {
   return `${view.radianceC.toFixed(4)} nW/(cm²·sr) · ${view.note} · ${view.quantizedHz} Hz (raw ${view.linearHz.toFixed(1)} Hz)`;
 }
 
+function skyGrowthText(view: SkyTick): string | null {
+  if (view.growthRate === null) return null;
+  const sign = view.growthRate >= 0 ? '+' : '';
+  return `Growth vs previous year: ${sign}${(view.growthRate * 100).toFixed(1)}%`;
+}
+
 function explainSky(view: SkyTick, untouched: boolean): ReactNode {
+  const growthText = !untouched ? skyGrowthText(view) : null;
   return (
     <section
       aria-label="Explain My Sound: Hear the Lights — Earth at Night — India"
@@ -34,6 +41,9 @@ function explainSky(view: SkyTick, untouched: boolean): ReactNode {
           ? 'Press Play — live values appear here as each note sounds.'
           : `Now playing: ${view.year} · ${skyReading(view)}`}
       </p>
+      {growthText && (
+        <p className="mt-1 font-mono text-sm text-atmos">{growthText}</p>
+      )}
       <details className="mt-3">
         <summary className="cursor-pointer font-semibold text-atmos">
           Scientific Details
@@ -170,6 +180,7 @@ export function SkyTrackPanel() {
       doneText={`Done — ${SKY_FIRST_YEAR} to ${SKY_LAST_YEAR}.`}
       tipFor={(e) => `${e.year} · ${e.radianceC.toFixed(4)} nW/(cm²·sr)`}
       readingFor={(v) => skyReading(v)}
+      readingExtra={(v) => skyGrowthText(v)}
       scrubLabel="Scrub night-lights timeline"
       progressLabel="Track 4 playback progress"
       sparkStart={String(SKY_FIRST_YEAR)}

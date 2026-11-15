@@ -26,7 +26,12 @@ function fireReading(view: FireTick): string {
   return `${view.count.toLocaleString('en-US')} detections · ${view.note} · ${view.quantizedHz} Hz (raw ${view.linearHz.toFixed(1)} Hz)`;
 }
 
+function fireFRPText(view: FireTick): string {
+  return `Mean FRP: ${view.meanFRP_MW.toFixed(1)} MW`;
+}
+
 function explainFire(view: FireTick, untouched: boolean): ReactNode {
+  const frpText = !untouched ? fireFRPText(view) : null;
   return (
     <section
       aria-label="Explain My Sound: Hear the Fire — Amazon"
@@ -38,6 +43,9 @@ function explainFire(view: FireTick, untouched: boolean): ReactNode {
           ? 'Press Play — live values appear here as each note sounds.'
           : `Now playing: ${view.label} · ${fireReading(view)}`}
       </p>
+      {frpText && (
+        <p className="mt-1 font-mono text-sm text-atmos">{frpText}</p>
+      )}
       <details className="mt-3">
         <summary className="cursor-pointer font-semibold text-atmos">
           Scientific Details
@@ -178,6 +186,7 @@ export function FireTrackPanel() {
       doneText={`Done — ${FIRE_FIRST_LABEL} to ${FIRE_LAST_LABEL}.`}
       tipFor={(e) => `${e.label} · ${e.count.toLocaleString('en-US')} detections`}
       readingFor={(v) => fireReading(v)}
+      readingExtra={(v) => fireFRPText(v)}
       scrubLabel="Scrub fire timeline"
       progressLabel="Track 3 playback progress"
       sparkStart={FIRE_FIRST_LABEL}
