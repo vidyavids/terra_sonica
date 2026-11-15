@@ -36,7 +36,7 @@ function explainSky(view: SkyTick, untouched: boolean): ReactNode {
       className="mt-6 rounded-lg border border-slate-800 bg-slate-900/40 p-5"
     >
       <h4 className="text-lg font-semibold text-cloud">Explain My Sound</h4>
-      <p className="mt-1 font-mono text-sm text-atmos" aria-live="polite">
+      <p className="mt-1 font-mono text-sm text-atmos">
         {untouched
           ? 'Press Play — live values appear here as each note sounds.'
           : `Now playing: ${view.year} · ${skyReading(view)}`}
