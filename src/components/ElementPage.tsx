@@ -3,6 +3,7 @@ import type { ElementSlug, PanelTrack } from '../data/elements';
 import { Legend } from './Experiences';
 import { FireTrackPanel } from './FirePanel';
 import { TrackPanel } from './PlayerSection';
+import { SkyTrackPanel } from './SkyPanel';
 
 interface ElementPageProps {
   slug: ElementSlug;
@@ -54,6 +55,8 @@ export default function ElementPage({ slug, track }: ElementPageProps) {
               <div className="mt-4">
                 {track === 'fire' ? (
                   <FireTrackPanel />
+                ) : track === 'sky' ? (
+                  <SkyTrackPanel />
                 ) : (
                   <TrackPanel track={track} />
                 )}

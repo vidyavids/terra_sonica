@@ -1,0 +1,157 @@
+{
+  "provenance": {
+    "dataset": "Annual mean corrected nighttime radiance over India, NASA Black Marble VNP46A4 Collection 002, DOI 10.5067/VIIRS/VNP46A4.002, variable NearNadir_Composite_Snow_Free, Suomi NPP only (accessed Nov 2026).",
+    "visual": "Asia and Australia at night, Black Marble composite, Suomi NPP VIIRS, Apr-Oct 2012. Credit: NASA Earth Observatory image by Robert Simmon, using Suomi NPP VIIRS data courtesy of Chris Elvidge (NOAA National Geophysical Data Center).",
+    "visualCoverage": "Asia and Australia at night, single Black Marble composite, Apr-Oct 2012. The visual is contextual, not synchronized with the sound.",
+    "soundCoverage": "2012-2025 yearly (14 values).",
+    "sourceFile": "india-nightlights-2012-2025.json",
+    "column": "meanRadiance (annual mean nW/(cm^2 sr), rounded to 4 decimals for events)",
+    "referencePeriod": "n/a (raw annual means, no baseline).",
+    "sensorCheck": "DNB platform code 0 (Suomi-NPP) on every kept pixel in all 14 years; single sensor, single collection, no inter-calibration.",
+    "region": "India, GADM 4.1 level-0 dissolved polygon.",
+    "eventCount": 14,
+    "missingValuePolicy": "No year is missing. Missing years would fail validation, never be interpolated.",
+    "generatedBy": "scripts/validate_sky.py",
+    "mappingDoc": "docs/sky-mapping.md"
+  },
+  "mapping": {
+    "linearHz": "clamp(R, 0.4417, 1.1153); 220 + (R - 0.4417) / (1.1153 - 0.4417) * 660",
+    "quantization": "nearest E-natural-minor note by ABS(LOG(raw/note, 2)); ties resolve to the higher note; raw frequencies clamp to [E3, B5].",
+    "noteMs": 700,
+    "pitchSetHz": {
+      "E3": 164.81,
+      "F#3": 185.0,
+      "G3": 196.0,
+      "A3": 220.0,
+      "B3": 246.94,
+      "C4": 261.63,
+      "D4": 293.66,
+      "E4": 329.63,
+      "F#4": 369.99,
+      "G4": 392.0,
+      "A4": 440.0,
+      "B4": 493.88,
+      "C5": 523.25,
+      "D5": 587.33,
+      "E5": 659.25,
+      "F#5": 739.99,
+      "G5": 783.99,
+      "A5": 880.0,
+      "B5": 987.77
+    }
+  },
+  "events": [
+    {
+      "year": 2012,
+      "radianceC": 0.4513,
+      "anomalyC": 0.4513,
+      "linearHz": 229.4062,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2013,
+      "radianceC": 0.4417,
+      "anomalyC": 0.4417,
+      "linearHz": 220.0,
+      "note": "A3",
+      "quantizedHz": 220.0
+    },
+    {
+      "year": 2014,
+      "radianceC": 0.5049,
+      "anomalyC": 0.5049,
+      "linearHz": 281.924,
+      "note": "D4",
+      "quantizedHz": 293.66
+    },
+    {
+      "year": 2015,
+      "radianceC": 0.5043,
+      "anomalyC": 0.5043,
+      "linearHz": 281.3361,
+      "note": "D4",
+      "quantizedHz": 293.66
+    },
+    {
+      "year": 2016,
+      "radianceC": 0.5212,
+      "anomalyC": 0.5212,
+      "linearHz": 297.8949,
+      "note": "D4",
+      "quantizedHz": 293.66
+    },
+    {
+      "year": 2017,
+      "radianceC": 0.5354,
+      "anomalyC": 0.5354,
+      "linearHz": 311.8082,
+      "note": "E4",
+      "quantizedHz": 329.63
+    },
+    {
+      "year": 2018,
+      "radianceC": 0.581,
+      "anomalyC": 0.581,
+      "linearHz": 356.4875,
+      "note": "F#4",
+      "quantizedHz": 369.99
+    },
+    {
+      "year": 2019,
+      "radianceC": 0.6051,
+      "anomalyC": 0.6051,
+      "linearHz": 380.101,
+      "note": "F#4",
+      "quantizedHz": 369.99
+    },
+    {
+      "year": 2020,
+      "radianceC": 0.5814,
+      "anomalyC": 0.5814,
+      "linearHz": 356.8795,
+      "note": "F#4",
+      "quantizedHz": 369.99
+    },
+    {
+      "year": 2021,
+      "radianceC": 0.6774,
+      "anomalyC": 0.6774,
+      "linearHz": 450.9412,
+      "note": "A4",
+      "quantizedHz": 440.0
+    },
+    {
+      "year": 2022,
+      "radianceC": 0.8504,
+      "anomalyC": 0.8504,
+      "linearHz": 620.4483,
+      "note": "D5",
+      "quantizedHz": 587.33
+    },
+    {
+      "year": 2023,
+      "radianceC": 0.9693,
+      "anomalyC": 0.9693,
+      "linearHz": 736.9477,
+      "note": "F#5",
+      "quantizedHz": 739.99
+    },
+    {
+      "year": 2024,
+      "radianceC": 1.0258,
+      "anomalyC": 1.0258,
+      "linearHz": 792.307,
+      "note": "G5",
+      "quantizedHz": 783.99
+    },
+    {
+      "year": 2025,
+      "radianceC": 1.1153,
+      "anomalyC": 1.1153,
+      "linearHz": 880.0,
+      "note": "A5",
+      "quantizedHz": 880.0
+    }
+  ]
+}

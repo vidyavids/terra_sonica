@@ -2,7 +2,7 @@ import ninoData from './nino34.json';
 import tempData from './global-temperature.json';
 
 export type ElementSlug = 'air' | 'water' | 'earth' | 'fire' | 'aether';
-export type PanelTrack = 'temp' | 'nino' | 'fire';
+export type PanelTrack = 'temp' | 'nino' | 'fire' | 'sky';
 
 export interface SubExperience {
   label: string;
@@ -125,14 +125,15 @@ export const ELEMENTS: Element[] = [
     description:
       'Aether listens to the lights of human civilization as seen from orbit — cities glowing against the dark side of the planet.',
     context:
-      'Two planned sonifications from NASA Black Marble nighttime imagery, including Earth at Night — India (2012–2025).',
+      'Earth at Night — India is built from fourteen years of NASA Black Marble nighttime imagery over India. Open the playable track to hear it.',
     image: '/images/aether-night-lights-asia.jpg',
     imageAlt: 'Asia and Australia at night, Black Marble composite of city lights',
     subs: [
       {
-        label: 'Earth at Night — India (2012–2025)',
-        status: 'planned',
-        statusLabel: 'Planned experience',
+        label: 'Hear the Lights — Earth at Night — India (2012–2025)',
+        status: 'playable',
+        href: '#/aether',
+        track: 'sky',
       },
       { label: 'Global Nighttime Radiance', status: 'planned' },
     ],
@@ -143,20 +144,23 @@ export const TRACK_TITLES: Record<PanelTrack, string> = {
   temp: 'Global Surface Temperature',
   nino: 'El Niño',
   fire: 'Hear the Fire — Amazon (2020–2025)',
+  sky: 'Hear the Lights — Earth at Night — India (2012–2025)',
 };
 
 export function trackRouteId(
   track: PanelTrack,
-): 'track-1' | 'track-2' | 'track-3' {
+): 'track-1' | 'track-2' | 'track-3' | 'track-4' {
   if (track === 'temp') return 'track-1';
   if (track === 'nino') return 'track-2';
-  return 'track-3';
+  if (track === 'fire') return 'track-3';
+  return 'track-4';
 }
 
 export function trackFromRouteId(id: string): PanelTrack | null {
   if (id === 'track-1') return 'temp';
   if (id === 'track-2') return 'nino';
   if (id === 'track-3') return 'fire';
+  if (id === 'track-4') return 'sky';
   return null;
 }
 
