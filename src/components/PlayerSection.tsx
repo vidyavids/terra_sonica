@@ -1,4 +1,4 @@
-import { useCallback, useId, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import AudioVisualizer from './AudioVisualizer';
 import { useComparisonPlayback } from '../hooks/useComparisonPlayback';
 import { PlaybackConductor } from '../audio/conductor';
@@ -181,6 +181,17 @@ interface CompareDef {
   to: number;
 }
 
+type DidYouHearThatAction =
+  | { kind: 'compareAB' }
+  | { kind: 'jump'; index: number }
+  | { kind: 'playFrom'; index: number };
+
+interface DidYouHearThat {
+  body: string;
+  actionLabel: string;
+  action: DidYouHearThatAction;
+}
+
 type TickView<TEvent extends TrackEventBase> = TEvent & {
   index: number;
   progress: number;
@@ -214,6 +225,7 @@ interface TrackCardProps<TEvent extends TrackEventBase> {
   sparkCaption: string;
   sparkDescription: string;
   visual?: ReactNode;
+  didYouHearThat?: DidYouHearThat;
   explain: (view: TickView<TEvent>, untouched: boolean) => ReactNode;
   readingFor?: (view: TickView<TEvent>) => string;
   sparkUnit?: string;
@@ -230,6 +242,52 @@ export function TrackCard<TEvent extends TrackEventBase>(
   const [guideDismissed, setGuideDismissed] = useState(false);
   const totalSeconds = Math.round((events.length * props.noteMs) / 1000);
   const view = controls.view;
+  const chainRef = useRef({ status: '', index: 0, range: '' as string | null });
+  useEffect(() => {
+    chainRef.current = {
+      status: controls.status,
+      index: view.index,
+      range: comparison.range?.label ?? null,
+    };
+  });
+  const chainTimer = useRef<number | null>(null);
+  useEffect(
+    () => () => {
+      if (chainTimer.current !== null) {
+        window.clearTimeout(chainTimer.current);
+      }
+    },
+    [],
+  );
+  const runDidYouHearThat = () => {
+    const spec = props.didYouHearThat;
+    if (!spec) return;
+    if (chainTimer.current !== null) {
+      window.clearTimeout(chainTimer.current);
+      chainTimer.current = null;
+    }
+    const act = spec.action;
+    if (act.kind === 'jump') {
+      controls.scrub(act.index);
+      return;
+    }
+    if (act.kind === 'playFrom') {
+      controls.scrub(act.index);
+      if (controls.status !== 'playing') controls.play();
+      return;
+    }
+    const a = props.compare.a;
+    const b = props.compare.b;
+    comparison.startComparison(a);
+    const waitMs = (a.to - a.from + 1) * props.noteMs + 2000;
+    chainTimer.current = window.setTimeout(() => {
+      chainTimer.current = null;
+      const s = chainRef.current;
+      if (s.status === 'idle' && s.index === a.to && s.range === a.label) {
+        comparison.startComparison(b);
+      }
+    }, waitMs);
+  };
   return (
     <section
       id={props.anchorId}
@@ -437,6 +495,28 @@ export function TrackCard<TEvent extends TrackEventBase>(
       </div>
 
       {props.visual}
+      {props.didYouHearThat && (
+        <section
+          aria-label="Did You Hear That?"
+          className="mt-6 rounded-lg border border-slate-800 bg-slate-900/40 p-5"
+        >
+          <details>
+            <summary className="cursor-pointer font-semibold text-atmos">
+              Did You Hear That?
+            </summary>
+            <p className="mt-2 text-sm text-slate-300">
+              {props.didYouHearThat.body}
+            </p>
+            <button
+              type="button"
+              onClick={runDidYouHearThat}
+              className="mt-3 rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400"
+            >
+              {props.didYouHearThat.actionLabel}
+            </button>
+          </details>
+        </section>
+      )}
     </section>
   );
 }
@@ -689,6 +769,11 @@ function TempTrackPanel() {
           to: atTempYear(tempEvents, 2025),
         },
       }}
+      didYouHearThat={{
+        body: 'Did You Hear That? The melody shifts as global temperature anomalies change over time. Compare the early years with recent years. Can you hear the difference in pitch?',
+        actionLabel: 'Replay early vs. recent years',
+        action: { kind: 'compareAB' },
+      }}
       guidance="Listen as each year becomes a note. Higher notes represent warmer global surface temperature anomalies."
       getTap={tap}
       stepUnit="year"
@@ -767,6 +852,11 @@ function NinoTrackPanel() {
           from: atNinoMonth(ninoEvents, 2023, 7),
           to: nino23.to,
         },
+      }}
+      didYouHearThat={{
+        body: 'Did You Hear That? The melody rises and falls as Pacific Ocean temperature anomalies change. Listen for the transition from cooler La Niña conditions to warmer El Niño conditions.',
+        actionLabel: 'Compare a verified cool period with a warm period',
+        action: { kind: 'compareAB' },
       }}
       guidance="Listen as each month becomes a note. Lower notes represent cooler La Niña conditions; higher notes represent warmer El Niño conditions."
       getTap={tap}

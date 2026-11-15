@@ -192,6 +192,11 @@ export function FireTrackPanel() {
           to: atFireMonth(fireEvents, 2024, 10),
         },
       }}
+      didYouHearThat={{
+        body: 'Did You Hear That? Higher notes represent more satellite-detected active-fire observations. Listen for the peaks during periods of increased fire activity.',
+        actionLabel: 'Jump to the September 2024 detection peak',
+        action: { kind: 'jump', index: atFireMonth(fireEvents, 2024, 9) },
+      }}
       guidance="Listen as each month becomes a note. Higher pitch means more MODIS active-fire detections."
       getTap={tap}
       stepUnit="month"
