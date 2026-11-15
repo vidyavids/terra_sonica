@@ -153,7 +153,7 @@ export default function Experiences() {
                     {i + 1}. {el.element} — {el.experience}
                   </h3>
                 </div>
-                <p className="mt-2 text-sm text-slate-200 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+                <p className="mt-2 text-base text-slate-200 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
                   {el.strapline}
                 </p>
                 <ul className="mt-3 space-y-2">
