@@ -187,7 +187,12 @@ export function SkyTrackPanel() {
       didYouHearThat={{
         body: 'Did You Hear That? Changes in the melody reflect changes in satellite-measured nighttime radiance over India. Higher notes represent brighter measured radiance.',
         actionLabel: 'Compare 2020 with 2025, without assuming what caused the change',
-        action: { kind: 'playFrom', index: atSkyYear(skyEvents, 2020) },
+        action: {
+          kind: 'compareRange',
+          label: '2020–2025',
+          from: atSkyYear(skyEvents, 2020),
+          to: atSkyYear(skyEvents, 2025),
+        },
       }}
       guidance="Listen as each year becomes a note. Dimmer years with fainter lights sound low; brighter years sound high."
       getTap={tap}

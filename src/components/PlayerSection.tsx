@@ -184,7 +184,7 @@ interface CompareDef {
 type DidYouHearThatAction =
   | { kind: 'compareAB' }
   | { kind: 'jump'; index: number }
-  | { kind: 'playFrom'; index: number };
+  | { kind: 'compareRange'; label: string; from: number; to: number };
 
 interface DidYouHearThat {
   body: string;
@@ -271,9 +271,12 @@ export function TrackCard<TEvent extends TrackEventBase>(
       controls.scrub(act.index);
       return;
     }
-    if (act.kind === 'playFrom') {
-      controls.scrub(act.index);
-      if (controls.status !== 'playing') controls.play();
+    if (act.kind === 'compareRange') {
+      comparison.startComparison({
+        label: act.label,
+        from: act.from,
+        to: act.to,
+      });
       return;
     }
     const a = props.compare.a;
