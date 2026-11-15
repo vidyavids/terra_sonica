@@ -565,7 +565,7 @@ function explainNino(
             Jan 29–Oct 10, 2025 vs 2026 (verified on the SVS 5683 page, Nov
             2026). The visual is contextual, not synchronized with the
             sound, while the sound covers Jan 2020–Aug 2026 monthly (80
-            months).
+            values).
           </dd>
         </div>
         <div>
