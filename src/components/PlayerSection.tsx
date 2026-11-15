@@ -587,9 +587,7 @@ export function TrackCard<TEvent extends TrackEventBase>(
       </div>
 
       {(props.didYouHearThat || table) && (
-        <div
-          className={`mt-6 grid gap-6 ${props.didYouHearThat && table ? 'md:grid-cols-2' : ''}`}
-        >
+        <div className="mt-6 grid gap-6">
           {props.didYouHearThat && (
         <section
           aria-label="Did You Hear That?"
