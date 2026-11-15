@@ -1,4 +1,6 @@
+import fireData from '../data/fire-brazil.json';
 import ninoData from '../data/nino34.json';
+import skyData from '../data/nightlights-india.json';
 import tempData from '../data/global-temperature.json';
 
 const IMAGE_CREDITS = [
@@ -9,6 +11,21 @@ const IMAGE_CREDITS = [
   'AETHER section. Asia and Australia at night, Black Marble composite, Suomi NPP VIIRS, Apr–Oct 2012. Credit: NASA Earth Observatory image by Robert Simmon, using Suomi NPP VIIRS data courtesy of Chris Elvidge (NOAA National Geophysical Data Center).',
 ];
 
+const REPO_DOCS = 'https://github.com/vidyavids/terra_sonica/blob/main/docs';
+
+function MethodLink({ file }: { file: string }) {
+  return (
+    <a
+      className="text-atmos hover:underline"
+      href={`${REPO_DOCS}/${file}`}
+      target="_blank"
+      rel="noreferrer"
+    >
+      methods
+    </a>
+  );
+}
+
 export default function SiteFooter() {
   return (
     <footer className="border-t border-slate-800 px-4 py-8">
@@ -16,10 +33,19 @@ export default function SiteFooter() {
         <div className="space-y-1">
           <p className="font-semibold text-slate-400">Data</p>
           <p>
-            {tempData.provenance.dataset} · {tempData.provenance.sourceFile}
+            {tempData.provenance.dataset} · {tempData.provenance.sourceFile}{' '}
+            (<MethodLink file="temperature-mapping.md" />)
           </p>
-          <p>{ninoData.provenance.dataset}</p>
+          <p>
+            {ninoData.provenance.dataset} (<MethodLink file="nino34-mapping.md" />)
+          </p>
           <p>{ninoData.provenance.visual}</p>
+          <p>
+            {fireData.provenance.dataset} (<MethodLink file="fire-mapping.md" />)
+          </p>
+          <p>
+            {skyData.provenance.dataset} (<MethodLink file="sky-mapping.md" />)
+          </p>
         </div>
         <div className="space-y-1">
           <p className="font-semibold text-slate-400">Imagery</p>

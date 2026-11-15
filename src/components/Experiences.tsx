@@ -1,4 +1,4 @@
-import { ELEMENTS } from '../data/elements';
+import { ELEMENTS, elementHash } from '../data/elements';
 
 function ElementIcon({ element }: { element: string }) {
   const cls =
@@ -44,6 +44,11 @@ function ElementIcon({ element }: { element: string }) {
         </svg>
       );
   }
+}
+
+function previewLabel(element: string): string {
+  const word = element.split(' ')[0].toLowerCase();
+  return `Preview ${word.charAt(0).toUpperCase() + word.slice(1)}`;
 }
 
 export function Legend() {
@@ -136,6 +141,11 @@ export default function Experiences() {
                 aria-hidden="true"
                 className="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/60 to-abyss/10"
               />
+              {!playableSub && (
+                <span className="absolute left-4 top-4 whitespace-nowrap rounded-full border border-slate-500/50 bg-slate-700/60 px-2.5 py-1 font-mono text-xs text-slate-200">
+                  Planned
+                </span>
+              )}
               <div className="absolute inset-x-0 bottom-0 p-5">
                 <div className="flex items-center gap-2 text-cloud drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
                   <ElementIcon element={el.element} />
@@ -172,6 +182,14 @@ export default function Experiences() {
                     ),
                   )}
                 </ul>
+                {!playableSub && (
+                  <a
+                    href={elementHash(el.slug)}
+                    className="mt-3 inline-block text-sm text-atmos drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] hover:text-cloud hover:underline"
+                  >
+                    {previewLabel(el.element)} →
+                  </a>
+                )}
               </div>
             </div>
           );

@@ -164,6 +164,7 @@ function Scrubber<TEvent extends TrackEventBase>({
         onBlur={() => setTip(null)}
         className="w-full accent-atmos"
         aria-label={ariaLabel}
+        aria-valuetext={tipFor(events[viewIndex])}
       />
     </div>
   );
@@ -236,7 +237,7 @@ export function TrackCard<TEvent extends TrackEventBase>(
       className="rounded-lg border border-atmos/20 bg-slate-900/40 p-5 shadow-[0_0_18px_rgba(86,199,245,0.10)]"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="text-xl font-semibold text-cloud">
+        <h3 tabIndex={-1} className="text-xl font-semibold text-cloud">
           {props.title}, {props.dateRange}
         </h3>
         <p className="font-mono text-xs text-slate-400">
@@ -250,6 +251,13 @@ export function TrackCard<TEvent extends TrackEventBase>(
         className="mt-4 font-mono text-5xl font-bold text-atmos"
         aria-live="polite"
       >
+        {controls.status === 'playing'
+          ? 'Playing, '
+          : controls.status === 'paused'
+            ? 'Paused, '
+            : controls.status === 'done' || controls.untouched
+              ? ''
+              : 'Selected, '}
         {controls.untouched ? props.idleBig : props.bigFor(view)}
       </p>
       <p className="mt-1 font-mono text-sm text-slate-300">
@@ -454,7 +462,7 @@ function explainTemperature(
       className="mt-6 rounded-lg border border-slate-800 bg-slate-900/40 p-5"
     >
       <h4 className="text-lg font-semibold text-cloud">Explain My Sound</h4>
-      <p className="mt-1 font-mono text-sm text-atmos" aria-live="polite">
+      <p className="mt-1 font-mono text-sm text-atmos">
         {untouched
           ? 'Press Play — live values appear here as each note sounds.'
           : `Now playing: ${view.year} · ${formatReading(view)}`}
@@ -523,7 +531,7 @@ function explainNino(
       className="mt-6 rounded-lg border border-slate-800 bg-slate-900/40 p-5"
     >
       <h4 className="text-lg font-semibold text-cloud">Explain My Sound</h4>
-      <p className="mt-1 font-mono text-sm text-atmos" aria-live="polite">
+      <p className="mt-1 font-mono text-sm text-atmos">
         {untouched
           ? 'Press Play — live values appear here as each note sounds.'
           : `Now playing: ${view.label} · ${formatReading(view)}`}
@@ -735,8 +743,10 @@ function NinoTrackPanel() {
           to: nino21.to,
         },
         b: {
+          // Warm half-year on purpose: full-year 2023 opens on cool
+          // months, while this contrast clip opens warm (Jul 2023).
           label: 'El Niño 2023',
-          from: nino23.from,
+          from: atNinoMonth(ninoEvents, 2023, 7),
           to: nino23.to,
         },
       }}

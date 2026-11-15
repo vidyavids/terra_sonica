@@ -26,7 +26,7 @@ export default function ElementPage({ slug, track }: ElementPageProps) {
       </a>
       <div className="mt-6 grid gap-10 lg:grid-cols-12">
         <div className="lg:col-span-5">
-          <h1 className="text-3xl font-bold tracking-tight text-cloud">
+          <h1 tabIndex={-1} className="text-3xl font-bold tracking-tight text-cloud">
             {el.element} — {el.experience}
           </h1>
           <p className="mt-2 text-atmos">{el.strapline}</p>
