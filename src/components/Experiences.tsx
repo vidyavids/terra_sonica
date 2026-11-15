@@ -46,6 +46,40 @@ function ElementIcon({ element }: { element: string }) {
   }
 }
 
+export function Legend() {
+  return (
+    <ul
+      className="mt-6 flex flex-wrap gap-x-6 gap-y-1 text-sm"
+      aria-label="Legend"
+    >
+      <li className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className="inline-block h-3 w-3 rounded-full bg-forest"
+        />
+        <span>
+          <strong className="text-cloud">▶ Playable Now</strong>{' '}
+          <span className="text-slate-300">
+            — Explore a working sonification
+          </span>
+        </span>
+      </li>
+      <li className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className="inline-block h-3 w-3 rounded-full bg-slate-500"
+        />
+        <span>
+          <strong className="text-cloud">Planned Experience</strong>{' '}
+          <span className="text-slate-300">
+            — Part of our full Earth Jukebox vision
+          </span>
+        </span>
+      </li>
+    </ul>
+  );
+}
+
 export default function Experiences() {
   return (
     <section
@@ -57,7 +91,7 @@ export default function Experiences() {
         The Earth Jukebox
       </p>
       <h2 className="mt-1 text-4xl font-bold tracking-tight text-cloud">
-        Hear Our <span className="text-atmos">Planet</span>
+        Hear Our <span className="italic text-atmos">Planet</span>
       </h2>
       <p className="mt-3 max-w-3xl text-slate-300">
         Explore Earth through sound. Each experience turns real NASA Earth
@@ -67,39 +101,41 @@ export default function Experiences() {
       <div className="mt-8 grid gap-6 md:grid-cols-3">
         {ELEMENTS.map((el, i) => {
           const playableSub = el.subs.find((s) => s.status === 'playable');
-          const cardClass = `overflow-hidden rounded-lg border bg-slate-900/40 ${
+          const cardClass = `relative block overflow-hidden rounded-xl border ${
             playableSub
               ? 'border-forest/60 shadow-[0_0_24px_rgba(54,168,134,0.25)] transition-colors hover:border-forest'
               : 'border-atmos/20 shadow-[0_0_18px_rgba(86,199,245,0.10)]'
           }`;
           const cardBody = (
-            <>
-              <div className="relative">
-                <img
-                  src={el.image}
-                  alt={el.imageAlt}
-                  loading="lazy"
-                  className="h-48 w-full object-cover"
-                />
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/30 to-transparent"
-                />
-                <div className="absolute bottom-3 left-4 right-4 flex min-h-[3.5rem] items-center gap-2 text-cloud">
+            <div className="relative h-96">
+              <img
+                src={el.image}
+                alt={el.imageAlt}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/60 to-abyss/10"
+              />
+              <div className="absolute inset-x-0 bottom-0 p-5">
+                <div className="flex items-center gap-2 text-cloud drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
                   <ElementIcon element={el.element} />
                   <h3 className="text-lg font-bold">
                     {i + 1}. {el.element} — {el.experience}
                   </h3>
                 </div>
-              </div>
-              <div className="p-5">
-                <p className="text-sm text-slate-300">{el.strapline}</p>
+                <p className="mt-2 text-sm text-slate-200 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+                  {el.strapline}
+                </p>
                 <ul className="mt-3 space-y-2">
                   {el.subs.map((s) =>
                     s.status === 'playable' ? (
                       <li key={s.label}>
-                        <span className="text-atmos">{s.label}</span>{' '}
-                        <span className="whitespace-nowrap rounded border border-forest/50 bg-forest/20 px-2 py-0.5 font-mono text-xs text-emerald-200 shadow-[0_0_12px_rgba(54,168,134,0.35)]">
+                        <span className="text-atmos drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+                          {s.label}
+                        </span>{' '}
+                        <span className="whitespace-nowrap rounded-full border border-forest/50 bg-forest/20 px-2 py-0.5 font-mono text-xs text-emerald-200 shadow-[0_0_12px_rgba(54,168,134,0.35)]">
                           ▶ Playable Now
                         </span>
                       </li>
@@ -107,11 +143,11 @@ export default function Experiences() {
                       <li
                         key={s.label}
                         data-planned="true"
-                        className="text-slate-300"
+                        className="text-slate-200 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]"
                       >
                         {s.label}
                         {s.detail ? ` — ${s.detail}` : ''}{' '}
-                        <span className="whitespace-nowrap rounded bg-slate-700/50 px-2 py-0.5 font-mono text-xs text-slate-300">
+                        <span className="whitespace-nowrap rounded-full bg-slate-700/50 px-2 py-0.5 font-mono text-xs text-slate-200">
                           {s.statusLabel ?? 'Planned — coming soon'}
                         </span>
                       </li>
@@ -119,57 +155,21 @@ export default function Experiences() {
                   )}
                 </ul>
               </div>
-              </>
-            );
-            const label = `${el.element}: ${el.experience}`;
-            return playableSub?.href ? (
-              <a
-                key={el.element}
-                href={playableSub.href}
-                className={`block ${cardClass}`}
-              >
-                <article aria-label={label}>{cardBody}</article>
-              </a>
-            ) : (
-              <article
-                key={el.element}
-                aria-label={label}
-                className={cardClass}
-              >
-                {cardBody}
-              </article>
-            );
-          })}
+            </div>
+          );
+          const label = `${el.element}: ${el.experience}`;
+          return playableSub?.href ? (
+            <a key={el.element} href={playableSub.href} className={cardClass}>
+              <article aria-label={label}>{cardBody}</article>
+            </a>
+          ) : (
+            <article key={el.element} aria-label={label} className={cardClass}>
+              {cardBody}
+            </article>
+          );
+        })}
       </div>
-      <ul
-        className="mt-6 flex flex-wrap gap-x-6 gap-y-1 text-sm"
-        aria-label="Legend"
-      >
-        <li className="flex items-center gap-2">
-          <span
-            aria-hidden="true"
-            className="inline-block h-3 w-3 rounded-full bg-forest"
-          />
-          <span>
-            <strong className="text-cloud">▶ Playable Now</strong>{' '}
-            <span className="text-slate-300">
-              — Explore a working sonification
-            </span>
-          </span>
-        </li>
-        <li className="flex items-center gap-2">
-          <span
-            aria-hidden="true"
-            className="inline-block h-3 w-3 rounded-full bg-slate-500"
-          />
-          <span>
-            <strong className="text-cloud">Planned Experience</strong>{' '}
-            <span className="text-slate-300">
-              — Part of our full Earth Jukebox vision
-            </span>
-          </span>
-        </li>
-      </ul>
+      <Legend />
     </section>
   );
 }

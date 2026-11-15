@@ -1,5 +1,6 @@
 import { elementHash, findElement, playerHash } from '../data/elements';
 import type { ElementSlug, PanelTrack } from '../data/elements';
+import { Legend } from './Experiences';
 import { TrackPanel } from './PlayerSection';
 
 interface ElementPageProps {
@@ -64,16 +65,31 @@ export default function ElementPage({ slug, track }: ElementPageProps) {
                     <li key={s.label}>
                       <a
                         href={playerHash(el.slug, s.track)}
-                        className="block rounded-lg border border-forest/60 bg-slate-900/40 p-5 shadow-[0_0_24px_rgba(54,168,134,0.25)] transition-colors hover:border-forest"
+                        className="block overflow-hidden rounded-xl border border-forest/60 shadow-[0_0_24px_rgba(54,168,134,0.25)] transition-colors hover:border-forest"
                       >
-                        <span className="text-lg font-semibold text-atmos">
-                          {s.label}
-                        </span>{' '}
-                        <span className="whitespace-nowrap rounded border border-forest/50 bg-forest/20 px-2 py-0.5 font-mono text-xs text-emerald-200 shadow-[0_0_12px_rgba(54,168,134,0.35)]">
-                          ▶ Playable Now
-                        </span>
-                        <span className="mt-2 block text-sm text-slate-300">
-                          Open the player →
+                        <span className="relative block h-44">
+                          <img
+                            src={el.image}
+                            alt=""
+                            aria-hidden="true"
+                            loading="lazy"
+                            className="absolute inset-0 h-full w-full object-cover"
+                          />
+                          <span
+                            aria-hidden="true"
+                            className="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/60 to-abyss/10"
+                          />
+                          <span className="absolute inset-x-0 bottom-0 block p-4">
+                            <span className="font-semibold text-atmos drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+                              {s.label}
+                            </span>{' '}
+                            <span className="whitespace-nowrap rounded-full border border-forest/50 bg-forest/20 px-2 py-0.5 font-mono text-xs text-emerald-200 shadow-[0_0_12px_rgba(54,168,134,0.35)]">
+                              ▶ Playable Now
+                            </span>
+                            <span className="mt-1 block text-sm text-slate-200 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+                              Open the player →
+                            </span>
+                          </span>
                         </span>
                       </a>
                     </li>
@@ -81,21 +97,38 @@ export default function ElementPage({ slug, track }: ElementPageProps) {
                     <li
                       key={s.label}
                       data-planned="true"
-                      className="rounded-lg border border-atmos/20 bg-slate-900/40 p-5"
+                      className="relative h-44 overflow-hidden rounded-xl border border-atmos/20"
                     >
-                      <span className="text-lg font-semibold text-slate-200">
-                        {s.label}
-                      </span>
-                      {s.detail ? (
-                        <span className="text-slate-300"> — {s.detail}</span>
-                      ) : null}{' '}
-                      <span className="whitespace-nowrap rounded bg-slate-700/50 px-2 py-0.5 font-mono text-xs text-slate-300">
-                        {s.statusLabel ?? 'Planned — coming soon'}
-                      </span>
+                      <img
+                        src={el.image}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        className="absolute inset-0 h-full w-full object-cover"
+                      />
+                      <div
+                        aria-hidden="true"
+                        className="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/60 to-abyss/10"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 p-4">
+                        <span className="font-semibold text-slate-100 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+                          {s.label}
+                        </span>
+                        {s.detail ? (
+                          <span className="text-slate-200 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+                            {' '}
+                            — {s.detail}
+                          </span>
+                        ) : null}{' '}
+                        <span className="whitespace-nowrap rounded-full bg-slate-700/50 px-2 py-0.5 font-mono text-xs text-slate-200">
+                          {s.statusLabel ?? 'Planned — coming soon'}
+                        </span>
+                      </div>
                     </li>
                   ),
                 )}
               </ul>
+              <Legend />
             </>
           )}
         </div>
