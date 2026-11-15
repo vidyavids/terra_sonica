@@ -586,11 +586,14 @@ export function TrackCard<TEvent extends TrackEventBase>(
         </div>
       </div>
 
-      {props.visual}
-      {props.didYouHearThat && (
+      {(props.didYouHearThat || table) && (
+        <div
+          className={`mt-6 grid gap-6 ${props.didYouHearThat && table ? 'md:grid-cols-2' : ''}`}
+        >
+          {props.didYouHearThat && (
         <section
           aria-label="Did You Hear That?"
-          className="mt-6 rounded-lg border border-slate-800 bg-slate-900/40 p-5"
+          className="rounded-lg border border-slate-800 bg-slate-900/40 p-5"
         >
           <details>
             <summary className="cursor-pointer font-semibold text-atmos">
@@ -610,7 +613,7 @@ export function TrackCard<TEvent extends TrackEventBase>(
         </section>
       )}
       {table && (
-        <details className="mt-6 rounded-lg border border-slate-800 bg-slate-900/40 p-5">
+        <details className="rounded-lg border border-slate-800 bg-slate-900/40 p-5">
           <summary className="cursor-pointer font-semibold text-atmos">
             Observation table ({events.length} observations)
           </summary>
@@ -625,7 +628,7 @@ export function TrackCard<TEvent extends TrackEventBase>(
                     <th
                       key={h}
                       scope="col"
-                      className="border-b border-slate-700 px-2 py-1 text-left font-semibold text-cloud"
+                      className="border-b border-slate-700 px-2 py-1.5 text-left font-semibold text-cloud"
                     >
                       {h}
                     </th>
@@ -638,7 +641,7 @@ export function TrackCard<TEvent extends TrackEventBase>(
                   return (
                     <tr key={cells[0]} className="border-b border-slate-800/60">
                       {cells.map((c, j) => (
-                        <td key={`${cells[0]}-${j}`} className="px-2 py-1">
+                        <td key={`${cells[0]}-${j}`} className="px-2 py-1.5">
                           {c}
                         </td>
                       ))}
@@ -650,6 +653,9 @@ export function TrackCard<TEvent extends TrackEventBase>(
           </div>
         </details>
       )}
+        </div>
+      )}
+      {props.visual}
     </section>
   );
 }
