@@ -104,11 +104,11 @@ export default function ElementPage({ slug, track }: ElementPageProps) {
                         alt=""
                         aria-hidden="true"
                         loading="lazy"
-                        className="absolute inset-0 h-full w-full object-cover"
+                        className="absolute inset-0 h-full w-full object-cover saturate-50 brightness-75"
                       />
                       <div
                         aria-hidden="true"
-                        className="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/60 to-abyss/10"
+                        className="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/80 to-abyss/40"
                       />
                       <div className="absolute inset-x-0 bottom-0 p-4">
                         <span className="font-semibold text-slate-100 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
@@ -128,11 +128,11 @@ export default function ElementPage({ slug, track }: ElementPageProps) {
                   ),
                 )}
               </ul>
-              <Legend />
             </>
           )}
         </div>
       </div>
+      {!showPlayer && <Legend />}
     </div>
   );
 }

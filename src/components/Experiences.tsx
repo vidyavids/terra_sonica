@@ -49,14 +49,21 @@ function ElementIcon({ element }: { element: string }) {
 export function Legend() {
   return (
     <ul
-      className="mt-6 flex flex-wrap gap-x-6 gap-y-1 text-sm"
+      className="mt-6 flex w-fit flex-wrap items-center gap-x-5 gap-y-2 rounded-full border border-slate-700/60 bg-slate-900/60 px-5 py-2.5 text-sm"
       aria-label="Legend"
     >
       <li className="flex items-center gap-2">
-        <span
+        <svg
+          viewBox="0 0 16 16"
+          className="h-4 w-4 shrink-0 text-emerald-400"
           aria-hidden="true"
-          className="inline-block h-3 w-3 rounded-full bg-forest"
-        />
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        >
+          <circle cx="8" cy="8" r="6.5" />
+          <path d="M6.5 5.8v4.4L10 8Z" fill="currentColor" stroke="none" />
+        </svg>
         <span>
           <strong className="text-cloud">▶ Playable Now</strong>{' '}
           <span className="text-slate-300">
@@ -64,11 +71,22 @@ export function Legend() {
           </span>
         </span>
       </li>
+      <li
+        aria-hidden="true"
+        className="hidden h-5 w-px bg-slate-600 sm:block"
+      />
       <li className="flex items-center gap-2">
-        <span
+        <svg
+          viewBox="0 0 16 16"
+          className="h-4 w-4 shrink-0 text-slate-300"
           aria-hidden="true"
-          className="inline-block h-3 w-3 rounded-full bg-slate-500"
-        />
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        >
+          <circle cx="8" cy="8" r="6.5" />
+          <path d="M8 5v3.2l2.2 1.3" strokeLinecap="round" />
+        </svg>
         <span>
           <strong className="text-cloud">Planned Experience</strong>{' '}
           <span className="text-slate-300">
