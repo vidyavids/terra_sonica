@@ -156,7 +156,7 @@ export default function InfoSections() {
               </li>
               <li>
                 Range: {ninoEvents[0].label} –{' '}
-                {ninoEvents[ninoEvents.length - 1].label} (80 months).
+                {ninoEvents[ninoEvents.length - 1].label} (80 values).
                 Region: Niño 3.4 (5°S–5°N, 170°W–120°W). Units: °C anomaly
                 ({ninoData.provenance.referencePeriod}).
               </li>
