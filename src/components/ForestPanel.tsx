@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PlaybackConductor } from '../audio/conductor';
+import type { PlaybackConductor as Conductor } from '../audio/conductor';
 import { FOREST_NOTE_MS, ForestPlayer } from '../audio/forestEngine';
 import type { ForestTick } from '../audio/forestEngine';
 import { useTrackPlayer } from '../hooks/useTrackPlayer';
@@ -127,6 +128,205 @@ function explainForest(view: ForestTick, untouched: boolean): ReactNode {
   );
 }
 
+function ForestCompare({
+  events,
+  conductor,
+}: {
+  events: ForestEvent[];
+  conductor: Conductor;
+}) {
+  const [aYear, setAYear] = useState(FOREST_FIRST_YEAR);
+  const [bYear, setBYear] = useState(FOREST_LAST_YEAR);
+  const evA = events.find((e) => e.year === aYear) ?? events[0];
+  const evB = events.find((e) => e.year === bYear) ?? events[0];
+  const diff = Math.abs(evA.treeCoverPct - evB.treeCoverPct);
+  const direction =
+    evB.treeCoverPct === evA.treeCoverPct
+      ? 'the same measured mean tree cover'
+      : evB.treeCoverPct < evA.treeCoverPct
+        ? `${evB.year} is ${diff.toFixed(2)} pp below ${evA.year}`
+        : `${evB.year} is ${diff.toFixed(2)} pp above ${evA.year}`;
+  const playerRef = useRef<ForestPlayer | null>(null);
+  useEffect(
+    () =>
+      conductor.register(() => {
+        playerRef.current?.stop();
+      }),
+    [conductor],
+  );
+  useEffect(
+    () => () => {
+      playerRef.current?.stop();
+    },
+    [],
+  );
+  const listen = (evts: ForestEvent[]) => {
+    void conductor.exclusive(async () => {
+      await conductor.settle();
+      const player = new ForestPlayer(evts);
+      playerRef.current = player;
+      await conductor.track(player.play(() => {}));
+    });
+  };
+  const selectClass =
+    'mt-1 block w-full rounded border border-slate-600 bg-slate-900 px-2 py-1 text-slate-200';
+  const buttonClass =
+    'rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400';
+  return (
+    <section
+      aria-label="Two-year comparison"
+      className="mt-6 rounded-lg border border-slate-800 bg-slate-900/40 p-5"
+    >
+      <h4 className="text-lg font-semibold text-cloud">Compare two years</h4>
+      <div className="mt-3 grid gap-4 sm:grid-cols-2">
+        <label className="text-sm text-slate-300">
+          First year (A)
+          <select
+            aria-label="First year"
+            className={selectClass}
+            value={aYear}
+            onChange={(e) => setAYear(Number(e.target.value))}
+          >
+            {events.map((e) => (
+              <option key={e.year} value={e.year}>
+                {e.year}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="text-sm text-slate-300">
+          Second year (B)
+          <select
+            aria-label="Second year"
+            className={selectClass}
+            value={bYear}
+            onChange={(e) => setBYear(Number(e.target.value))}
+          >
+            {events.map((e) => (
+              <option key={e.year} value={e.year}>
+                {e.year}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <p className="mt-3 font-mono text-sm text-atmos">
+        A · {evA.year} · {evA.treeCoverPct.toFixed(3)}% · {evA.note} ·{' '}
+        {evA.quantizedHz} Hz (raw {evA.linearHz.toFixed(1)} Hz)
+      </p>
+      <p className="mt-1 font-mono text-sm text-atmos">
+        B · {evB.year} · {evB.treeCoverPct.toFixed(3)}% · {evB.note} ·{' '}
+        {evB.quantizedHz} Hz (raw {evB.linearHz.toFixed(1)} Hz)
+      </p>
+      <p className="mt-3 text-sm text-slate-200">
+        Difference in measured mean tree cover: {diff.toFixed(2)} pp (
+        {direction}).
+      </p>
+      <p className="mt-1 text-sm text-slate-300">
+        The difference is a change in measured mean tree cover, NOT an
+        estimate of deforested area.
+      </p>
+      <div className="mt-3 flex flex-wrap gap-3">
+        <button type="button" onClick={() => listen([evA])} className={buttonClass}>
+          Listen to Year A
+        </button>
+        <button type="button" onClick={() => listen([evB])} className={buttonClass}>
+          Listen to Year B
+        </button>
+        <button
+          type="button"
+          onClick={() => listen([evA, evB])}
+          className={buttonClass}
+        >
+          Listen to the Difference
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function ForestQuiz({ events, done }: { events: ForestEvent[]; done: boolean }) {
+  const [open, setOpen] = useState(false);
+  const [picked, setPicked] = useState<number | null>(null);
+  const shown = open || done;
+  const ev2011 = events.find((e) => e.year === 2011) ?? events[0];
+  const ev2016 = events.find((e) => e.year === 2016) ?? events[0];
+  const diff = Math.abs(ev2011.treeCoverPct - ev2016.treeCoverPct);
+  const buttonClass =
+    'rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400';
+  if (!shown) {
+    return (
+      <section
+        aria-label="Listening check"
+        className="mt-6 rounded-lg border border-slate-800 bg-slate-900/40 p-5"
+      >
+        <h4 className="text-lg font-semibold text-cloud">Listening check</h4>
+        <p className="mt-1 text-sm text-slate-300">
+          A one-question listening check for learning, not a test. It
+          appears after playback — or take it now.
+        </p>
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className={`${buttonClass} mt-3`}
+        >
+          Take the listening check
+        </button>
+      </section>
+    );
+  }
+  return (
+    <section
+      aria-label="Listening check"
+      className="mt-6 rounded-lg border border-slate-800 bg-slate-900/40 p-5"
+    >
+      <h4 className="text-lg font-semibold text-cloud">Listening check</h4>
+      <p className="mt-1 text-sm text-slate-300">
+        One question, for learning — not a test.
+      </p>
+      <p className="mt-3 text-sm text-slate-200">
+        Which year had higher measured tree cover — 2011 or 2016?
+      </p>
+      <div className="mt-3 flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={() => setPicked(2011)}
+          className={buttonClass}
+        >
+          2011
+        </button>
+        <button
+          type="button"
+          onClick={() => setPicked(2016)}
+          className={buttonClass}
+        >
+          2016
+        </button>
+      </div>
+      {picked !== null && (
+        <div className="mt-3">
+          <p className="text-sm text-slate-200">
+            {picked === 2011 ? 'Correct.' : 'Not quite.'} 2011 had higher
+            measured tree cover.
+          </p>
+          <p className="mt-1 font-mono text-sm text-atmos">
+            2011 · {ev2011.treeCoverPct.toFixed(3)}% · {ev2011.note} ·{' '}
+            {ev2011.quantizedHz} Hz
+          </p>
+          <p className="mt-1 font-mono text-sm text-atmos">
+            2016 · {ev2016.treeCoverPct.toFixed(3)}% · {ev2016.note} ·{' '}
+            {ev2016.quantizedHz} Hz
+          </p>
+          <p className="mt-1 text-sm text-slate-200">
+            Difference: {diff.toFixed(3)} percentage points of measured
+            mean tree cover.
+          </p>
+        </div>
+      )}
+    </section>
+  );
+}
+
 export function ForestTrackPanel() {
   const conductor = useMemo(() => new PlaybackConductor(), []);
   const forestEvents = forestData.events;
@@ -156,6 +356,7 @@ export function ForestTrackPanel() {
   const forestRange = `${FOREST_FIRST_YEAR}–${FOREST_LAST_YEAR}`;
 
   return (
+    <>
     <TrackCard<ForestEvent>
       anchorId="track-5"
       cardLabel="Track 5: Hear the Forest — Amazon Tree Cover"
@@ -218,5 +419,8 @@ export function ForestTrackPanel() {
       }
       explain={explainForest}
     />
+    <ForestCompare events={forestEvents} conductor={conductor} />
+    <ForestQuiz events={forestEvents} done={controls.status === 'done'} />
+    </>
   );
 }
