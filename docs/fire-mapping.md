@@ -1,4 +1,4 @@
-# Hear the Fire — Amazon (2020–2025): data and mapping audit
+# Hear the Fire — Brazil (2020–2025): data and mapping audit
 
 Third playable track. Monthly counts of MODIS active-fire detections
 over Brazil, Jan 2020–Dec 2025 (72 months), sonified one month per note
@@ -6,13 +6,12 @@ at 500 ms per note (~36 s).
 
 ## Source (verified)
 
-- NASA FIRMS API, area query over the Brazil bounding box,
-  product **MODIS_SP** (standard science-quality processing; the
-  MODIS_NRT fallback was implemented but never needed).
-- Accessed 2026-11-15. API version field: none (the versioned URL shape
-  returns HTTP 400; the working shape is
-  `/api/area/csv/{MAP_KEY}/{PRODUCT}/{bbox}/{days}/{date}`, max 5 days
-  per query, verified by probe 2026-11-15).
+- NASA FIRMS API, area query over the Brazil bounding box (derived
+  from the GADM boundary), product **MODIS_SP** (standard
+  science-quality processing; the MODIS_NRT fallback was implemented
+  but never needed).
+- Accessed Nov 2026 (counts) — see the fetch log for the per-month
+  record; FRP refetch provenance is recorded in the dataset.
 - Region: Brazil, filtered to the GADM 4.1 Brazil level-0 dissolved
   polygon (same boundary approach as the India mask). The global
   fallback was NOT needed — say so here explicitly if that ever changes.
@@ -21,11 +20,12 @@ at 500 ms per note (~36 s).
 
 ## What the numbers are
 
-Each monthly value is a **count of MODIS active-fire detection pixels**
-inside Brazil that month. It is an observation count, NOT a count of
-unique wildfires and NOT area burned. Burned area is a different product
-(MCD64A1) and is never presented as a FIRMS variable. Fire radiative
-power (FRP) comes back in the same API rows but is **not used** here.
+Each monthly value is a **count of MODIS active-fire detections**
+inside Brazil that month: satellite-detected thermal anomalies. It is
+an observation count, NOT a count of unique wildfires and NOT area
+burned. Burned area is a different product (MCD64A1) and is never
+presented as a FIRMS variable. The same API rows also carry FRP, which
+drives only the drone layer (see below).
 
 Verified range over the 72 months: **2,914** (Apr 2025) to **164,682**
 (Sep 2024) detections/month, 2,230,722 total. All 72 months have full
@@ -80,4 +80,4 @@ asserts `anomalyC == count` on every event.
 `scripts/validate_fire.py` asserts: 72 contiguous months; exact range
 2,914–164,682; full day coverage per month; MODIS-only with both
 satellites every month (from the fetch log); the min/max/tie/clamp
-mapping pins; and writes `src/data/fire-amazon.json`.
+mapping pins; and writes `src/data/fire-brazil.json`.

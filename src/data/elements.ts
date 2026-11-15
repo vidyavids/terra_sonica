@@ -100,7 +100,7 @@ export const ELEMENTS: Element[] = [
     experience: 'Hear the Fire',
     strapline: "Hear the changing patterns of fire across Earth's surface.",
     description:
-      'Fire listens to burning: six years of MODIS active-fire detections over Brazil, one month per note, from quiet wet months to fierce burning seasons.',
+      'Fire listens to burning: six years of MODIS active-fire detections over Brazil, one month per note; higher pitch means more detections.',
     context:
       'Hear the Fire is driven only by verified monthly detection counts. The NASA visualization beside the player is contextual, not synchronized with the sound.',
     image: '/images/fire-greece-modis.jpg',
@@ -108,7 +108,7 @@ export const ELEMENTS: Element[] = [
       'Fires in Greece with a smoke plume over the Aegean Sea, MODIS satellite image',
     subs: [
       {
-        label: 'Hear the Fire — Amazon (2020–2025)',
+        label: 'Hear the Fire — Brazil (2020–2025)',
         status: 'playable',
         href: '#/fire',
         track: 'fire',
@@ -143,7 +143,7 @@ export const ELEMENTS: Element[] = [
 export const TRACK_TITLES: Record<PanelTrack, string> = {
   temp: 'Global Surface Temperature',
   nino: 'El Niño',
-  fire: 'Hear the Fire — Amazon (2020–2025)',
+  fire: 'Hear the Fire — Brazil (2020–2025)',
   sky: 'Hear the Lights — Earth at Night — India (2012–2025)',
 };
 

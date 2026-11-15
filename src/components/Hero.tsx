@@ -38,7 +38,7 @@ export default function Hero() {
             </h1>
             <p className="mt-3 text-2xl text-atmos">The Sounding Earth</p>
             <p className="mt-5 max-w-xl text-slate-300">
-              Real NASA Earth observations, converted to sound — an
+              Real Earth observations, converted to sound — an
               accessible, artistic way to experience a changing planet.
             </p>
             <div className="mt-8">

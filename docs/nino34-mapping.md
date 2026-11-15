@@ -10,14 +10,18 @@
 - Columns in file: `YEAR`, `MON/MMM`, `NINO34_MEAN`, `NINO34_CLIM`,
   `NINO34_ANOM`, `ONI`, `PHASE`. Column sonified: `NINO34_ANOM`, the
   monthly SST anomaly in °C (difference between the monthly mean and the
-  climatological value). The 3-month `ONI` column is not used.
+  climatological value). The `ONI` column — the 3-month running mean of
+  these monthly anomalies — is not used; the track plays the monthly
+  anomalies.
 - Region: Niño 3.4, 5S–5N, 190E–240E per the file header
   (= 5°S–5°N, 170°W–120°W).
-- Reference period: 1991–2020 per ONI convention. The base-period years
-  are not embedded in the file header, which documents a 30-year
-  climatology updated every 5 years; supporting evidence: `NINO34_CLIM`
-  is constant per calendar month across the whole window (checked on
-  every validator run), i.e. a single base period applies throughout.
+- Reference period: 1996–2025 (verified on the provider page, Nov 2026:
+  "2016-present also uses 1996-2025 climatology because 2001-2030
+  climatology does not exist yet"). The whole track window (Jan
+  2020–Aug 2026) sits inside 2016–present. Supporting evidence:
+  `NINO34_CLIM` is constant per calendar month across the whole window
+  (checked on every validator run), i.e. a single base period applies
+  throughout.
 - Window: Jan 2020–Aug 2026, exactly 80 contiguous monthly events, all
   present, none missing. Observed range −1.13…+2.17 °C
   (min Nov 2020, max Aug 2026).

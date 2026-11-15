@@ -112,7 +112,7 @@ export default function Experiences() {
         Hear Our <span className="italic text-atmos">Planet</span>
       </h2>
       <p className="mt-3 max-w-3xl text-slate-300">
-        Explore Earth through sound. Each experience turns real NASA Earth
+        Explore Earth through sound. Each experience turns real Earth
         observations into music, revealing a different story about our changing
         planet.
       </p>

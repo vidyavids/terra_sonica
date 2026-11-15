@@ -20,7 +20,7 @@ on any missing or inconsistent input.
 - Audit: `docs/nino34-mapping.md`. Validator:
   `scripts/validate_nino34.py`.
 
-## Track 3 — Hear the Fire — Amazon (2020–2025)
+## Track 3 — Hear the Fire — Brazil (2020–2025)
 
 - Monthly counts of MODIS active-fire detections over Brazil, NASA
   FIRMS API, product MODIS_SP (Terra + Aqua), masked to the GADM 4.1

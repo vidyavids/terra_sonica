@@ -718,7 +718,7 @@ function NinoTrackPanel() {
       cardLabel="Track 2: El Niño"
       title="Track 2 · El Niño"
       dateRange={`${NINO_FIRST_LABEL} – ${NINO_LAST_LABEL}`}
-      measurement="Niño 3.4 sea-surface temperature anomaly · NOAA ERSSTv6"
+      measurement="Monthly Niño 3.4 SST anomalies · NOAA ERSSTv6 via McNoldy (Univ. of Miami)"
       description="One note per month; cool La Niña months sound low, warm El Niño months high."
       events={ninoEvents}
       noteMs={NINO_NOTE_MS}

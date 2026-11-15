@@ -2,7 +2,7 @@ import ninoData from '../data/nino34.json';
 import tempData from '../data/global-temperature.json';
 
 const PROJECT_SUMMARY =
-  'Terra Sonica transforms NASA Earth observation data into interactive sound, allowing people to hear, explore, and understand our changing planet. By combining scientific sonification, paired visualizations, and accessible learning experiences, we aim to make Earth science more engaging, intuitive, and inclusive.';
+  'Terra Sonica transforms Earth observation data into interactive sound, allowing people to hear, explore, and understand our changing planet. By combining scientific sonification, paired visualizations, and accessible learning experiences, we aim to make Earth science more engaging, intuitive, and inclusive.';
 
 const sectionClass = 'mx-auto max-w-7xl px-4 py-10';
 const headingClass = 'text-2xl font-bold text-cloud';

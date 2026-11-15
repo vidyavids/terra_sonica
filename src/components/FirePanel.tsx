@@ -4,7 +4,7 @@ import { FIRE_NOTE_MS, FirePlayer } from '../audio/fireEngine';
 import type { FireTick } from '../audio/fireEngine';
 import { useTrackPlayer } from '../hooks/useTrackPlayer';
 import type { ReactNode } from 'react';
-import fireData from '../data/fire-amazon.json';
+import fireData from '../data/fire-brazil.json';
 import { TrackCard } from './PlayerSection';
 
 type FireEvent = (typeof fireData.events)[number];
@@ -34,7 +34,7 @@ function explainFire(view: FireTick, untouched: boolean): ReactNode {
   const frpText = !untouched ? fireFRPText(view) : null;
   return (
     <section
-      aria-label="Explain My Sound: Hear the Fire — Amazon"
+      aria-label="Explain My Sound: Hear the Fire — Brazil"
       className="mt-6 rounded-lg border border-slate-800 bg-slate-900/40 p-5"
     >
       <h4 className="text-lg font-semibold text-cloud">Explain My Sound</h4>
@@ -55,21 +55,22 @@ function explainFire(view: FireTick, untouched: boolean): ReactNode {
             <dt className="font-semibold text-atmos">What you hear</dt>
             <dd>
               One {FIRE_NOTE_MS} ms sine note per month from {FIRE_FIRST_LABEL}{' '}
-              to {FIRE_LAST_LABEL}. The main note is the detection count
-              (how many fires): quiet months sound low, fierce fire months
-              high. Under every note, a low fixed drone swells with the
-              monthly mean FRP (how intensely they burned, in MW).
+              to {FIRE_LAST_LABEL}. The main note is the monthly detection
+              count: higher pitch means more MODIS active-fire detections.
+              Under every note, a low fixed drone swells with the monthly
+              mean FRP (how intensely they burned, in MW).
             </dd>
           </div>
           <div>
             <dt className="font-semibold text-atmos">What it measures</dt>
             <dd>
               MODIS active-fire detections over Brazil, from NASA FIRMS
-              (Terra and Aqua). Counts are detection observations, not
-              unique wildfires and not area burned: burned area is a
-              different product (MCD64A1). FRP is fire radiative power, a
-              measure of radiant energy output — not burned area, not a
-              wildfire count.
+              (Terra and Aqua): satellite-detected thermal anomalies.
+              Counts are detection observations, not unique wildfires and
+              not area burned: burned area is a different product
+              (MCD64A1). FRP is fire radiative power, a measure of
+              radiant energy output — not burned area, not a wildfire
+              count.
             </dd>
           </div>
           <div>
@@ -146,11 +147,11 @@ export function FireTrackPanel() {
   return (
     <TrackCard<FireEvent>
       anchorId="track-3"
-      cardLabel="Track 3: Hear the Fire — Amazon"
-      title="Track 3 · Hear the Fire — Amazon"
+      cardLabel="Track 3: Hear the Fire — Brazil"
+      title="Track 3 · Hear the Fire — Brazil"
       dateRange={`${FIRE_FIRST_LABEL} – ${FIRE_LAST_LABEL}`}
       measurement="Monthly MODIS active-fire detections · NASA FIRMS"
-      description="One note per month; quiet months sound low, fierce fire months high."
+      description="One note per month; higher pitch means more MODIS active-fire detections across Brazil."
       events={fireEvents}
       noteMs={FIRE_NOTE_MS}
       controls={controls}
@@ -177,7 +178,7 @@ export function FireTrackPanel() {
           to: atFireMonth(fireEvents, 2024, 10),
         },
       }}
-      guidance="Listen as each month becomes a note. Low notes mean few detected fires; high notes mean fierce burning."
+      guidance="Listen as each month becomes a note. Higher pitch means more MODIS active-fire detections."
       getTap={tap}
       stepUnit="month"
       bigFor={(v) => v.label}

@@ -11,6 +11,7 @@ Fails (exit 1) on any gap, range violation, or failed spot-check.
 """
 
 import csv
+import hashlib
 import json
 import math
 import sys
@@ -181,7 +182,7 @@ def main() -> int:
     if drifting:
         clim_note = ("NINO34_CLIM varies within calendar months across the "
                      f"window ({len(drifting)} months affected): base-period "
-                     "update inside the window, see ONI file header.")
+                     "update inside the window, see ONI_NINO34_v6.txt file header.")
     else:
         clim_note = ("NINO34_CLIM constant per calendar month across "
                      "Jan 2020-Aug 2026: single base period across the window.")
@@ -234,14 +235,15 @@ def main() -> int:
             "soundCoverage": "Jan 2020-Aug 2026 monthly (80 months).",
             "sourceFile": ONI.name,
             "derivedFile": CSV.name,
+            "inputSha256": hashlib.sha256(ONI.read_bytes()).hexdigest(),
             "column": "NINO34_ANOM (monthly SST anomaly, degrees C)",
-            "referencePeriod": "1991-2020 per ONI convention (expected; "
-                               "base-period years not embedded in the file "
-                               "header - file documents 30-year climatology "
-                               "updated every 5 years).",
+            "referencePeriod": "1996–2025 (verified on the provider page, "
+                               "Nov 2026: 2016-present uses the 1996-2025 "
+                               "climatology because the 2001-2030 "
+                               "climatology does not exist yet).",
             "climatologyCheck": clim_note,
             "region": "Nino 3.4: 5S-5N, 190E-240E (= 5S-5N, 170W-120W) "
-                      "per ONI file header.",
+                      "per ONI_NINO34_v6.txt file header.",
             "eventCount": len(events),
             "missingValuePolicy": "NINO34_ANOM of -99.99 means no observation; "
                                   "no month in Jan 2020-Aug 2026 is missing. "

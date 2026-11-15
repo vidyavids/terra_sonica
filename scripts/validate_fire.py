@@ -6,7 +6,7 @@ monthly detection counts for Brazil, Jan 2020-Dec 2025) plus the fetch
 log, validates gates (72 contiguous months, exact range, full day
 coverage, MODIS-only with both satellites every month), merges the
 verified monthly mean FRP layer, applies the finalized frequency
-mapping, and writes ``src/data/fire-amazon.json``.
+mapping, and writes ``src/data/fire-brazil.json``.
 
 Fails (exit 1) on any gap, range violation, or failed spot-check.
 """
@@ -22,7 +22,7 @@ CSV = ROOT / "data" / "fire-brazil-monthly-2020-2025.csv"
 LOG = ROOT / "data" / "fire-brazil-fetch-log.json"
 FRP_CSV = ROOT / "data" / "fire-brazil-frp-monthly-2020-2025.csv"
 FRP_LOG = ROOT / "data" / "fire-brazil-frp-fetch-log.json"
-OUT = ROOT / "src" / "data" / "fire-amazon.json"
+OUT = ROOT / "src" / "data" / "fire-brazil.json"
 
 FIRST = (2020, 1)
 LAST = (2025, 12)
