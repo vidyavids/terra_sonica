@@ -7,6 +7,8 @@ import type { TrackStatus } from '../hooks/useTrackPlayer';
 import type { ReactNode } from 'react';
 import skyData from '../data/nightlights-india.json';
 import { TrackCard } from './PlayerSection';
+import type { WorldMapSpec } from './WorldMapVisual';
+import { normalize01 } from '../utils/normalize';
 
 type SkyEvent = (typeof skyData.events)[number];
 
@@ -14,6 +16,13 @@ const SKY_FIRST_YEAR = skyData.events[0].year;
 const SKY_LAST_YEAR = skyData.events[skyData.events.length - 1].year;
 
 const SKY_STILL = '/images/aether-night-lights-asia.jpg';
+
+const SKY_WORLD_MAP: WorldMapSpec = {
+  kind: 'overlay',
+  baseSrc: '/images/hero-blue-marble.jpg',
+  values01: normalize01(skyData.events.map((e) => e.radianceC)),
+  credit: 'The Blue Marble (Apollo 17, 1972). Credit: NASA.',
+};
 
 function atSkyYear(events: { year: number }[], year: number): number {
   return events.findIndex((e) => e.year === year);
@@ -234,6 +243,7 @@ export function SkyTrackPanel() {
       sparkCaption="mean radiance nW/(cm²·sr)"
       sparkDescription={`Annual mean nighttime radiance over India, ${SKY_FIRST_YEAR} to ${SKY_LAST_YEAR}`}
       sparkUnit="nW/(cm²·sr)"
+      worldMap={SKY_WORLD_MAP}
       visual={
         <>
           <figure className="mt-5">

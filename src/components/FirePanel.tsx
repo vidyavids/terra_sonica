@@ -7,6 +7,8 @@ import type { TrackStatus } from '../hooks/useTrackPlayer';
 import type { ReactNode } from 'react';
 import fireData from '../data/fire-brazil.json';
 import { TrackCard } from './PlayerSection';
+import type { WorldMapSpec } from './WorldMapVisual';
+import { normalize01 } from '../utils/normalize';
 
 type FireEvent = (typeof fireData.events)[number];
 
@@ -14,6 +16,13 @@ const FIRE_FIRST_LABEL = fireData.events[0].label;
 const FIRE_LAST_LABEL = fireData.events[fireData.events.length - 1].label;
 
 const FIRE_STILL = '/images/fire-greece-modis.jpg';
+
+const FIRE_WORLD_MAP: WorldMapSpec = {
+  kind: 'overlay',
+  baseSrc: '/images/hero-blue-marble.jpg',
+  values01: normalize01(fireData.events.map((e) => e.count)),
+  credit: 'The Blue Marble (Apollo 17, 1972). Credit: NASA.',
+};
 
 function atFireMonth(
   events: { year: number; month: number }[],
@@ -237,6 +246,7 @@ export function FireTrackPanel() {
       sparkCaption="detections per month"
       sparkDescription={`Monthly MODIS active-fire detections, ${FIRE_FIRST_LABEL} to ${FIRE_LAST_LABEL}`}
       sparkUnit="detections"
+      worldMap={FIRE_WORLD_MAP}
       visual={
         <>
           <figure className="mt-5">

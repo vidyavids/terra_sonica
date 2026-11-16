@@ -7,6 +7,9 @@ import { NOTE_MS, TemperaturePlayer } from '../audio/temperatureEngine';
 import { NINO_NOTE_MS, NinoPlayer } from '../audio/ninoEngine';
 import { useTrackPlayer } from '../hooks/useTrackPlayer';
 import type { TrackControls, TrackStatus } from '../hooks/useTrackPlayer';
+import WorldMapVisual from './WorldMapVisual';
+import type { WorldMapSpec } from './WorldMapVisual';
+import { normalize01 } from '../utils/normalize';
 import type { ReactNode } from 'react';
 import ninoData from '../data/nino34.json';
 import tempData from '../data/global-temperature.json';
@@ -230,6 +233,7 @@ interface TrackCardProps<TEvent extends TrackEventBase> {
   sparkEnd: string;
   sparkCaption: string;
   sparkDescription: string;
+  worldMap?: WorldMapSpec;
   visual?: ReactNode;
   dataTable?: DataTable<TEvent>;
   didYouHearThat?: DidYouHearThat;
@@ -416,6 +420,14 @@ export function TrackCard<TEvent extends TrackEventBase>(
             unit={props.sparkUnit}
           />
           <AudioVisualizer getAnalyser={props.getTap} />
+          {props.worldMap && (
+            <WorldMapVisual
+              spec={props.worldMap}
+              viewIndex={view.index}
+              status={controls.status}
+              stopCount={controls.stopCount}
+            />
+          )}
           {!guideDismissed && controls.untouched && (
             <div className="mt-4 flex items-start justify-between gap-3 rounded border border-atmos/30 bg-atmos/10 p-3 text-sm text-slate-200">
               <p>{props.guidance}</p>
@@ -668,6 +680,35 @@ const NINO_LAST_LABEL = ninoData.events[ninoData.events.length - 1].label;
 
 const NINO_STILL =
   '/media/elnino_2026_ssta_avw_ssha_1010_nolabels.02200_preview.jpg';
+
+// SVS 5450 covers 1880–2024: 1880 reuses the movie's first frame (labelled
+// 1881, the earliest available) and 2025 reuses the final 2024 frame.
+const SVS_FIRST_YEAR = 1880;
+const SVS_LAST_YEAR = 2024;
+
+function svsFrameSrc(index: number): string {
+  const year = tempData.events[index]?.year ?? TEMP_FIRST_YEAR;
+  const clamped = Math.min(
+    SVS_LAST_YEAR,
+    Math.max(SVS_FIRST_YEAR, year),
+  );
+  return `/images/svs5450/gistemp_${clamped}.jpg`;
+}
+
+const TEMP_WORLD_MAP: WorldMapSpec = {
+  kind: 'frames',
+  frameSrc: svsFrameSrc,
+  count: tempData.events.length,
+  credit:
+    "NASA Goddard's Scientific Visualization Studio (SVS 5450), data: GISTEMP v4",
+};
+
+const NINO_WORLD_MAP: WorldMapSpec = {
+  kind: 'overlay',
+  baseSrc: '/images/hero-blue-marble.jpg',
+  values01: normalize01(ninoData.events.map((e) => e.anomalyC)),
+  credit: 'The Blue Marble (Apollo 17, 1972). Credit: NASA.',
+};
 
 function explainTemperature(
   view: TickView<TempEvent>,
@@ -951,6 +992,7 @@ function TempTrackPanel() {
       sparkEnd={String(TEMP_LAST_YEAR)}
       sparkCaption="anomaly °C, dashed line = 0"
       sparkDescription={`Annual temperature anomaly, ${tempRange}`}
+      worldMap={TEMP_WORLD_MAP}
       explain={explainTemperature}
     />
   );
@@ -1047,6 +1089,7 @@ function NinoTrackPanel() {
       sparkEnd={NINO_LAST_LABEL}
       sparkCaption="anomaly °C, dashed line = 0"
       sparkDescription={`Monthly Niño 3.4 SST anomaly, ${NINO_FIRST_LABEL} to ${NINO_LAST_LABEL}`}
+      worldMap={NINO_WORLD_MAP}
       visual={
         <figure className="mt-5">
           <img

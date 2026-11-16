@@ -8,6 +8,8 @@ import type { TrackStatus } from '../hooks/useTrackPlayer';
 import type { ReactNode } from 'react';
 import forestData from '../data/forest-amazon.json';
 import { TrackCard } from './PlayerSection';
+import type { WorldMapSpec } from './WorldMapVisual';
+import { normalize01 } from '../utils/normalize';
 
 type ForestEvent = (typeof forestData.events)[number];
 
@@ -15,6 +17,13 @@ const FOREST_FIRST_YEAR = forestData.events[0].year;
 const FOREST_LAST_YEAR = forestData.events[forestData.events.length - 1].year;
 
 const FOREST_STILL = '/images/earth-forest-amazon.jpg';
+
+const FOREST_WORLD_MAP: WorldMapSpec = {
+  kind: 'overlay',
+  baseSrc: '/images/hero-blue-marble.jpg',
+  values01: normalize01(forestData.events.map((e) => e.treeCoverPct)),
+  credit: 'The Blue Marble (Apollo 17, 1972). Credit: NASA.',
+};
 
 function atForestYear(events: { year: number }[], year: number): number {
   return events.findIndex((e) => e.year === year);
@@ -434,6 +443,7 @@ export function ForestTrackPanel() {
       sparkCaption="mean tree cover %"
       sparkDescription={`Annual mean tree cover over the Brazilian Legal Amazon, ${FOREST_FIRST_YEAR} to ${FOREST_LAST_YEAR}`}
       sparkUnit="%"
+      worldMap={FOREST_WORLD_MAP}
       visual={
         <figure className="mt-5">
           <img
