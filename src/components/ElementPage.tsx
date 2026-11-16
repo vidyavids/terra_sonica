@@ -31,12 +31,14 @@ export default function ElementPage({ slug, track }: ElementPageProps) {
             {el.element} — {el.experience}
           </h1>
           <p className="mt-2 text-atmos">{el.strapline}</p>
-          <img
-            src={el.image}
-            alt={el.imageAlt}
-            className="mt-5 h-64 w-full rounded-lg border border-atmos/20 object-cover md:h-[340px]"
-          />
-          <p className="mt-4 text-slate-200">{el.description}</p>
+          <div className="mt-5 flex flex-col items-start gap-4 sm:flex-row">
+            <img
+              src={el.image}
+              alt={el.imageAlt}
+              className="h-auto w-1/2 shrink-0 rounded-lg border border-atmos/20"
+            />
+            <p className="text-slate-200">{el.description}</p>
+          </div>
           <h2 className="mt-6 text-lg font-semibold text-cloud">
             Scientific context
           </h2>
