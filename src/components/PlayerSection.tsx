@@ -417,6 +417,10 @@ export function TrackCard<TEvent extends TrackEventBase>(
           viewIndex={view.index}
           status={controls.status}
           stopCount={controls.stopCount}
+          onPlayPause={() => {
+            if (controls.status === 'playing') controls.pause();
+            else controls.play();
+          }}
           overlay={
             <>
               <AudioVisualizer getAnalyser={props.getTap} />

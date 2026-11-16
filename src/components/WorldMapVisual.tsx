@@ -34,6 +34,8 @@ interface WorldMapVisualProps {
   stopCount: number;
   /** Chart + waveform strip overlaid along the map's bottom edge. */
   overlay?: ReactNode;
+  /** Play/pause the track; the stage button mirrors the transport control. */
+  onPlayPause: () => void;
 }
 
 /**
@@ -42,7 +44,9 @@ interface WorldMapVisualProps {
  * show the real NASA Blue Marble with a warm overlay whose opacity follows
  * the track's normalized data value. Driven purely by player state, so it
  * stays in sync with the sounded note and the playhead: pause holds the
- * frame, seek/jump moves it, stop resets it to the first frame.
+ * frame, seek/jump moves it, stop resets it to the first frame. The map,
+ * heading, strip, and credit are decorative (aria-hidden); the centered
+ * Play/Pause button is the exposed control that mirrors transport state.
  */
 export default function WorldMapVisual({
   spec,
@@ -50,6 +54,7 @@ export default function WorldMapVisual({
   status,
   stopCount,
   overlay,
+  onPlayPause,
 }: WorldMapVisualProps) {
   const count = spec.kind === 'frames' ? spec.count : spec.values01.length;
   // Pin to the first frame after a stop (stop leaves the sounded position
@@ -99,65 +104,87 @@ export default function WorldMapVisual({
     spec.kind === 'overlay'
       ? OVERLAY_MAX_OPACITY * spec.values01[index]
       : 0;
+  const playing = status === 'playing';
 
   return (
-    <div
-      aria-hidden="true"
-      className="mt-5 w-full rounded-lg border border-slate-800 bg-slate-900/40 p-5"
-    >
-      <p className="font-semibold text-atmos">World Map Visual</p>
+    <div className="mt-5 w-full rounded-lg border border-slate-800 bg-slate-900/40 p-5">
+      <p aria-hidden="true" className="font-semibold text-atmos">
+        World Map Visual
+      </p>
       {/* The bottom padding extends the stage below the map so the overlaid
           strip straddles the map's bottom edge instead of covering it, and so
           the overlay always fits inside the stage (no clipping) at any width.
           Taller on small screens, where the strip is tall relative to the map. */}
       <div className="relative mt-3 pb-40 md:pb-24">
-        <div className="relative w-full overflow-hidden rounded border border-slate-800">
-          {spec.kind === 'frames' ? (
-            <>
-              {prev && (
+        <div className="relative">
+          <div
+            aria-hidden="true"
+            className="relative w-full overflow-hidden rounded border border-slate-800"
+          >
+            {spec.kind === 'frames' ? (
+              <>
+                {prev && (
+                  <img
+                    src={prev}
+                    alt=""
+                    draggable={false}
+                    decoding="async"
+                    className="block h-auto w-full"
+                  />
+                )}
+                {shown && (
+                  <img
+                    key={shown}
+                    src={shown}
+                    alt=""
+                    draggable={false}
+                    decoding="async"
+                    className="ts-map-frame block h-auto w-full data-[stacked]:absolute data-[stacked]:inset-0"
+                    data-stacked={prev && prev !== shown ? true : undefined}
+                  />
+                )}
+              </>
+            ) : (
+              <>
                 <img
-                  src={prev}
+                  src={spec.baseSrc}
                   alt=""
                   draggable={false}
                   decoding="async"
-                  className="block h-auto w-full"
+                  className="block aspect-video w-full object-cover"
                 />
-              )}
-              {shown && (
-                <img
-                  key={shown}
-                  src={shown}
-                  alt=""
-                  draggable={false}
-                  decoding="async"
-                  className="ts-map-frame block h-auto w-full data-[stacked]:absolute data-[stacked]:inset-0"
-                  data-stacked={prev && prev !== shown ? true : undefined}
+                <div
+                  className="absolute inset-0 bg-amber transition-opacity duration-500 motion-reduce:transition-none"
+                  style={{ opacity: overlayOpacity }}
                 />
-              )}
-            </>
-          ) : (
-            <>
-              <img
-                src={spec.baseSrc}
-                alt=""
-                draggable={false}
-                decoding="async"
-                className="block aspect-video w-full object-cover"
-              />
-              <div
-                className="absolute inset-0 bg-amber transition-opacity duration-500 motion-reduce:transition-none"
-                style={{ opacity: overlayOpacity }}
-              />
-            </>
-          )}
+              </>
+            )}
+          </div>
+          <button
+            type="button"
+            data-stage="play-pause"
+            onClick={onPlayPause}
+            aria-label={playing ? 'Pause' : 'Play'}
+            className="absolute left-1/2 top-1/2 z-10 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-atmos/60 bg-abyss/70 text-2xl text-atmos shadow-[0_0_24px_rgba(86,199,245,0.35)] hover:border-atmos hover:brightness-110"
+          >
+            <span aria-hidden="true">{playing ? '❚❚' : '▶'}</span>
+          </button>
         </div>
         {overlay && (
-          <div className="absolute inset-x-0 bottom-0 bg-abyss/70 px-3 pb-3">
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 bottom-0 bg-abyss/70 px-3 pb-3"
+          >
             {overlay}
           </div>
         )}
       </div>
-      <p className="mt-2 font-mono text-xs text-slate-400">{spec.credit}</p>
+      <p
+        aria-hidden="true"
+        className="mt-2 font-mono text-xs text-slate-400"
+      >
+        {spec.credit}
+      </p>
     </div>
   );
 }
