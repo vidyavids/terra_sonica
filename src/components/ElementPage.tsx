@@ -35,7 +35,7 @@ export default function ElementPage({ slug, track }: ElementPageProps) {
             <img
               src={el.image}
               alt={el.imageAlt}
-              className="h-auto w-1/2 shrink-0 rounded-lg border border-atmos/20"
+              className="aspect-[4/3] w-1/2 shrink-0 rounded-lg border border-atmos/20 object-cover"
             />
             <p className="text-slate-200">{el.description}</p>
           </div>
