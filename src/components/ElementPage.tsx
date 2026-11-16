@@ -1,4 +1,5 @@
 import { elementHash, findElement, playerHash } from '../data/elements';
+import { TRACK_INFO_SLOT_ID } from '../hooks/useMediaQuery';
 import type { ElementSlug, PanelTrack } from '../data/elements';
 import { Legend } from './Experiences';
 import { FireTrackPanel } from './FirePanel';
@@ -45,6 +46,7 @@ export default function ElementPage({ slug, track }: ElementPageProps) {
           <p className="mt-2 text-sm leading-relaxed text-slate-300">
             {el.context}
           </p>
+          <div id={TRACK_INFO_SLOT_ID} />
         </div>
         <div className="lg:col-span-7">
           {showPlayer && track ? (

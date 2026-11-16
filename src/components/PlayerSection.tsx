@@ -1,10 +1,20 @@
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { createPortal } from 'react-dom';
 import AudioVisualizer from './AudioVisualizer';
 import { useComparisonPlayback } from '../hooks/useComparisonPlayback';
 import { PlaybackConductor } from '../audio/conductor';
 import type { TrackEventBase } from '../audio/conductor';
 import { NOTE_MS, TemperaturePlayer } from '../audio/temperatureEngine';
 import { NINO_NOTE_MS, NinoPlayer } from '../audio/ninoEngine';
+import { TRACK_INFO_SLOT_ID, useMediaQuery } from '../hooks/useMediaQuery';
 import { useTrackPlayer } from '../hooks/useTrackPlayer';
 import type { TrackControls, TrackStatus } from '../hooks/useTrackPlayer';
 import WorldMapVisual from './WorldMapVisual';
@@ -259,6 +269,15 @@ export function TrackCard<TEvent extends TrackEventBase>(
   const controls = playback.controls;
   const comparison = playback.comparison;
   const [guideDismissed, setGuideDismissed] = useState(false);
+  // Desktop (same lg breakpoint as the page grid) moves the DYHT/table
+  // sections into the left info column; smaller screens keep them inline.
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const [infoSlot, setInfoSlot] = useState<HTMLElement | null>(null);
+  // The slot lives in ElementPage's column; grab it after mount, before paint.
+  useLayoutEffect(() => {
+    // oxlint-disable-next-line react/set-state-in-effect
+    setInfoSlot(document.getElementById(TRACK_INFO_SLOT_ID));
+  }, []);
   const totalSeconds = Math.round((events.length * props.noteMs) / 1000);
   const view = controls.view;
   const headerPrefix =
@@ -361,6 +380,76 @@ export function TrackCard<TEvent extends TrackEventBase>(
       }
     }, waitMs);
   };
+  // Shared by both columns: portalled into the left info column on
+  // desktop, rendered inline below the player otherwise. Same elements.
+  const extraSections = (props.didYouHearThat || table) && (
+      <div className="mt-6 grid gap-6">
+        {props.didYouHearThat && (
+      <section
+        aria-label="Did You Hear That?"
+        className="rounded-lg border border-slate-800 bg-slate-900/40 p-5"
+      >
+        <details>
+          <summary className="cursor-pointer font-semibold text-atmos">
+            Did You Hear That?
+          </summary>
+          <p className="mt-2 text-sm text-slate-300">
+            {props.didYouHearThat.body}
+          </p>
+          <button
+            type="button"
+            onClick={runDidYouHearThat}
+            className="mt-3 rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400"
+          >
+            {props.didYouHearThat.actionLabel}
+          </button>
+        </details>
+      </section>
+      )}
+      {table && (
+      <details className="rounded-lg border border-slate-800 bg-slate-900/40 p-5">
+        <summary className="cursor-pointer font-semibold text-atmos">
+          Observation table ({events.length} observations)
+        </summary>
+        <div className="mt-3 max-h-96 overflow-auto">
+          <table className="w-full border-collapse font-mono text-xs text-slate-300">
+            <caption className="mb-2 text-left font-sans text-sm text-slate-300">
+              {table.caption}
+            </caption>
+            <thead className="sticky top-0 bg-slate-900">
+              <tr>
+                {table.head.map((h) => (
+                  <th
+                    key={h}
+                    scope="col"
+                    className="border-b border-slate-700 px-2 py-1.5 text-left font-semibold text-cloud"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {events.map((e) => {
+                const cells = table.row(e);
+                return (
+                  <tr key={cells[0]} className="border-b border-slate-800/60">
+                    {cells.map((c, j) => (
+                      <td key={`${cells[0]}-${j}`} className="px-2 py-1.5">
+                        {c}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </details>
+      )}
+      </div>
+  );
+
   return (
     <section
       id={props.anchorId}
@@ -619,73 +708,7 @@ export function TrackCard<TEvent extends TrackEventBase>(
         </div>
       </div>
 
-      {(props.didYouHearThat || table) && (
-        <div className="mt-6 grid gap-6">
-          {props.didYouHearThat && (
-        <section
-          aria-label="Did You Hear That?"
-          className="rounded-lg border border-slate-800 bg-slate-900/40 p-5"
-        >
-          <details>
-            <summary className="cursor-pointer font-semibold text-atmos">
-              Did You Hear That?
-            </summary>
-            <p className="mt-2 text-sm text-slate-300">
-              {props.didYouHearThat.body}
-            </p>
-            <button
-              type="button"
-              onClick={runDidYouHearThat}
-              className="mt-3 rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400"
-            >
-              {props.didYouHearThat.actionLabel}
-            </button>
-          </details>
-        </section>
-      )}
-      {table && (
-        <details className="rounded-lg border border-slate-800 bg-slate-900/40 p-5">
-          <summary className="cursor-pointer font-semibold text-atmos">
-            Observation table ({events.length} observations)
-          </summary>
-          <div className="mt-3 max-h-96 overflow-auto">
-            <table className="w-full border-collapse font-mono text-xs text-slate-300">
-              <caption className="mb-2 text-left font-sans text-sm text-slate-300">
-                {table.caption}
-              </caption>
-              <thead className="sticky top-0 bg-slate-900">
-                <tr>
-                  {table.head.map((h) => (
-                    <th
-                      key={h}
-                      scope="col"
-                      className="border-b border-slate-700 px-2 py-1.5 text-left font-semibold text-cloud"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {events.map((e) => {
-                  const cells = table.row(e);
-                  return (
-                    <tr key={cells[0]} className="border-b border-slate-800/60">
-                      {cells.map((c, j) => (
-                        <td key={`${cells[0]}-${j}`} className="px-2 py-1.5">
-                          {c}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </details>
-      )}
-        </div>
-      )}
+      {isDesktop && infoSlot ? createPortal(extraSections, infoSlot) : extraSections}
       {props.visual}
     </section>
   );
