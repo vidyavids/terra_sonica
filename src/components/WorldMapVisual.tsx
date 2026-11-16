@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import type { TrackStatus } from '../hooks/useTrackPlayer';
 
 export interface WorldMapFramesSpec {
@@ -31,6 +32,8 @@ interface WorldMapVisualProps {
   status: TrackStatus;
   /** Increments on every stop; the map resets to the first frame on stop. */
   stopCount: number;
+  /** Chart + waveform strip overlaid along the map's bottom edge. */
+  overlay?: ReactNode;
 }
 
 /**
@@ -46,6 +49,7 @@ export default function WorldMapVisual({
   viewIndex,
   status,
   stopCount,
+  overlay,
 }: WorldMapVisualProps) {
   const count = spec.kind === 'frames' ? spec.count : spec.values01.length;
   // Pin to the first frame after a stop (stop leaves the sounded position
@@ -99,47 +103,58 @@ export default function WorldMapVisual({
   return (
     <div
       aria-hidden="true"
-      className="mt-4 w-full rounded-lg border border-slate-800 bg-slate-900/40 p-5"
+      className="mt-5 w-full rounded-lg border border-slate-800 bg-slate-900/40 p-5"
     >
       <p className="font-semibold text-atmos">World Map Visual</p>
-      <div className="relative mt-3 w-full overflow-hidden rounded border border-slate-800">
-        {spec.kind === 'frames' ? (
-          <>
-            {prev && (
+      {/* The bottom padding extends the stage below the map so the overlaid
+          strip straddles the map's bottom edge instead of covering it, and so
+          the overlay always fits inside the stage (no clipping) at any width.
+          Taller on small screens, where the strip is tall relative to the map. */}
+      <div className="relative mt-3 pb-40 md:pb-24">
+        <div className="relative w-full overflow-hidden rounded border border-slate-800">
+          {spec.kind === 'frames' ? (
+            <>
+              {prev && (
+                <img
+                  src={prev}
+                  alt=""
+                  draggable={false}
+                  decoding="async"
+                  className="block h-auto w-full"
+                />
+              )}
+              {shown && (
+                <img
+                  key={shown}
+                  src={shown}
+                  alt=""
+                  draggable={false}
+                  decoding="async"
+                  className="ts-map-frame block h-auto w-full data-[stacked]:absolute data-[stacked]:inset-0"
+                  data-stacked={prev && prev !== shown ? true : undefined}
+                />
+              )}
+            </>
+          ) : (
+            <>
               <img
-                src={prev}
+                src={spec.baseSrc}
                 alt=""
                 draggable={false}
                 decoding="async"
-                className="block h-auto w-full"
+                className="block aspect-video w-full object-cover"
               />
-            )}
-            {shown && (
-              <img
-                key={shown}
-                src={shown}
-                alt=""
-                draggable={false}
-                decoding="async"
-                className="ts-map-frame block h-auto w-full data-[stacked]:absolute data-[stacked]:inset-0"
-                data-stacked={prev && prev !== shown ? true : undefined}
+              <div
+                className="absolute inset-0 bg-amber transition-opacity duration-500 motion-reduce:transition-none"
+                style={{ opacity: overlayOpacity }}
               />
-            )}
-          </>
-        ) : (
-          <>
-            <img
-              src={spec.baseSrc}
-              alt=""
-              draggable={false}
-              decoding="async"
-              className="block aspect-video w-full object-cover"
-            />
-            <div
-              className="absolute inset-0 bg-amber transition-opacity duration-500 motion-reduce:transition-none"
-              style={{ opacity: overlayOpacity }}
-            />
-          </>
+            </>
+          )}
+        </div>
+        {overlay && (
+          <div className="absolute inset-x-0 bottom-0 bg-abyss/70 px-3 pb-3">
+            {overlay}
+          </div>
         )}
       </div>
       <p className="mt-2 font-mono text-xs text-slate-400">{spec.credit}</p>

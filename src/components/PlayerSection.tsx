@@ -30,6 +30,8 @@ interface SparklineProps {
   caption: string;
   description: string;
   unit?: string;
+  /** Shorter plot for the map overlay; data, playhead, and labels unchanged. */
+  compact?: boolean;
 }
 
 function Sparkline({
@@ -40,11 +42,12 @@ function Sparkline({
   caption,
   description,
   unit = 'degrees C',
+  compact = false,
 }: SparklineProps) {
   const gid = useId().replace(/[^a-zA-Z0-9-_]/g, '');
   const geom = useMemo(() => {
     const w = 600;
-    const h = 180;
+    const h = compact ? 56 : 180;
     const pad = 10;
     const min = Math.min(...values);
     const max = Math.max(...values);
@@ -55,7 +58,7 @@ function Sparkline({
       .map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`)
       .join(' ');
     return { w, h, min, max, x, y, points };
-  }, [values]);
+  }, [values, compact]);
 
   return (
     <>
@@ -408,8 +411,32 @@ export function TrackCard<TEvent extends TrackEventBase>(
         />
       </div>
 
-      <div className="mt-5 grid gap-6 md:grid-cols-5">
-        <div className="md:col-span-3 md:pt-6">
+      {props.worldMap ? (
+        <WorldMapVisual
+          spec={props.worldMap}
+          viewIndex={view.index}
+          status={controls.status}
+          stopCount={controls.stopCount}
+          overlay={
+            <>
+              <AudioVisualizer getAnalyser={props.getTap} />
+              <div className="mt-3">
+                <Sparkline
+                  compact
+                  values={events.map((e) => e.anomalyC)}
+                  activeIndex={controls.untouched ? null : view.index}
+                  startLabel={props.sparkStart}
+                  endLabel={props.sparkEnd}
+                  caption={props.sparkCaption}
+                  description={props.sparkDescription}
+                  unit={props.sparkUnit}
+                />
+              </div>
+            </>
+          }
+        />
+      ) : (
+        <div className="mt-5">
           <Sparkline
             values={events.map((e) => e.anomalyC)}
             activeIndex={controls.untouched ? null : view.index}
@@ -420,181 +447,171 @@ export function TrackCard<TEvent extends TrackEventBase>(
             unit={props.sparkUnit}
           />
           <AudioVisualizer getAnalyser={props.getTap} />
-          {props.worldMap && (
-            <WorldMapVisual
-              spec={props.worldMap}
-              viewIndex={view.index}
-              status={controls.status}
-              stopCount={controls.stopCount}
-            />
-          )}
-          {!guideDismissed && controls.untouched && (
-            <div className="mt-4 flex items-start justify-between gap-3 rounded border border-atmos/30 bg-atmos/10 p-3 text-sm text-slate-200">
-              <p>{props.guidance}</p>
-              <button
-                type="button"
-                onClick={() => setGuideDismissed(true)}
-                aria-label="Dismiss listening guidance"
-                className="shrink-0 rounded border border-slate-600 px-2 py-1 text-sm font-semibold text-slate-200 hover:border-slate-400"
-              >
-                Dismiss
-              </button>
-            </div>
-          )}
-          <div className="mt-4 flex flex-wrap gap-3">
-            <button
-              type="button"
-              data-transport="play"
-              onClick={() => {
-                controls.play();
-                focusTransport('pause');
-              }}
-              disabled={controls.status === 'playing'}
-              className="rounded bg-atmos px-6 py-2 font-semibold text-slate-950 hover:brightness-110 disabled:opacity-40"
-            >
-              {controls.status === 'done'
-                ? '▶ Play again'
-                : controls.status === 'paused'
-                  ? '▶ Resume'
-                  : '▶ Play'}
-            </button>
-            <button
-              type="button"
-              data-transport="pause"
-              onClick={() => {
-                controls.pause();
-                focusTransport('play');
-              }}
-              disabled={controls.status !== 'playing'}
-              className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
-            >
-              ❚❚ Pause
-            </button>
-            <button
-              type="button"
-              data-transport="replay"
-              onClick={() => {
-                controls.replay();
-                focusTransport('pause');
-              }}
-              disabled={controls.status === 'playing'}
-              className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
-            >
-              ↺ Replay
-            </button>
-            <button
-              type="button"
-              data-transport="stop"
-              onClick={() => {
-                controls.stop();
-                focusTransport('play');
-              }}
-              disabled={
-                controls.status !== 'playing' && controls.status !== 'paused'
-              }
-              className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
-            >
-              ■ Stop
-            </button>
-            <span
-              className="flex gap-2"
-              role="group"
-              aria-label={`Step one ${props.stepUnit}`}
-            >
-              <button
-                type="button"
-                data-transport="prev"
-                onClick={() => {
-                  const atStart = view.index - 1 <= 0;
-                  controls.scrub(view.index - 1);
-                  if (atStart) focusTransport('next');
-                }}
-                disabled={view.index === 0}
-                aria-label={`Previous ${props.stepUnit}`}
-                className="rounded border border-slate-700 px-3 py-2 text-sm font-semibold text-atmos hover:border-atmos disabled:opacity-40"
-              >
-                ‹ Prev
-              </button>
-              <button
-                type="button"
-                data-transport="next"
-                onClick={() => {
-                  const atEnd = view.index + 1 >= events.length - 1;
-                  controls.scrub(view.index + 1);
-                  if (atEnd) focusTransport('prev');
-                }}
-                disabled={view.index === events.length - 1}
-                aria-label={`Next ${props.stepUnit}`}
-                className="rounded border border-slate-700 px-3 py-2 text-sm font-semibold text-atmos hover:border-atmos disabled:opacity-40"
-              >
-                Next ›
-              </button>
-            </span>
-          </div>
-
-          <div className="mt-4">
-            <p className="mb-1 text-sm text-slate-300">Compare real moments</p>
-            <div className="flex flex-wrap items-center gap-2">
-              {[props.compare.a, props.compare.b].map((d) => (
-                <button
-                  key={d.label}
-                  type="button"
-                  onClick={() => comparison.startComparison(d)}
-                  aria-pressed={
-                    comparison.range?.label === d.label &&
-                    (controls.status === 'playing' ||
-                      controls.status === 'paused')
-                  }
-                  className="rounded border border-atmos px-4 py-1.5 text-sm font-semibold text-atmos hover:bg-atmos/10 aria-pressed:bg-atmos/20"
-                >
-                  {d.label}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={comparison.playFullTrack}
-                disabled={
-                  controls.status === 'playing' && !comparison.range
-                }
-                className="rounded bg-atmos px-4 py-1.5 text-sm font-semibold text-slate-950 hover:brightness-110 disabled:opacity-40"
-              >
-                ▶ Play full track
-              </button>
-            </div>
-            {comparison.range &&
-              (controls.status === 'playing' ||
-                controls.status === 'paused') && (
-                <p className="mt-1 font-mono text-sm text-atmos">
-                  Comparing {comparison.range.label}…
-                </p>
-              )}
-          </div>
-
-          <div className="mt-4">
-            <p className="mb-1 text-sm text-slate-300">{props.presetHeading}</p>
-            <Scrubber
-              events={events}
-              viewIndex={view.index}
-              scrub={controls.scrub}
-              tipFor={props.tipFor}
-              ariaLabel={props.scrubLabel}
-            />
-            <div className="mt-2 flex flex-wrap gap-2">
-              {props.presets.map((p) => (
-                <button
-                  key={p.label}
-                  type="button"
-                  onClick={() => controls.scrub(p.index)}
-                  className="rounded border border-slate-700 px-3 py-1 text-sm font-semibold text-atmos hover:border-atmos"
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
-        <div className="md:col-span-2">
-          {props.explain(view, controls.untouched, controls.status)}
+      )}
+      {props.explain(view, controls.untouched, controls.status)}
+      {!guideDismissed && controls.untouched && (
+        <div className="mt-4 flex items-start justify-between gap-3 rounded border border-atmos/30 bg-atmos/10 p-3 text-sm text-slate-200">
+          <p>{props.guidance}</p>
+          <button
+            type="button"
+            onClick={() => setGuideDismissed(true)}
+            aria-label="Dismiss listening guidance"
+            className="shrink-0 rounded border border-slate-600 px-2 py-1 text-sm font-semibold text-slate-200 hover:border-slate-400"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+      <div className="mt-4 flex flex-wrap gap-3">
+        <button
+          type="button"
+          data-transport="play"
+          onClick={() => {
+            controls.play();
+            focusTransport('pause');
+          }}
+          disabled={controls.status === 'playing'}
+          className="rounded bg-atmos px-6 py-2 font-semibold text-slate-950 hover:brightness-110 disabled:opacity-40"
+        >
+          {controls.status === 'done'
+            ? '▶ Play again'
+            : controls.status === 'paused'
+              ? '▶ Resume'
+              : '▶ Play'}
+        </button>
+        <button
+          type="button"
+          data-transport="pause"
+          onClick={() => {
+            controls.pause();
+            focusTransport('play');
+          }}
+          disabled={controls.status !== 'playing'}
+          className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
+        >
+          ❚❚ Pause
+        </button>
+        <button
+          type="button"
+          data-transport="replay"
+          onClick={() => {
+            controls.replay();
+            focusTransport('pause');
+          }}
+          disabled={controls.status === 'playing'}
+          className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
+        >
+          ↺ Replay
+        </button>
+        <button
+          type="button"
+          data-transport="stop"
+          onClick={() => {
+            controls.stop();
+            focusTransport('play');
+          }}
+          disabled={
+            controls.status !== 'playing' && controls.status !== 'paused'
+          }
+          className="rounded border border-slate-600 px-6 py-2 font-semibold text-slate-200 hover:border-slate-400 disabled:opacity-40"
+        >
+          ■ Stop
+        </button>
+        <span
+          className="flex gap-2"
+          role="group"
+          aria-label={`Step one ${props.stepUnit}`}
+        >
+          <button
+            type="button"
+            data-transport="prev"
+            onClick={() => {
+              const atStart = view.index - 1 <= 0;
+              controls.scrub(view.index - 1);
+              if (atStart) focusTransport('next');
+            }}
+            disabled={view.index === 0}
+            aria-label={`Previous ${props.stepUnit}`}
+            className="rounded border border-slate-700 px-3 py-2 text-sm font-semibold text-atmos hover:border-atmos disabled:opacity-40"
+          >
+            ‹ Prev
+          </button>
+          <button
+            type="button"
+            data-transport="next"
+            onClick={() => {
+              const atEnd = view.index + 1 >= events.length - 1;
+              controls.scrub(view.index + 1);
+              if (atEnd) focusTransport('prev');
+            }}
+            disabled={view.index === events.length - 1}
+            aria-label={`Next ${props.stepUnit}`}
+            className="rounded border border-slate-700 px-3 py-2 text-sm font-semibold text-atmos hover:border-atmos disabled:opacity-40"
+          >
+            Next ›
+          </button>
+        </span>
+      </div>
+
+      <div className="mt-4">
+        <p className="mb-1 text-sm text-slate-300">Compare real moments</p>
+        <div className="flex flex-wrap items-center gap-2">
+          {[props.compare.a, props.compare.b].map((d) => (
+            <button
+              key={d.label}
+              type="button"
+              onClick={() => comparison.startComparison(d)}
+              aria-pressed={
+                comparison.range?.label === d.label &&
+                (controls.status === 'playing' ||
+                  controls.status === 'paused')
+              }
+              className="rounded border border-atmos px-4 py-1.5 text-sm font-semibold text-atmos hover:bg-atmos/10 aria-pressed:bg-atmos/20"
+            >
+              {d.label}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={comparison.playFullTrack}
+            disabled={
+              controls.status === 'playing' && !comparison.range
+            }
+            className="rounded bg-atmos px-4 py-1.5 text-sm font-semibold text-slate-950 hover:brightness-110 disabled:opacity-40"
+          >
+            ▶ Play full track
+          </button>
+        </div>
+        {comparison.range &&
+          (controls.status === 'playing' ||
+            controls.status === 'paused') && (
+            <p className="mt-1 font-mono text-sm text-atmos">
+              Comparing {comparison.range.label}…
+            </p>
+          )}
+      </div>
+
+      <div className="mt-4">
+        <p className="mb-1 text-sm text-slate-300">{props.presetHeading}</p>
+        <Scrubber
+          events={events}
+          viewIndex={view.index}
+          scrub={controls.scrub}
+          tipFor={props.tipFor}
+          ariaLabel={props.scrubLabel}
+        />
+        <div className="mt-2 flex flex-wrap gap-2">
+          {props.presets.map((p) => (
+            <button
+              key={p.label}
+              type="button"
+              onClick={() => controls.scrub(p.index)}
+              className="rounded border border-slate-700 px-3 py-1 text-sm font-semibold text-atmos hover:border-atmos"
+            >
+              {p.label}
+            </button>
+          ))}
         </div>
       </div>
 
