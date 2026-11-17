@@ -308,23 +308,6 @@ export function TrackCard<TEvent extends TrackEventBase>(
       setSrStatus(headerText);
     }
   }, [controls.status, view.index, controls.untouched, headerText]);
-  const chainRef = useRef({ status: '', index: 0, range: '' as string | null });
-  useEffect(() => {
-    chainRef.current = {
-      status: controls.status,
-      index: view.index,
-      range: comparison.range?.label ?? null,
-    };
-  });
-  const chainTimer = useRef<number | null>(null);
-  useEffect(
-    () => () => {
-      if (chainTimer.current !== null) {
-        window.clearTimeout(chainTimer.current);
-      }
-    },
-    [],
-  );
   const focusTransport = (name: string) => {
     const origin = document.activeElement;
     let attempts = 0;
@@ -351,10 +334,6 @@ export function TrackCard<TEvent extends TrackEventBase>(
   const runDidYouHearThat = () => {
     const spec = props.didYouHearThat;
     if (!spec) return;
-    if (chainTimer.current !== null) {
-      window.clearTimeout(chainTimer.current);
-      chainTimer.current = null;
-    }
     const act = spec.action;
     if (act.kind === 'jump') {
       controls.scrub(act.index);
@@ -370,15 +349,7 @@ export function TrackCard<TEvent extends TrackEventBase>(
     }
     const a = props.compare.a;
     const b = props.compare.b;
-    comparison.startComparison(a);
-    const waitMs = (a.to - a.from + 1) * props.noteMs + 2000;
-    chainTimer.current = window.setTimeout(() => {
-      chainTimer.current = null;
-      const s = chainRef.current;
-      if (s.status === 'idle' && s.index === a.to && s.range === a.label) {
-        comparison.startComparison(b);
-      }
-    }, waitMs);
+    comparison.startComparison(a, b);
   };
   // Shared by both columns: portalled into the left info column on
   // desktop, rendered inline below the player otherwise. Same elements.

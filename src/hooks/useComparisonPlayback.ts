@@ -10,7 +10,7 @@ export interface CompareRange {
 
 interface Comparison {
   range: CompareRange | null;
-  startComparison: (def: CompareRange) => void;
+  startComparison: (def: CompareRange, next?: CompareRange | null) => void;
   playFullTrack: () => void;
 }
 
@@ -20,6 +20,9 @@ interface Comparison {
  * actions exit comparison mode. Starting a comparison cascades across
  * renders (stop, move cursor, play) so the launch always uses fresh state,
  * and a timer stops playback shortly after the range's last note starts.
+ * A chained follow-up range plays as one continuous comparison: at the
+ * first range's last note the player relaunches into the follow-up without
+ * ever leaving 'playing', so there is no idle "Selected" gap in between.
  */
 export function useComparisonPlayback<TEvent extends TrackEventBase>(
   controls: TrackControls<TEvent>,
@@ -27,6 +30,7 @@ export function useComparisonPlayback<TEvent extends TrackEventBase>(
 ): { controls: TrackControls<TEvent>; comparison: Comparison } {
   const [range, setRange] = useState<CompareRange | null>(null);
   const [pending, setPending] = useState<CompareRange | null>(null);
+  const [followUp, setFollowUp] = useState<CompareRange | null>(null);
   const baseRef = useRef(controls);
   useEffect(() => {
     baseRef.current = controls;
@@ -53,20 +57,35 @@ export function useComparisonPlayback<TEvent extends TrackEventBase>(
   useEffect(() => {
     if (!range || status !== 'playing' || viewIndex !== range.to) return;
     const t = setTimeout(
-      () => baseRef.current.stop(),
+      () => {
+        // Chained follow-up: relaunch into the next range directly. Scrubbing
+        // while playing keeps the status at 'playing', so the seam never
+        // flashes idle/"Selected" — and firing before the next tick keeps the
+        // first range from overrunning, exactly like the single-range stop.
+        if (followUp) {
+          const next = followUp;
+          setFollowUp(null);
+          setRange(next);
+          baseRef.current.scrub(next.from);
+          return;
+        }
+        baseRef.current.stop();
+      },
       Math.round(noteMs * 0.6),
     );
     return () => clearTimeout(t);
-  }, [range, status, viewIndex, noteMs]);
+  }, [range, status, viewIndex, noteMs, followUp]);
 
   const exit = useCallback(() => {
     setRange(null);
     setPending(null);
+    setFollowUp(null);
   }, []);
 
-  const startComparison = (def: CompareRange) => {
+  const startComparison = (def: CompareRange, next: CompareRange | null = null) => {
     setRange(null);
     setPending(def);
+    setFollowUp(next);
     controls.stop();
   };
 
