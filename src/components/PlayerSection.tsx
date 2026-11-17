@@ -23,6 +23,7 @@ import { normalize01 } from '../utils/normalize';
 import type { ReactNode } from 'react';
 import ninoData from '../data/nino34.json';
 import tempData from '../data/global-temperature.json';
+import regionOverlays from '../data/region-overlays.json';
 
 function formatAnomaly(a: number): string {
   return `${a >= 0 ? '+' : ''}${a.toFixed(2)} °C`;
@@ -720,9 +721,18 @@ const TEMP_WORLD_MAP: WorldMapSpec = {
 
 const NINO_WORLD_MAP: WorldMapSpec = {
   kind: 'overlay',
-  baseSrc: '/images/hero-blue-marble.jpg',
+  baseSrc: '/images/epic/epic-pacific.jpg',
   values01: normalize01(ninoData.events.map((e) => e.anomalyC)),
-  credit: 'The Blue Marble (Apollo 17, 1972). Credit: NASA.',
+  region: {
+    paths: regionOverlays.nino.paths,
+    labelX: regionOverlays.nino.label.x,
+    labelY: regionOverlays.nino.label.y,
+    labelPlace: regionOverlays.nino.label.place as 'above' | 'below',
+    mobileX: regionOverlays.nino.labelMobile.x,
+    mobileY: regionOverlays.nino.labelMobile.y,
+    label: 'Niño 3.4 — tropical Pacific',
+  },
+  credit: 'Earth: NASA DSCOVR EPIC, 15 Mar 2024.',
 };
 
 function explainTemperature(

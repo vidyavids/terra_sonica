@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import type { TrackStatus } from '../hooks/useTrackPlayer';
 
 export interface WorldMapFramesSpec {
@@ -10,13 +11,31 @@ export interface WorldMapFramesSpec {
   credit: string;
 }
 
+export interface RegionOverlay {
+  /** SVG path data in base-image pixels (square VIEW space, see below). */
+  paths: string[];
+  /** Label anchor as percent of the displayed (cropped) map box. */
+  labelX: number;
+  labelY: number;
+  labelPlace: 'above' | 'below';
+  /** Small-screen anchor: raised clear of the Play button and strip. */
+  mobileX: number;
+  mobileY: number;
+  label: string;
+}
+
 export interface WorldMapOverlaySpec {
   kind: 'overlay';
   baseSrc: string;
   /** Per-event normalized data value, 0..1, driving the warm overlay. */
   values01: number[];
+  /** Outlined data region + label drawn over the base photo. */
+  region: RegionOverlay;
   credit: string;
 }
+
+/** Base photos are square; the overlay SVG shares this viewBox. */
+const REGION_VIEW = 1280;
 
 export type WorldMapSpec = WorldMapFramesSpec | WorldMapOverlaySpec;
 
@@ -105,6 +124,7 @@ export default function WorldMapVisual({
       ? OVERLAY_MAX_OPACITY * spec.values01[index]
       : 0;
   const playing = status === 'playing';
+  const isDesktop = useMediaQuery('(min-width: 768px)');
 
   return (
     <div className="mt-5 w-full rounded-lg border border-slate-800 bg-slate-900/40 p-5">
@@ -157,6 +177,47 @@ export default function WorldMapVisual({
                   className="absolute inset-0 bg-amber transition-opacity duration-500 motion-reduce:transition-none"
                   style={{ opacity: overlayOpacity }}
                 />
+                <svg
+                  viewBox={`0 0 ${REGION_VIEW} ${REGION_VIEW}`}
+                  preserveAspectRatio="xMidYMid slice"
+                  focusable="false"
+                  className="pointer-events-none absolute inset-0 h-full w-full"
+                >
+                  {spec.region.paths.map((d, i) => (
+                    <g key={i}>
+                      <path
+                        d={d}
+                        fill="none"
+                        stroke="#050D1B"
+                        strokeWidth={6}
+                        vectorEffect="non-scaling-stroke"
+                        strokeLinejoin="round"
+                        opacity={0.85}
+                      />
+                      <path
+                        d={d}
+                        fill="none"
+                        stroke="#56C7F5"
+                        strokeWidth={2.5}
+                        vectorEffect="non-scaling-stroke"
+                        strokeLinejoin="round"
+                      />
+                    </g>
+                  ))}
+                </svg>
+                <div
+                  className="pointer-events-none absolute whitespace-nowrap rounded bg-abyss/70 px-1.5 py-0.5 font-mono text-[10px] text-cloud md:text-xs"
+                  style={{
+                    left: `${isDesktop ? spec.region.labelX : spec.region.mobileX}%`,
+                    top: `${isDesktop ? spec.region.labelY : spec.region.mobileY}%`,
+                    transform:
+                      spec.region.labelPlace === 'above' || !isDesktop
+                        ? 'translate(-50%, calc(-100% - 6px))'
+                        : 'translate(-50%, 6px)',
+                  }}
+                >
+                  {spec.region.label}
+                </div>
               </>
             )}
           </div>
@@ -165,7 +226,7 @@ export default function WorldMapVisual({
             data-stage="play-pause"
             onClick={onPlayPause}
             aria-label={playing ? 'Pause' : 'Play'}
-            className="absolute left-1/2 top-1/2 z-10 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-atmos/60 bg-abyss/70 text-2xl text-atmos shadow-[0_0_24px_rgba(86,199,245,0.35)] hover:border-atmos hover:brightness-110"
+            className="absolute left-1/2 top-1/2 z-10 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-atmos/60 bg-abyss/70 text-xl text-atmos shadow-[0_0_24px_rgba(86,199,245,0.35)] hover:border-atmos hover:brightness-110 md:h-16 md:w-16 md:text-2xl"
           >
             <span aria-hidden="true">{playing ? '❚❚' : '▶'}</span>
           </button>

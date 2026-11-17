@@ -6,6 +6,7 @@ import { useTrackPlayer } from '../hooks/useTrackPlayer';
 import type { TrackStatus } from '../hooks/useTrackPlayer';
 import type { ReactNode } from 'react';
 import skyData from '../data/nightlights-india.json';
+import regionOverlays from '../data/region-overlays.json';
 import { TrackCard } from './PlayerSection';
 import type { WorldMapSpec } from './WorldMapVisual';
 import { normalize01 } from '../utils/normalize';
@@ -19,9 +20,18 @@ const SKY_STILL = '/images/aether-night-lights-asia.jpg';
 
 const SKY_WORLD_MAP: WorldMapSpec = {
   kind: 'overlay',
-  baseSrc: '/images/hero-blue-marble.jpg',
+  baseSrc: '/images/epic/epic-asia.jpg',
   values01: normalize01(skyData.events.map((e) => e.radianceC)),
-  credit: 'The Blue Marble (Apollo 17, 1972). Credit: NASA.',
+  region: {
+    paths: regionOverlays.sky.paths,
+    labelX: regionOverlays.sky.label.x,
+    labelY: regionOverlays.sky.label.y,
+    labelPlace: regionOverlays.sky.label.place as 'above' | 'below',
+    mobileX: regionOverlays.sky.labelMobile.x,
+    mobileY: regionOverlays.sky.labelMobile.y,
+    label: 'India',
+  },
+  credit: 'Earth: NASA DSCOVR EPIC, 15 Mar 2024. Boundary: GADM 4.1.',
 };
 
 function atSkyYear(events: { year: number }[], year: number): number {

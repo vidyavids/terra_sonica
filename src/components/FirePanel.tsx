@@ -6,6 +6,7 @@ import { useTrackPlayer } from '../hooks/useTrackPlayer';
 import type { TrackStatus } from '../hooks/useTrackPlayer';
 import type { ReactNode } from 'react';
 import fireData from '../data/fire-brazil.json';
+import regionOverlays from '../data/region-overlays.json';
 import { TrackCard } from './PlayerSection';
 import type { WorldMapSpec } from './WorldMapVisual';
 import { normalize01 } from '../utils/normalize';
@@ -19,9 +20,18 @@ const FIRE_STILL = '/images/fire-greece-modis.jpg';
 
 const FIRE_WORLD_MAP: WorldMapSpec = {
   kind: 'overlay',
-  baseSrc: '/images/hero-blue-marble.jpg',
+  baseSrc: '/images/epic/epic-americas.jpg',
   values01: normalize01(fireData.events.map((e) => e.count)),
-  credit: 'The Blue Marble (Apollo 17, 1972). Credit: NASA.',
+  region: {
+    paths: regionOverlays.fire.paths,
+    labelX: regionOverlays.fire.label.x,
+    labelY: regionOverlays.fire.label.y,
+    labelPlace: regionOverlays.fire.label.place as 'above' | 'below',
+    mobileX: regionOverlays.fire.labelMobile.x,
+    mobileY: regionOverlays.fire.labelMobile.y,
+    label: 'Brazil',
+  },
+  credit: 'Earth: NASA DSCOVR EPIC, 15 Mar 2024. Boundary: GADM 4.1.',
 };
 
 function atFireMonth(

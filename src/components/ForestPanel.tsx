@@ -7,6 +7,7 @@ import { useTrackPlayer } from '../hooks/useTrackPlayer';
 import type { TrackStatus } from '../hooks/useTrackPlayer';
 import type { ReactNode } from 'react';
 import forestData from '../data/forest-amazon.json';
+import regionOverlays from '../data/region-overlays.json';
 import { TrackCard } from './PlayerSection';
 import type { WorldMapSpec } from './WorldMapVisual';
 import { normalize01 } from '../utils/normalize';
@@ -20,9 +21,18 @@ const FOREST_STILL = '/images/earth-forest-amazon.jpg';
 
 const FOREST_WORLD_MAP: WorldMapSpec = {
   kind: 'overlay',
-  baseSrc: '/images/hero-blue-marble.jpg',
+  baseSrc: '/images/epic/epic-americas.jpg',
   values01: normalize01(forestData.events.map((e) => e.treeCoverPct)),
-  credit: 'The Blue Marble (Apollo 17, 1972). Credit: NASA.',
+  region: {
+    paths: regionOverlays.forest.paths,
+    labelX: regionOverlays.forest.label.x,
+    labelY: regionOverlays.forest.label.y,
+    labelPlace: regionOverlays.forest.label.place as 'above' | 'below',
+    mobileX: regionOverlays.forest.labelMobile.x,
+    mobileY: regionOverlays.forest.labelMobile.y,
+    label: 'Brazilian Legal Amazon',
+  },
+  credit: 'Earth: NASA DSCOVR EPIC, 15 Mar 2024. Boundary: IBGE.',
 };
 
 function atForestYear(events: { year: number }[], year: number): number {
