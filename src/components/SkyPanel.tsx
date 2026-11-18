@@ -270,8 +270,8 @@ export function SkyTrackPanel() {
               className="w-full rounded border border-slate-800"
             />
             <figcaption className="mt-1 font-mono text-sm text-slate-300">
-              NASA Black Marble Asia, 2012 · contextual visual, not
-              synchronized with the sound
+              NASA Black Marble Asia, 2012 · static reference still —
+              the map above changes with the data as the track plays
             </figcaption>
           </figure>
           <p className="mt-3 text-sm">

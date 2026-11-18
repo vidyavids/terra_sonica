@@ -9,7 +9,6 @@ import fireData from '../data/fire-brazil.json';
 import regionOverlays from '../data/region-overlays.json';
 import { TrackCard } from './PlayerSection';
 import type { WorldMapSpec } from './WorldMapVisual';
-import { normalize01 } from '../utils/normalize';
 
 type FireEvent = (typeof fireData.events)[number];
 
@@ -18,10 +17,20 @@ const FIRE_LAST_LABEL = fireData.events[fireData.events.length - 1].label;
 
 const FIRE_STILL = '/images/fire-greece-modis.jpg';
 
+function fireFrameSrc(index: number): string {
+  const ev = fireData.events[index] ?? fireData.events[0];
+  return `/images/fire/fire_${ev.year}${String(ev.month).padStart(2, '0')}.jpg`;
+}
+
+function fireFrameCredit(index: number): string {
+  const ev = fireData.events[index] ?? fireData.events[0];
+  return `Detections: NASA FIRMS (Terra+Aqua MODIS), ${ev.label}. Boundary: GADM 4.1.`;
+}
+
 const FIRE_WORLD_MAP: WorldMapSpec = {
-  kind: 'overlay',
-  baseSrc: '/images/regions/fire-sep24.jpg',
-  values01: normalize01(fireData.events.map((e) => e.count)),
+  kind: 'frames',
+  frameSrc: fireFrameSrc,
+  count: fireData.events.length,
   region: {
     viewW: regionOverlays.fire.view[0],
     viewH: regionOverlays.fire.view[1],
@@ -33,7 +42,8 @@ const FIRE_WORLD_MAP: WorldMapSpec = {
     mobileY: regionOverlays.fire.labelMobile.y,
     label: 'Brazil',
   },
-  credit: 'Detections: NASA FIRMS (Terra+Aqua MODIS), Sep 2024. Boundary: GADM 4.1.',
+  credit: 'Detections: NASA FIRMS (Terra+Aqua MODIS). Boundary: GADM 4.1.',
+  creditFor: fireFrameCredit,
 };
 
 function atFireMonth(
@@ -269,8 +279,9 @@ export function FireTrackPanel() {
               className="w-full rounded border border-slate-800"
             />
             <figcaption className="mt-1 font-mono text-sm text-slate-300">
-              NASA MODIS Greece fires, Aug 2009 · contextual visual, not
-              synchronized with the sound
+              NASA MODIS Greece fires, Aug 2009 · static reference
+              still — the map above changes with the data as the track
+              plays
             </figcaption>
           </figure>
           <p className="mt-3 text-sm">

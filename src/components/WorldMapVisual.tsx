@@ -18,6 +18,8 @@ export interface WorldMapFramesSpec {
   /** Optional color-scale legend chip (bottom-left of the map). */
   legend?: MapLegend;
   credit: string;
+  /** Optional per-frame credit (e.g. the current month); falls back to credit. */
+  creditFor?: (index: number) => string;
 }
 
 export interface RegionOverlay {
@@ -65,9 +67,9 @@ const PRELOAD_CACHE_MAX = 40;
 /** Base-image brightness range across the normalized data value. */
 const BRIGHTNESS_MIN = 0.45;
 const BRIGHTNESS_MAX = 1.35;
-/** SSTA legend gradient; stops match render_ssta.py RAMP at ±SCALE. */
+/** SSTA legend gradient; stops match ssta_render3.py RAMP at ±SCALE. */
 const SSTA_GRADIENT =
-  'linear-gradient(to right, #2166AC 0%, #ABD0E6 25%, #E8F1F8 43.3%, #F7F7F7 50%, #F6E3C5 56.7%, #FDBB84 75%, #B2182B 100%)';
+  'linear-gradient(to right, #2166AC 0%, #388DC2 27.5%, #E8F1F8 44%, #F7F7F7 50%, #F6E3C5 56.7%, #FDBB84 75%, #B2182B 100%)';
 
 /** Lerp two #rrggbb colors by t in [0, 1]. */
 function mixHex(from: string, to: string, t: number): string {
@@ -314,7 +316,9 @@ export default function WorldMapVisual({
         aria-hidden="true"
         className="mt-2 font-mono text-xs text-slate-400"
       >
-        {spec.credit}
+        {spec.kind === 'frames' && spec.creditFor
+          ? spec.creditFor(index)
+          : spec.credit}
       </p>
     </div>
   );

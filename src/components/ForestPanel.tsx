@@ -484,7 +484,8 @@ export function ForestTrackPanel() {
           />
           <figcaption className="mt-1 font-mono text-sm text-slate-300">
             Amazon rainforest, northern Brazil, MODIS, 1 Jul 2002 ·
-            contextual visual, not synchronized with the sound
+            static reference still — the map above changes with the data
+            as the track plays
           </figcaption>
         </figure>
       }
