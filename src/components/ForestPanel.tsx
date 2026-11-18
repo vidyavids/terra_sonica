@@ -21,9 +21,11 @@ const FOREST_STILL = '/images/earth-forest-amazon.jpg';
 
 const FOREST_WORLD_MAP: WorldMapSpec = {
   kind: 'overlay',
-  baseSrc: '/images/epic/epic-americas.jpg',
+  baseSrc: '/images/regions/zoom-forest.jpg',
   values01: normalize01(forestData.events.map((e) => e.treeCoverPct)),
   region: {
+    viewW: regionOverlays.forest.view[0],
+    viewH: regionOverlays.forest.view[1],
     paths: regionOverlays.forest.paths,
     labelX: regionOverlays.forest.label.x,
     labelY: regionOverlays.forest.label.y,

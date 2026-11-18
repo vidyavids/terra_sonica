@@ -721,9 +721,11 @@ const TEMP_WORLD_MAP: WorldMapSpec = {
 
 const NINO_WORLD_MAP: WorldMapSpec = {
   kind: 'overlay',
-  baseSrc: '/images/epic/epic-pacific.jpg',
+  baseSrc: '/images/regions/zoom-nino.jpg',
   values01: normalize01(ninoData.events.map((e) => e.anomalyC)),
   region: {
+    viewW: regionOverlays.nino.view[0],
+    viewH: regionOverlays.nino.view[1],
     paths: regionOverlays.nino.paths,
     labelX: regionOverlays.nino.label.x,
     labelY: regionOverlays.nino.label.y,

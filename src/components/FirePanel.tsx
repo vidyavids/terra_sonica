@@ -20,9 +20,11 @@ const FIRE_STILL = '/images/fire-greece-modis.jpg';
 
 const FIRE_WORLD_MAP: WorldMapSpec = {
   kind: 'overlay',
-  baseSrc: '/images/epic/epic-americas.jpg',
+  baseSrc: '/images/regions/zoom-fire.jpg',
   values01: normalize01(fireData.events.map((e) => e.count)),
   region: {
+    viewW: regionOverlays.fire.view[0],
+    viewH: regionOverlays.fire.view[1],
     paths: regionOverlays.fire.paths,
     labelX: regionOverlays.fire.label.x,
     labelY: regionOverlays.fire.label.y,

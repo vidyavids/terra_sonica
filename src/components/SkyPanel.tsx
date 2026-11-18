@@ -20,9 +20,11 @@ const SKY_STILL = '/images/aether-night-lights-asia.jpg';
 
 const SKY_WORLD_MAP: WorldMapSpec = {
   kind: 'overlay',
-  baseSrc: '/images/epic/epic-asia.jpg',
+  baseSrc: '/images/regions/zoom-sky.jpg',
   values01: normalize01(skyData.events.map((e) => e.radianceC)),
   region: {
+    viewW: regionOverlays.sky.view[0],
+    viewH: regionOverlays.sky.view[1],
     paths: regionOverlays.sky.paths,
     labelX: regionOverlays.sky.label.x,
     labelY: regionOverlays.sky.label.y,

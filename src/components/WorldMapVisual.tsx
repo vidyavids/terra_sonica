@@ -12,7 +12,10 @@ export interface WorldMapFramesSpec {
 }
 
 export interface RegionOverlay {
-  /** SVG path data in base-image pixels (square VIEW space, see below). */
+  /** Base-image pixel dimensions; the SVG paths use this viewBox. */
+  viewW: number;
+  viewH: number;
+  /** SVG path data in base-image pixels. */
   paths: string[];
   /** Label anchor as percent of the displayed (cropped) map box. */
   labelX: number;
@@ -33,9 +36,6 @@ export interface WorldMapOverlaySpec {
   region: RegionOverlay;
   credit: string;
 }
-
-/** Base photos are square; the overlay SVG shares this viewBox. */
-const REGION_VIEW = 1280;
 
 export type WorldMapSpec = WorldMapFramesSpec | WorldMapOverlaySpec;
 
@@ -178,7 +178,7 @@ export default function WorldMapVisual({
                   style={{ opacity: overlayOpacity }}
                 />
                 <svg
-                  viewBox={`0 0 ${REGION_VIEW} ${REGION_VIEW}`}
+                  viewBox={`0 0 ${spec.region.viewW} ${spec.region.viewH}`}
                   preserveAspectRatio="xMidYMid slice"
                   focusable="false"
                   className="pointer-events-none absolute inset-0 h-full w-full"
