@@ -435,6 +435,23 @@ export function ForestTrackPanel() {
       idleBig={forestRange}
       idleSub="Press Play to hear twenty-four years of Amazon canopy."
       doneText={`Done — ${FOREST_FIRST_YEAR} to ${FOREST_LAST_YEAR}.`}
+      didYouHearThat={{
+        body: "The forest's voice follows its cover. 2011 had the highest mean tree cover (57.705%) and 2016 the lowest (54.496%). Listen to both years — the higher cover sounds higher.",
+        actionLabel: 'Replay 2011 vs 2016',
+        action: {
+          kind: 'compareAB',
+          a: {
+            label: '2011',
+            from: atForestYear(forestEvents, 2011),
+            to: atForestYear(forestEvents, 2011),
+          },
+          b: {
+            label: '2016',
+            from: atForestYear(forestEvents, 2016),
+            to: atForestYear(forestEvents, 2016),
+          },
+        },
+      }}
       dataTable={{
         caption:
           'Each row is one sounded year. Denser canopy maps to higher pitches over a narrow 220–660 Hz span, snapped to E natural minor; pitch is stretched to keep small differences audible.',

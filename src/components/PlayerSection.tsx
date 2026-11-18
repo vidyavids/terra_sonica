@@ -198,7 +198,7 @@ interface CompareDef {
 }
 
 type DidYouHearThatAction =
-  | { kind: 'compareAB' }
+  | { kind: 'compareAB'; a?: CompareDef; b?: CompareDef }
   | { kind: 'jump'; index: number }
   | { kind: 'compareRange'; label: string; from: number; to: number };
 
@@ -347,8 +347,9 @@ export function TrackCard<TEvent extends TrackEventBase>(
       });
       return;
     }
-    const a = props.compare.a;
-    const b = props.compare.b;
+    const a = act.a ?? props.compare?.a;
+    const b = act.b ?? props.compare?.b;
+    if (!a || !b) return;
     comparison.startComparison(a, b);
   };
   // Shared by both columns: portalled into the left info column on
