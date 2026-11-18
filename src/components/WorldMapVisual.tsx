@@ -8,6 +8,8 @@ export interface WorldMapFramesSpec {
   /** Frame image URL for an event index. */
   frameSrc: (index: number) => string;
   count: number;
+  /** Optional outlined region + label drawn over the frames. */
+  region?: RegionOverlay;
   credit: string;
 }
 
@@ -27,13 +29,26 @@ export interface RegionOverlay {
   label: string;
 }
 
+export interface Choropleth {
+  /** Fill color for the region paths. */
+  fill: string;
+  /** Fill opacity range across the normalized data value. */
+  min: number;
+  max: number;
+}
+
 export interface WorldMapOverlaySpec {
   kind: 'overlay';
-  baseSrc: string;
-  /** Per-event normalized data value, 0..1, driving the warm overlay. */
+  /** Base photo; absent for choropleth mode (black + vector context). */
+  baseSrc?: string;
+  /** Per-event normalized data value, 0..1, driving the overlay. */
   values01: number[];
-  /** Outlined data region + label drawn over the base photo. */
+  /** Outlined data region + label drawn over the base. */
   region: RegionOverlay;
+  /** Dim geographic context paths (same viewBox as region). */
+  contextPaths?: string[];
+  /** When set, the region fills with the data value instead of amber wash. */
+  choropleth?: Choropleth;
   credit: string;
 }
 
@@ -41,8 +56,93 @@ export type WorldMapSpec = WorldMapFramesSpec | WorldMapOverlaySpec;
 
 const PRELOAD_AHEAD = 10;
 const PRELOAD_CACHE_MAX = 40;
-/** Warm-overlay opacity at the maximum data value; minimum stays clear. */
-const OVERLAY_MAX_OPACITY = 0.6;
+/** Base-image brightness range across the normalized data value. */
+const BRIGHTNESS_MIN = 0.45;
+const BRIGHTNESS_MAX = 1.35;
+
+/** Outlined region + label layer shared by frames and overlay modes. */
+function RegionLayer({
+  region,
+  contextPaths,
+  fill,
+  fillOpacity,
+  isDesktop,
+}: {
+  region: RegionOverlay;
+  contextPaths?: string[];
+  fill?: string;
+  fillOpacity?: number;
+  isDesktop: boolean;
+}) {
+  return (
+    <>
+      <svg
+        viewBox={`0 0 ${region.viewW} ${region.viewH}`}
+        preserveAspectRatio="xMidYMid slice"
+        focusable="false"
+        className="pointer-events-none absolute inset-0 h-full w-full"
+      >
+        {contextPaths?.map((d, i) => (
+          <path
+            key={`c${i}`}
+            d={d}
+            fill="none"
+            stroke="#475569"
+            strokeWidth={1.5}
+            vectorEffect="non-scaling-stroke"
+            strokeLinejoin="round"
+            opacity={0.9}
+          />
+        ))}
+        {fill !== undefined &&
+          region.paths.map((d, i) => (
+            <path
+              key={`f${i}`}
+              d={d}
+              fill={fill}
+              stroke="none"
+              className="transition-opacity duration-500 motion-reduce:transition-none"
+              style={{ opacity: fillOpacity }}
+            />
+          ))}
+        {region.paths.map((d, i) => (
+          <g key={i}>
+            <path
+              d={d}
+              fill="none"
+              stroke="#050D1B"
+              strokeWidth={6}
+              vectorEffect="non-scaling-stroke"
+              strokeLinejoin="round"
+              opacity={0.85}
+            />
+            <path
+              d={d}
+              fill="none"
+              stroke="#56C7F5"
+              strokeWidth={2.5}
+              vectorEffect="non-scaling-stroke"
+              strokeLinejoin="round"
+            />
+          </g>
+        ))}
+      </svg>
+      <div
+        className="pointer-events-none absolute whitespace-nowrap rounded bg-abyss/70 px-1.5 py-0.5 font-mono text-[10px] text-cloud md:text-xs"
+        style={{
+          left: `${isDesktop ? region.labelX : region.mobileX}%`,
+          top: `${isDesktop ? region.labelY : region.mobileY}%`,
+          transform:
+            region.labelPlace === 'above' || !isDesktop
+              ? 'translate(-50%, calc(-100% - 6px))'
+              : 'translate(-50%, 6px)',
+        }}
+      >
+        {region.label}
+      </div>
+    </>
+  );
+}
 
 interface WorldMapVisualProps {
   spec: WorldMapSpec;
@@ -119,10 +219,10 @@ export default function WorldMapVisual({
     }
   }, [index, spec]);
 
-  const overlayOpacity =
+  const brightness =
     spec.kind === 'overlay'
-      ? OVERLAY_MAX_OPACITY * spec.values01[index]
-      : 0;
+      ? BRIGHTNESS_MIN + (BRIGHTNESS_MAX - BRIGHTNESS_MIN) * spec.values01[index]
+      : 1;
   const playing = status === 'playing';
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
@@ -163,61 +263,40 @@ export default function WorldMapVisual({
                     data-stacked={prev && prev !== shown ? true : undefined}
                   />
                 )}
+                {spec.region && (
+                  <RegionLayer region={spec.region} isDesktop={isDesktop} />
+                )}
               </>
             ) : (
               <>
-                <img
-                  src={spec.baseSrc}
-                  alt=""
-                  draggable={false}
-                  decoding="async"
-                  className="block aspect-video w-full object-cover"
+                {spec.baseSrc ? (
+                  <img
+                    src={spec.baseSrc}
+                    alt=""
+                    draggable={false}
+                    decoding="async"
+                    className="block aspect-video w-full object-cover transition-[filter] duration-500 motion-reduce:transition-none"
+                    style={{ filter: `brightness(${brightness})` }}
+                  />
+                ) : (
+                  <div
+                    aria-hidden="true"
+                    className="block aspect-video w-full bg-black"
+                  />
+                )}
+                <RegionLayer
+                  region={spec.region}
+                  contextPaths={spec.contextPaths}
+                  fill={spec.choropleth?.fill}
+                  fillOpacity={
+                    spec.choropleth
+                      ? spec.choropleth.min +
+                        (spec.choropleth.max - spec.choropleth.min) *
+                          spec.values01[index]
+                      : undefined
+                  }
+                  isDesktop={isDesktop}
                 />
-                <div
-                  className="absolute inset-0 bg-amber transition-opacity duration-500 motion-reduce:transition-none"
-                  style={{ opacity: overlayOpacity }}
-                />
-                <svg
-                  viewBox={`0 0 ${spec.region.viewW} ${spec.region.viewH}`}
-                  preserveAspectRatio="xMidYMid slice"
-                  focusable="false"
-                  className="pointer-events-none absolute inset-0 h-full w-full"
-                >
-                  {spec.region.paths.map((d, i) => (
-                    <g key={i}>
-                      <path
-                        d={d}
-                        fill="none"
-                        stroke="#050D1B"
-                        strokeWidth={6}
-                        vectorEffect="non-scaling-stroke"
-                        strokeLinejoin="round"
-                        opacity={0.85}
-                      />
-                      <path
-                        d={d}
-                        fill="none"
-                        stroke="#56C7F5"
-                        strokeWidth={2.5}
-                        vectorEffect="non-scaling-stroke"
-                        strokeLinejoin="round"
-                      />
-                    </g>
-                  ))}
-                </svg>
-                <div
-                  className="pointer-events-none absolute whitespace-nowrap rounded bg-abyss/70 px-1.5 py-0.5 font-mono text-[10px] text-cloud md:text-xs"
-                  style={{
-                    left: `${isDesktop ? spec.region.labelX : spec.region.mobileX}%`,
-                    top: `${isDesktop ? spec.region.labelY : spec.region.mobileY}%`,
-                    transform:
-                      spec.region.labelPlace === 'above' || !isDesktop
-                        ? 'translate(-50%, calc(-100% - 6px))'
-                        : 'translate(-50%, 6px)',
-                  }}
-                >
-                  {spec.region.label}
-                </div>
               </>
             )}
           </div>

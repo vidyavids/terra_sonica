@@ -21,7 +21,6 @@ const FOREST_STILL = '/images/earth-forest-amazon.jpg';
 
 const FOREST_WORLD_MAP: WorldMapSpec = {
   kind: 'overlay',
-  baseSrc: '/images/regions/zoom-forest.jpg',
   values01: normalize01(forestData.events.map((e) => e.treeCoverPct)),
   region: {
     viewW: regionOverlays.forest.view[0],
@@ -34,7 +33,9 @@ const FOREST_WORLD_MAP: WorldMapSpec = {
     mobileY: regionOverlays.forest.labelMobile.y,
     label: 'Brazilian Legal Amazon',
   },
-  credit: 'Earth: NASA DSCOVR EPIC, 15 Mar 2024. Boundary: IBGE.',
+  contextPaths: regionOverlays.forest.contextPaths,
+  choropleth: { fill: '#36A886', min: 0.3, max: 0.95 },
+  credit: 'Tree cover: MODIS MOD44B C6.1 annual means. Boundary: IBGE.',
 };
 
 function atForestYear(events: { year: number }[], year: number): number {

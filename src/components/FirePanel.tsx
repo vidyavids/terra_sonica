@@ -20,7 +20,7 @@ const FIRE_STILL = '/images/fire-greece-modis.jpg';
 
 const FIRE_WORLD_MAP: WorldMapSpec = {
   kind: 'overlay',
-  baseSrc: '/images/regions/zoom-fire.jpg',
+  baseSrc: '/images/regions/fire-sep24.jpg',
   values01: normalize01(fireData.events.map((e) => e.count)),
   region: {
     viewW: regionOverlays.fire.view[0],
@@ -33,7 +33,7 @@ const FIRE_WORLD_MAP: WorldMapSpec = {
     mobileY: regionOverlays.fire.labelMobile.y,
     label: 'Brazil',
   },
-  credit: 'Earth: NASA DSCOVR EPIC, 15 Mar 2024. Boundary: GADM 4.1.',
+  credit: 'Detections: NASA FIRMS (Terra+Aqua MODIS), Sep 2024. Boundary: GADM 4.1.',
 };
 
 function atFireMonth(

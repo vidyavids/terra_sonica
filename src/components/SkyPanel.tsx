@@ -9,7 +9,6 @@ import skyData from '../data/nightlights-india.json';
 import regionOverlays from '../data/region-overlays.json';
 import { TrackCard } from './PlayerSection';
 import type { WorldMapSpec } from './WorldMapVisual';
-import { normalize01 } from '../utils/normalize';
 
 type SkyEvent = (typeof skyData.events)[number];
 
@@ -18,10 +17,15 @@ const SKY_LAST_YEAR = skyData.events[skyData.events.length - 1].year;
 
 const SKY_STILL = '/images/aether-night-lights-asia.jpg';
 
+function skyFrameSrc(index: number): string {
+  const ev = skyData.events[index] ?? skyData.events[0];
+  return `/images/nightindia/night_${ev.year}.jpg`;
+}
+
 const SKY_WORLD_MAP: WorldMapSpec = {
-  kind: 'overlay',
-  baseSrc: '/images/regions/zoom-sky.jpg',
-  values01: normalize01(skyData.events.map((e) => e.radianceC)),
+  kind: 'frames',
+  frameSrc: skyFrameSrc,
+  count: skyData.events.length,
   region: {
     viewW: regionOverlays.sky.view[0],
     viewH: regionOverlays.sky.view[1],
@@ -33,7 +37,7 @@ const SKY_WORLD_MAP: WorldMapSpec = {
     mobileY: regionOverlays.sky.labelMobile.y,
     label: 'India',
   },
-  credit: 'Earth: NASA DSCOVR EPIC, 15 Mar 2024. Boundary: GADM 4.1.',
+  credit: 'Night lights: NASA Black Marble VIIRS (VNP46A4 C002). Boundary: GADM 4.1.',
 };
 
 function atSkyYear(events: { year: number }[], year: number): number {

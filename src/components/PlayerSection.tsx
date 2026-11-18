@@ -19,7 +19,6 @@ import { useTrackPlayer } from '../hooks/useTrackPlayer';
 import type { TrackControls, TrackStatus } from '../hooks/useTrackPlayer';
 import WorldMapVisual from './WorldMapVisual';
 import type { WorldMapSpec } from './WorldMapVisual';
-import { normalize01 } from '../utils/normalize';
 import type { ReactNode } from 'react';
 import ninoData from '../data/nino34.json';
 import tempData from '../data/global-temperature.json';
@@ -719,10 +718,15 @@ const TEMP_WORLD_MAP: WorldMapSpec = {
     "NASA Goddard's Scientific Visualization Studio (SVS 5450), data: GISTEMP v4",
 };
 
+function ninoFrameSrc(index: number): string {
+  const ev = ninoData.events[index] ?? ninoData.events[0];
+  return `/images/ssta/ssta_${ev.year}${String(ev.month).padStart(2, '0')}.jpg`;
+}
+
 const NINO_WORLD_MAP: WorldMapSpec = {
-  kind: 'overlay',
-  baseSrc: '/images/regions/zoom-nino.jpg',
-  values01: normalize01(ninoData.events.map((e) => e.anomalyC)),
+  kind: 'frames',
+  frameSrc: ninoFrameSrc,
+  count: ninoData.events.length,
   region: {
     viewW: regionOverlays.nino.view[0],
     viewH: regionOverlays.nino.view[1],
@@ -734,7 +738,7 @@ const NINO_WORLD_MAP: WorldMapSpec = {
     mobileY: regionOverlays.nino.labelMobile.y,
     label: 'Niño 3.4 — tropical Pacific',
   },
-  credit: 'Earth: NASA DSCOVR EPIC, 15 Mar 2024.',
+  credit: 'SST anomaly: NOAA ERSSTv6, 1996–2025 baseline.',
 };
 
 function explainTemperature(
