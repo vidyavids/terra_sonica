@@ -46,11 +46,18 @@ function forestReading(view: ForestTick): string {
   return `${view.treeCoverPct.toFixed(3)}% tree cover · ${view.note} · ${view.quantizedHz} Hz (raw ${view.linearHz.toFixed(1)} Hz)`;
 }
 
+function forestChangeText(view: ForestTick): string | null {
+  if (view.changeRate === null) return null;
+  const sign = view.changeRate >= 0 ? '+' : '';
+  return `Change vs previous year: ${sign}${view.changeRate.toFixed(2)} pp`;
+}
+
 function explainForest(
   view: ForestTick,
   untouched: boolean,
   status: TrackStatus,
 ): ReactNode {
+  const changeText = !untouched ? forestChangeText(view) : null;
   return (
     <section
       aria-label="Explain My Sound: Hear the Forest — Amazon Tree Cover"
@@ -68,6 +75,9 @@ function explainForest(
                 ? `Done — ${view.year} · ${forestReading(view)}`
                 : `Selected: ${view.year} · ${forestReading(view)}`}
       </p>
+      {changeText && (
+        <p className="mt-1 font-mono text-sm text-atmos">{changeText}</p>
+      )}
       <details className="mt-3">
         <summary className="cursor-pointer font-semibold text-atmos">
           Scientific Details
@@ -88,7 +98,10 @@ function explainForest(
               One {FOREST_NOTE_MS} ms sine note per year from{' '}
               {FOREST_FIRST_YEAR} to {FOREST_LAST_YEAR}. Pitch follows
               mean tree cover: sparser-canopy years sound low,
-              denser-canopy years high.
+              denser-canopy years high. A second voice a fifth above
+              follows the year-over-year change in mean tree cover —
+              derived from the same tree-cover series, not a second
+              measurement.
             </dd>
           </div>
           <div>
@@ -466,6 +479,7 @@ export function ForestTrackPanel() {
       }}
       tipFor={(e) => `${e.year} · ${e.treeCoverPct.toFixed(3)}%`}
       readingFor={(v) => forestReading(v)}
+      readingExtra={(v) => forestChangeText(v)}
       scrubLabel="Scrub tree-cover timeline"
       progressLabel="Track 5 playback progress"
       sparkStart={String(FOREST_FIRST_YEAR)}

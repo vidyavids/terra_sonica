@@ -78,6 +78,22 @@ QUANTIZE_CASES: list[tuple[float, str]] = [
 ]
 
 
+def change_gain(change: float | None, lo: float, hi: float) -> float:
+    """Change-voice gain: 1880 (no previous year) is silent; otherwise
+    0.02 + 0.08 * (change - lo) / (hi - lo), well under the 0.3 main peak."""
+    if change is None:
+        return 0.0
+    return 0.02 + 0.08 * (change - lo) / (hi - lo)
+
+
+# (year, expected YoY change in C): pins for the derived change series.
+CHANGE_CASES: list[tuple[int, float]] = [
+    (1882, -0.04),  # min YoY change
+    (2023, 0.06),  # max YoY change
+    (2024, 0.05),
+]
+
+
 def run_quantize_self_tests() -> None:
     """Durable regression pins for the prototype quantization rule."""
     d_lo = abs(math.log2(TIE_RAW_E4_F4 / 329.63))
@@ -86,6 +102,9 @@ def run_quantize_self_tests() -> None:
     for raw, want in QUANTIZE_CASES:
         got = quantize(raw)[0]
         assert got == want, f"quantize({raw}) = {got}, want {want}"
+    assert change_gain(None, -1.0, 1.0) == 0.0, "1880 must be silent"
+    assert change_gain(1.0, 0.0, 1.0) == 0.10, "max change gain must be 0.10"
+    assert change_gain(0.0, 0.0, 1.0) == 0.02, "min change gain must be 0.02"
 
 
 def parse_float_or_missing(text: str) -> float | None:
@@ -190,17 +209,26 @@ def main() -> int:
     for line in audit_legacy(anomalies):
         print(" ", line)
 
+    changes = {y: anomalies[y] - anomalies[y - 1] for y in window[1:]}
+    ch_lo, ch_hi = min(changes.values()), max(changes.values())
+    print(f"YoY change range: {ch_lo:+.2f}..{ch_hi:+.2f} C "
+          f"(min {min(changes, key=changes.__getitem__)}, "
+          f"max {max(changes, key=changes.__getitem__)})")
+
     events = []
     for year in window:
         anomaly = anomalies[year]
         raw = linear_freq(anomaly)
         note, quantized = quantize(raw)
+        change = changes.get(year)
         events.append({
             "year": year,
             "anomalyC": anomaly,
             "linearHz": round(raw, 4),
             "note": note,
             "quantizedHz": quantized,
+            "changeRate": None if change is None else round(change, 6),
+            "changeGain": round(change_gain(change, ch_lo, ch_hi), 4),
         })
     assert len(events) == 146, len(events)
     by_year = {entry["year"]: entry["note"] for entry in events}
@@ -208,6 +236,12 @@ def main() -> int:
         got = by_year[year]
         assert got == want, f"{year} -> {got}, want {want}"
     print("  year spot-checks pass: 2013 E5, 2018 F#5, 2023 G5")
+    by_ev = {entry["year"]: entry for entry in events}
+    for year, rate in CHANGE_CASES:
+        assert by_ev[year]["changeRate"] == rate, (year, by_ev[year]["changeRate"])
+    assert by_ev[1880]["changeRate"] is None, "1880 must have no change rate"
+    assert by_ev[1880]["changeGain"] == 0.0, "1880 change voice must be silent"
+    print("  change spot-checks pass: 1882 -0.04, 2023 +0.06, 2024 +0.05 C")
 
     payload = {
         "provenance": {
@@ -239,6 +273,9 @@ def main() -> int:
             "quantization": "nearest E-natural-minor note by "
                             "ABS(LOG(raw/note, 2)); ties resolve to the higher "
                             "note; raw frequencies clamp to [E3, B5].",
+            "changeVoice": "second voice at quantizedHz * 1.5; gain "
+                           "0.02 + 0.08 * (change - lo) / (hi - lo) over "
+                           "1881-2025 YoY-change range; 1880 silent (gain 0.0).",
             "pitchSetHz": {name: freq for name, freq in NOTES},
         },
         "events": events,

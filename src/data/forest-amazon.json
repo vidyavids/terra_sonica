@@ -17,6 +17,7 @@
   "mapping": {
     "linearHz": "clamp(value, 54.496, 57.705); 220 + (value - 54.496) / (57.705 - 54.496) * 440",
     "quantization": "nearest E-natural-minor note by ABS(LOG(raw/note, 2)); ties resolve to the higher note; raw frequencies clamp to [E3, B5].",
+    "changeVoice": "second voice at quantizedHz * 1.5; gain 0.02 + 0.08 * (change - lo) / (hi - lo) over 2002-2024 YoY-change range; 2001 silent (gain 0.0).",
     "noteMs": 700,
     "pitchSetHz": {
       "E3": 164.81,
@@ -47,7 +48,9 @@
       "anomalyC": 56.42917174515476,
       "linearHz": 485.0656,
       "note": "B4",
-      "quantizedHz": 493.88
+      "quantizedHz": 493.88,
+      "changeRate": null,
+      "changeGain": 0.0
     },
     {
       "year": 2002,
@@ -55,7 +58,9 @@
       "anomalyC": 57.60617903158169,
       "linearHz": 646.4502,
       "note": "E5",
-      "quantizedHz": 659.25
+      "quantizedHz": 659.25,
+      "changeRate": 1.177007,
+      "changeGain": 0.087
     },
     {
       "year": 2003,
@@ -63,7 +68,9 @@
       "anomalyC": 56.50488082588996,
       "linearHz": 495.4464,
       "note": "B4",
-      "quantizedHz": 493.88
+      "quantizedHz": 493.88,
+      "changeRate": -1.101298,
+      "changeGain": 0.035
     },
     {
       "year": 2004,
@@ -71,7 +78,9 @@
       "anomalyC": 57.331079285902554,
       "linearHz": 608.7301,
       "note": "D5",
-      "quantizedHz": 587.33
+      "quantizedHz": 587.33,
+      "changeRate": 0.826198,
+      "changeGain": 0.079
     },
     {
       "year": 2005,
@@ -79,7 +88,9 @@
       "anomalyC": 57.06802389183117,
       "linearHz": 572.6614,
       "note": "D5",
-      "quantizedHz": 587.33
+      "quantizedHz": 587.33,
+      "changeRate": -0.263055,
+      "changeGain": 0.0541
     },
     {
       "year": 2006,
@@ -87,7 +98,9 @@
       "anomalyC": 55.99263597732245,
       "linearHz": 425.2103,
       "note": "A4",
-      "quantizedHz": 440.0
+      "quantizedHz": 440.0,
+      "changeRate": -1.075388,
+      "changeGain": 0.0356
     },
     {
       "year": 2007,
@@ -95,7 +108,9 @@
       "anomalyC": 56.364743506021654,
       "linearHz": 476.2316,
       "note": "B4",
-      "quantizedHz": 493.88
+      "quantizedHz": 493.88,
+      "changeRate": 0.372108,
+      "changeGain": 0.0686
     },
     {
       "year": 2008,
@@ -103,7 +118,9 @@
       "anomalyC": 56.78049381697216,
       "linearHz": 533.2369,
       "note": "C5",
-      "quantizedHz": 523.25
+      "quantizedHz": 523.25,
+      "changeRate": 0.41575,
+      "changeGain": 0.0696
     },
     {
       "year": 2009,
@@ -111,7 +128,9 @@
       "anomalyC": 55.95257342266909,
       "linearHz": 419.7171,
       "note": "A4",
-      "quantizedHz": 440.0
+      "quantizedHz": 440.0,
+      "changeRate": -0.82792,
+      "changeGain": 0.0412
     },
     {
       "year": 2010,
@@ -119,7 +138,9 @@
       "anomalyC": 57.107233452065266,
       "linearHz": 578.0376,
       "note": "D5",
-      "quantizedHz": 587.33
+      "quantizedHz": 587.33,
+      "changeRate": 1.15466,
+      "changeGain": 0.0865
     },
     {
       "year": 2011,
@@ -127,7 +148,9 @@
       "anomalyC": 57.70492650068356,
       "linearHz": 659.9899,
       "note": "E5",
-      "quantizedHz": 659.25
+      "quantizedHz": 659.25,
+      "changeRate": 0.597693,
+      "changeGain": 0.0738
     },
     {
       "year": 2012,
@@ -135,7 +158,9 @@
       "anomalyC": 55.949144546334985,
       "linearHz": 419.247,
       "note": "A4",
-      "quantizedHz": 440.0
+      "quantizedHz": 440.0,
+      "changeRate": -1.755782,
+      "changeGain": 0.02
     },
     {
       "year": 2013,
@@ -143,7 +168,9 @@
       "anomalyC": 56.111610659551914,
       "linearHz": 441.5234,
       "note": "A4",
-      "quantizedHz": 440.0
+      "quantizedHz": 440.0,
+      "changeRate": 0.162466,
+      "changeGain": 0.0639
     },
     {
       "year": 2014,
@@ -151,7 +178,9 @@
       "anomalyC": 54.812814172623334,
       "linearHz": 263.4398,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "changeRate": -1.298796,
+      "changeGain": 0.0304
     },
     {
       "year": 2015,
@@ -159,7 +188,9 @@
       "anomalyC": 54.88325764766088,
       "linearHz": 273.0986,
       "note": "C4",
-      "quantizedHz": 261.63
+      "quantizedHz": 261.63,
+      "changeRate": 0.070443,
+      "changeGain": 0.0617
     },
     {
       "year": 2016,
@@ -167,7 +198,9 @@
       "anomalyC": 54.49622758650215,
       "linearHz": 220.0312,
       "note": "A3",
-      "quantizedHz": 220.0
+      "quantizedHz": 220.0,
+      "changeRate": -0.38703,
+      "changeGain": 0.0513
     },
     {
       "year": 2017,
@@ -175,7 +208,9 @@
       "anomalyC": 56.239821539314875,
       "linearHz": 459.103,
       "note": "A4",
-      "quantizedHz": 440.0
+      "quantizedHz": 440.0,
+      "changeRate": 1.743594,
+      "changeGain": 0.1
     },
     {
       "year": 2018,
@@ -183,7 +218,9 @@
       "anomalyC": 55.569392537558734,
       "linearHz": 367.1775,
       "note": "F#4",
-      "quantizedHz": 369.99
+      "quantizedHz": 369.99,
+      "changeRate": -0.670429,
+      "changeGain": 0.0448
     },
     {
       "year": 2019,
@@ -191,7 +228,9 @@
       "anomalyC": 55.96858474862351,
       "linearHz": 421.9125,
       "note": "A4",
-      "quantizedHz": 440.0
+      "quantizedHz": 440.0,
+      "changeRate": 0.399192,
+      "changeGain": 0.0693
     },
     {
       "year": 2020,
@@ -199,7 +238,9 @@
       "anomalyC": 55.82933163913472,
       "linearHz": 402.8189,
       "note": "G4",
-      "quantizedHz": 392.0
+      "quantizedHz": 392.0,
+      "changeRate": -0.139253,
+      "changeGain": 0.057
     },
     {
       "year": 2021,
@@ -207,7 +248,9 @@
       "anomalyC": 55.39065984736517,
       "linearHz": 342.6707,
       "note": "E4",
-      "quantizedHz": 329.63
+      "quantizedHz": 329.63,
+      "changeRate": -0.438672,
+      "changeGain": 0.0501
     },
     {
       "year": 2022,
@@ -215,7 +258,9 @@
       "anomalyC": 55.27061059102601,
       "linearHz": 326.2102,
       "note": "E4",
-      "quantizedHz": 329.63
+      "quantizedHz": 329.63,
+      "changeRate": -0.120049,
+      "changeGain": 0.0574
     },
     {
       "year": 2023,
@@ -223,7 +268,9 @@
       "anomalyC": 55.14607071849285,
       "linearHz": 309.134,
       "note": "D4",
-      "quantizedHz": 293.66
+      "quantizedHz": 293.66,
+      "changeRate": -0.12454,
+      "changeGain": 0.0573
     },
     {
       "year": 2024,
@@ -231,7 +278,9 @@
       "anomalyC": 55.24488792297522,
       "linearHz": 322.6833,
       "note": "E4",
-      "quantizedHz": 329.63
+      "quantizedHz": 329.63,
+      "changeRate": 0.098817,
+      "changeGain": 0.0624
     }
   ]
 }

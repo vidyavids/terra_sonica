@@ -103,6 +103,22 @@ EVENT_CASES: list[tuple[tuple[int, int], float, float, str]] = [
 ]
 
 
+def change_gain(change: float | None, lo: float, hi: float) -> float:
+    """Change-voice gain: Jan 2020 (no previous month) is silent; otherwise
+    0.02 + 0.08 * (change - lo) / (hi - lo), well under the 0.3 main peak."""
+    if change is None:
+        return 0.0
+    return 0.02 + 0.08 * (change - lo) / (hi - lo)
+
+
+# ((year, month), expected MoM change in C): pins for the derived series.
+CHANGE_CASES: list[tuple[tuple[int, int], float]] = [
+    ((2020, 5), -0.64),  # min MoM change
+    ((2026, 6), 0.53),  # max MoM change
+    ((2023, 7), 0.16),
+]
+
+
 def run_self_tests() -> None:
     """Durable regression pins for the finalized track-2 mapping."""
     d_lo = abs(math.log2(TIE_RAW_E4_F4 / 329.63))
@@ -114,6 +130,9 @@ def run_self_tests() -> None:
     for anomaly, want in LINEAR_CASES:
         got = linear_freq(anomaly)
         assert abs(got - want) < 1e-9, f"linear({anomaly}) = {got}, want {want}"
+    assert change_gain(None, -1.0, 1.0) == 0.0, "Jan 2020 must be silent"
+    assert change_gain(1.0, 0.0, 1.0) == 0.10, "max change gain must be 0.10"
+    assert change_gain(0.0, 0.0, 1.0) == 0.02, "min change gain must be 0.02"
 
 
 def month_range():
@@ -202,11 +221,19 @@ def main() -> int:
         assert abs(float(row["AnomalyC"]) - rows[ym]["anom"]) < 1e-9, row
     print(f"wrote {CSV.name}: {len(reread)} rows, round-trip verified")
 
+    changes = {ym: rows[ym]["anom"] - rows[prev]["anom"]
+               for ym, prev in zip(window[1:], window)}
+    ch_lo, ch_hi = min(changes.values()), max(changes.values())
+    print(f"MoM change range: {ch_lo:+.2f}..{ch_hi:+.2f} C "
+          f"(min {min(changes, key=changes.__getitem__)}, "
+          f"max {max(changes, key=changes.__getitem__)})")
+
     events = []
     for ym in window:
         anomaly = rows[ym]["anom"]
         raw = linear_freq(anomaly)
         note, quantized = quantize(raw)
+        change = changes.get(ym)
         events.append({
             "year": ym[0],
             "month": ym[1],
@@ -215,6 +242,8 @@ def main() -> int:
             "linearHz": round(raw, 4),
             "note": note,
             "quantizedHz": quantized,
+            "changeRate": None if change is None else round(change, 6),
+            "changeGain": round(change_gain(change, ch_lo, ch_hi), 4),
         })
     by_ym = {(e["year"], e["month"]): e for e in events}
     for ym, anom, raw, note in EVENT_CASES:
@@ -223,6 +252,11 @@ def main() -> int:
         assert abs(event["linearHz"] - raw) < 1e-9, (ym, event["linearHz"])
         assert event["note"] == note, (ym, event["note"])
     print("  event spot-checks pass: Feb 2021 E4, Jul 2023 E5, Aug 2026 G5")
+    for ym, rate in CHANGE_CASES:
+        assert by_ym[ym]["changeRate"] == rate, (ym, by_ym[ym]["changeRate"])
+    assert by_ym[(2020, 1)]["changeRate"] is None, "Jan 2020 needs no rate"
+    assert by_ym[(2020, 1)]["changeGain"] == 0.0, "Jan 2020 voice silent"
+    print("  change spot-checks pass: May 2020 -0.64, Jun 2026 +0.53 C")
 
     payload = {
         "provenance": {
@@ -257,6 +291,10 @@ def main() -> int:
             "quantization": "nearest E-natural-minor note by "
                             "ABS(LOG(raw/note, 2)); ties resolve to the higher "
                             "note; raw frequencies clamp to [E3, B5].",
+            "changeVoice": "second voice at quantizedHz * 1.5; gain "
+                           "0.02 + 0.08 * (change - lo) / (hi - lo) over "
+                           "the Feb 2020-Aug 2026 MoM-change range; "
+                           "Jan 2020 silent (gain 0.0).",
             "noteMs": 500,
             "pitchSetHz": {name: freq for name, freq in NOTES},
         },

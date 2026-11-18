@@ -12,6 +12,10 @@
  *    rendering; the callback fires once per note, same as the display update.
  * 3. A `stop()` method was added (the prototype could only play through).
  *    Timing, oscillator type, and envelope are unchanged.
+ *
+ * Second layer (user decision): a second voice a perfect fifth above
+ * the main note whose gain follows the derived year-over-year change.
+ * The main note block below is byte-identical to the single-voice version.
  */
 
 export interface TemperatureTrackEvent {
@@ -20,6 +24,8 @@ export interface TemperatureTrackEvent {
   linearHz: number;
   note: string;
   quantizedHz: number;
+  changeRate: number | null;
+  changeGain: number;
 }
 
 export interface TemperatureTick extends TemperatureTrackEvent {
@@ -93,6 +99,26 @@ export class TemperaturePlayer {
       if (tap) gain.connect(tap);
       osc.start();
       osc.stop(this.ctx.currentTime + NOTE_MS / 1000);
+
+      if (entry.changeGain > 0) {
+        const osc2 = this.ctx.createOscillator();
+        const gain2 = this.ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.value = entry.quantizedHz * 1.5;
+        gain2.gain.setValueAtTime(0.0001, this.ctx.currentTime);
+        gain2.gain.exponentialRampToValueAtTime(
+          entry.changeGain,
+          this.ctx.currentTime + 0.05,
+        );
+        gain2.gain.exponentialRampToValueAtTime(
+          0.0001,
+          this.ctx.currentTime + NOTE_MS / 1000,
+        );
+        osc2.connect(gain2).connect(this.ctx.destination);
+        if (tap) gain2.connect(tap);
+        osc2.start();
+        osc2.stop(this.ctx.currentTime + NOTE_MS / 1000);
+      }
 
       await new Promise((r) => setTimeout(r, NOTE_MS));
     }

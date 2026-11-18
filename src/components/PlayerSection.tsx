@@ -671,6 +671,16 @@ export function TrackCard<TEvent extends TrackEventBase>(
 type TempEvent = (typeof tempData.events)[number];
 type NinoEvent = (typeof ninoData.events)[number];
 
+function tempChangeText(view: TickView<TempEvent>): string | null {
+  if (view.changeRate === null) return null;
+  return `Change vs previous year: ${formatAnomaly(view.changeRate)}`;
+}
+
+function ninoChangeText(view: TickView<NinoEvent>): string | null {
+  if (view.changeRate === null) return null;
+  return `Change vs previous month: ${formatAnomaly(view.changeRate)}`;
+}
+
 const TEMP_FIRST_YEAR = tempData.events[0].year;
 const TEMP_LAST_YEAR = tempData.events[tempData.events.length - 1].year;
 const NINO_FIRST_LABEL = ninoData.events[0].label;
@@ -748,6 +758,11 @@ function explainTemperature(
                 ? `Done — ${view.year} · ${formatReading(view)}`
                 : `Selected: ${view.year} · ${formatReading(view)}`}
       </p>
+      {!untouched && tempChangeText(view) && (
+        <p className="mt-1 font-mono text-sm text-atmos">
+          {tempChangeText(view)}
+        </p>
+      )}
       <details className="mt-3">
         <summary className="cursor-pointer font-semibold text-atmos">
           Scientific Details
@@ -767,7 +782,9 @@ function explainTemperature(
             <dd>
               One {NOTE_MS} ms sine note per year from {TEMP_FIRST_YEAR} to{' '}
             {TEMP_LAST_YEAR}. Pitch rises as the planet warms: colder years
-            sound low, hotter years high.
+            sound low, hotter years high. A second voice a fifth above
+            follows the year-over-year change in the anomaly — derived
+            from the same anomaly series, not a second measurement.
           </dd>
         </div>
         <div>
@@ -833,6 +850,11 @@ function explainNino(
                 ? `Done — ${view.label} · ${formatReading(view)}`
                 : `Selected: ${view.label} · ${formatReading(view)}`}
       </p>
+      {!untouched && ninoChangeText(view) && (
+        <p className="mt-1 font-mono text-sm text-atmos">
+          {ninoChangeText(view)}
+        </p>
+      )}
       <details className="mt-3">
         <summary className="cursor-pointer font-semibold text-atmos">
           Scientific Details
@@ -852,7 +874,10 @@ function explainNino(
             <dd>
               One {NINO_NOTE_MS} ms sine note per month from {NINO_FIRST_LABEL}{' '}
             to {NINO_LAST_LABEL}. Pitch follows the Niño 3.4 SST anomaly:
-            cool La Niña months sound low, warm El Niño months high.
+            cool La Niña months sound low, warm El Niño months high. A
+            second voice a fifth above follows the month-over-month
+            change in the anomaly — derived from the same anomaly
+            series, not a second measurement.
           </dd>
         </div>
         <div>
@@ -1002,6 +1027,7 @@ function TempTrackPanel() {
         ],
       }}
       tipFor={(e) => `${e.year} · ${formatAnomaly(e.anomalyC)}`}
+      readingExtra={(v) => tempChangeText(v)}
       scrubLabel="Scrub Global Surface Temperature timeline"
       progressLabel="Track 1 playback progress"
       sparkStart={String(TEMP_FIRST_YEAR)}
@@ -1099,6 +1125,7 @@ function NinoTrackPanel() {
         ],
       }}
       tipFor={(e) => `${e.label} · ${formatAnomaly(e.anomalyC)}`}
+      readingExtra={(v) => ninoChangeText(v)}
       scrubLabel="Scrub El Niño timeline"
       progressLabel="Track 2 playback progress"
       sparkStart={NINO_FIRST_LABEL}

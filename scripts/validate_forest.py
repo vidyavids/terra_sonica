@@ -109,6 +109,22 @@ EVENT_CASES: list[tuple[int, str, float]] = [
 ]
 
 
+def change_gain(change: float | None, lo: float, hi: float) -> float:
+    """Change-voice gain: 2001 (no previous year) is silent; otherwise
+    0.02 + 0.08 * (change - lo) / (hi - lo), well under the 0.3 main peak."""
+    if change is None:
+        return 0.0
+    return 0.02 + 0.08 * (change - lo) / (hi - lo)
+
+
+# (year, expected YoY change in pp): pins for the derived change series.
+CHANGE_CASES: list[tuple[int, float]] = [
+    (2012, -1.755782),  # min YoY change
+    (2017, 1.743594),  # max YoY change
+    (2016, -0.38703),
+]
+
+
 def run_self_tests() -> None:
     """Durable regression pins for the finalized track-5 mapping."""
     d_lo = abs(math.log2(TIE_RAW_E4_F4 / 329.63))
@@ -120,6 +136,9 @@ def run_self_tests() -> None:
     for value, want in LINEAR_CASES:
         got = linear_freq(value)
         assert abs(got - want) < 1e-9, f"linear({value}) = {got}, want {want}"
+    assert change_gain(None, -1.0, 1.0) == 0.0, "2001 must be silent"
+    assert change_gain(1.0, 0.0, 1.0) == 0.10, "max change gain must be 0.10"
+    assert change_gain(0.0, 0.0, 1.0) == 0.02, "min change gain must be 0.02"
 
 
 def main() -> int:
@@ -198,11 +217,18 @@ def main() -> int:
         print("FATAL: YoY step outside bound.", file=sys.stderr)
         return 1
 
+    changes = {y: values[y] - values[y - 1] for y in want_years[1:]}
+    ch_lo, ch_hi = min(changes.values()), max(changes.values())
+    print(f"YoY change range: {ch_lo:+.4f}..{ch_hi:+.4f} pp "
+          f"(min {min(changes, key=changes.__getitem__)}, "
+          f"max {max(changes, key=changes.__getitem__)})")
+
     events = []
     for year in want_years:
         value = values[year]
         raw = linear_freq(value)
         note, quantized = quantize(raw)
+        change = changes.get(year)
         events.append({
             "year": year,
             "treeCoverPct": value,
@@ -210,6 +236,8 @@ def main() -> int:
             "linearHz": round(raw, 4),
             "note": note,
             "quantizedHz": quantized,
+            "changeRate": None if change is None else round(change, 6),
+            "changeGain": round(change_gain(change, ch_lo, ch_hi), 4),
         })
     by_ev = {e["year"]: e for e in events}
     for year, note, raw1 in EVENT_CASES:
@@ -220,6 +248,11 @@ def main() -> int:
         assert abs(event["linearHz"] - raw1) < 0.06, (year, event["linearHz"])
     print("  event spot-checks pass: "
           + ", ".join(f"{y} {n}" for y, n, _ in EVENT_CASES))
+    for year, rate in CHANGE_CASES:
+        assert by_ev[year]["changeRate"] == rate, (year, by_ev[year]["changeRate"])
+    assert by_ev[2001]["changeRate"] is None, "2001 must have no change rate"
+    assert by_ev[2001]["changeGain"] == 0.0, "2001 change voice must be silent"
+    print("  change spot-checks pass: 2012 -1.755782, 2017 +1.743594 pp")
 
     payload = {
         "provenance": {
@@ -251,6 +284,9 @@ def main() -> int:
             "quantization": "nearest E-natural-minor note by "
                             "ABS(LOG(raw/note, 2)); ties resolve to the higher "
                             "note; raw frequencies clamp to [E3, B5].",
+            "changeVoice": "second voice at quantizedHz * 1.5; gain "
+                           "0.02 + 0.08 * (change - lo) / (hi - lo) over "
+                           "2002-2024 YoY-change range; 2001 silent (gain 0.0).",
             "noteMs": 700,
             "pitchSetHz": {name: freq for name, freq in NOTES},
         },
