@@ -472,48 +472,30 @@ export function TrackCard<TEvent extends TrackEventBase>(
         />
       </div>
 
-      {props.worldMap ? (
+      {props.worldMap && (
         <WorldMapVisual
           spec={props.worldMap}
           viewIndex={view.index}
           status={controls.status}
-          stopCount={controls.stopCount}
           onPlayPause={() => {
             if (controls.status === 'playing') controls.pause();
             else controls.play();
           }}
-          overlay={
-            <>
-              <AudioVisualizer getAnalyser={props.getTap} />
-              <div className="mt-3">
-                <Sparkline
-                  compact
-                  values={events.map((e) => e.anomalyC)}
-                  activeIndex={controls.untouched ? null : view.index}
-                  startLabel={props.sparkStart}
-                  endLabel={props.sparkEnd}
-                  caption={props.sparkCaption}
-                  description={props.sparkDescription}
-                  unit={props.sparkUnit}
-                />
-              </div>
-            </>
-          }
         />
-      ) : (
-        <div className="mt-5">
-          <Sparkline
-            values={events.map((e) => e.anomalyC)}
-            activeIndex={controls.untouched ? null : view.index}
-            startLabel={props.sparkStart}
-            endLabel={props.sparkEnd}
-            caption={props.sparkCaption}
-            description={props.sparkDescription}
-            unit={props.sparkUnit}
-          />
-          <AudioVisualizer getAnalyser={props.getTap} />
-        </div>
       )}
+      <AudioVisualizer getAnalyser={props.getTap} />
+      <div className="mt-3">
+        <Sparkline
+          compact
+          values={events.map((e) => e.anomalyC)}
+          activeIndex={controls.untouched ? null : view.index}
+          startLabel={props.sparkStart}
+          endLabel={props.sparkEnd}
+          caption={props.sparkCaption}
+          description={props.sparkDescription}
+          unit={props.sparkUnit}
+        />
+      </div>
       {props.explain(view, controls.untouched, controls.status)}
       {!guideDismissed && controls.untouched && (
         <div className="mt-4 flex items-start justify-between gap-3 rounded border border-atmos/30 bg-atmos/10 p-3 text-sm text-slate-200">
@@ -728,6 +710,7 @@ const NINO_WORLD_MAP: WorldMapSpec = {
   kind: 'frames',
   frameSrc: ninoFrameSrc,
   count: ninoData.events.length,
+  legend: { min: '-2.25', max: '+2.25', unit: '°C' },
   region: {
     viewW: regionOverlays.nino.view[0],
     viewH: regionOverlays.nino.view[1],

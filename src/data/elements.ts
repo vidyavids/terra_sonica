@@ -61,7 +61,7 @@ export const ELEMENTS: Element[] = [
     description:
       'Water listens to the tropical Pacific as it swings between cool La Niña and warm El Niño: 80 months of ocean temperature, one month per note.',
     context:
-      'El Niño is driven only by verified Niño 3.4 sea-surface temperature anomalies. The NASA visualization beside the player is contextual, not synchronized with the sound.',
+      'El Niño is driven only by verified Niño 3.4 sea-surface temperature anomalies. The map changes with the data as the track plays.',
     image:
       '/media/elnino_2026_ssta_avw_ssha_1010_nolabels.02200_preview.jpg',
     imageAlt:
@@ -85,7 +85,7 @@ export const ELEMENTS: Element[] = [
     description:
       'Earth listens to the Amazon: twenty-four years of MODIS tree-cover estimates over the Brazilian Legal Amazon, one year per note; denser-canopy years sound high.',
     context:
-      'Hear the Forest is driven only by annual means from the supplied export — mean canopy-cover percentages, satellite estimates of canopy, not a measure of clearing. The NASA visualization beside the player is contextual, not synchronized with the sound.',
+      'Hear the Forest is driven only by annual means from the supplied export — mean canopy-cover percentages, satellite estimates of canopy, not a measure of clearing. The map changes with the data as the track plays.',
     image: '/images/earth-forest-amazon.jpg',
     imageAlt: 'Amazon rainforest in northern Brazil, MODIS satellite image',
     subs: [
@@ -108,7 +108,7 @@ export const ELEMENTS: Element[] = [
     description:
       'Fire listens to burning: six years of MODIS active-fire detections over Brazil, one month per note; higher pitch means more detections.',
     context:
-      'Hear the Fire is driven only by verified monthly detection counts. The NASA visualization beside the player is contextual, not synchronized with the sound.',
+      'Hear the Fire is driven only by verified monthly detection counts. The map changes with the data as the track plays.',
     image: '/images/fire-greece-modis.jpg',
     imageAlt:
       'Fires in Greece with a smoke plume over the Aegean Sea, MODIS satellite image',

@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import type { TrackStatus } from '../hooks/useTrackPlayer';
+
+export interface MapLegend {
+  min: string;
+  max: string;
+  unit: string;
+}
 
 export interface WorldMapFramesSpec {
   kind: 'frames';
@@ -10,6 +15,8 @@ export interface WorldMapFramesSpec {
   count: number;
   /** Optional outlined region + label drawn over the frames. */
   region?: RegionOverlay;
+  /** Optional color-scale legend chip (bottom-left of the map). */
+  legend?: MapLegend;
   credit: string;
 }
 
@@ -30,11 +37,10 @@ export interface RegionOverlay {
 }
 
 export interface Choropleth {
-  /** Fill color for the region paths. */
-  fill: string;
-  /** Fill opacity range across the normalized data value. */
-  min: number;
-  max: number;
+  /** Fill color at the minimum data value (pale end). */
+  from: string;
+  /** Fill color at the maximum data value (deep end). */
+  to: string;
 }
 
 export interface WorldMapOverlaySpec {
@@ -59,19 +65,28 @@ const PRELOAD_CACHE_MAX = 40;
 /** Base-image brightness range across the normalized data value. */
 const BRIGHTNESS_MIN = 0.45;
 const BRIGHTNESS_MAX = 1.35;
+/** SSTA legend gradient; stops match render_ssta.py RAMP at ±SCALE. */
+const SSTA_GRADIENT =
+  'linear-gradient(to right, #2166AC 0%, #ABD0E6 25%, #E8F1F8 43.3%, #F7F7F7 50%, #F6E3C5 56.7%, #FDBB84 75%, #B2182B 100%)';
+
+/** Lerp two #rrggbb colors by t in [0, 1]. */
+function mixHex(from: string, to: string, t: number): string {
+  const c0 = [1, 3, 5].map((i) => parseInt(from.slice(i, i + 2), 16));
+  const c1 = [1, 3, 5].map((i) => parseInt(to.slice(i, i + 2), 16));
+  const c = c0.map((v, i) => Math.round(v + (c1[i] - v) * t));
+  return `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+}
 
 /** Outlined region + label layer shared by frames and overlay modes. */
 function RegionLayer({
   region,
   contextPaths,
   fill,
-  fillOpacity,
   isDesktop,
 }: {
   region: RegionOverlay;
   contextPaths?: string[];
   fill?: string;
-  fillOpacity?: number;
   isDesktop: boolean;
 }) {
   return (
@@ -101,8 +116,7 @@ function RegionLayer({
               d={d}
               fill={fill}
               stroke="none"
-              className="transition-opacity duration-500 motion-reduce:transition-none"
-              style={{ opacity: fillOpacity }}
+              className="transition-colors duration-500 motion-reduce:transition-none"
             />
           ))}
         {region.paths.map((d, i) => (
@@ -149,50 +163,26 @@ interface WorldMapVisualProps {
   /** Currently sounded/selected event index. */
   viewIndex: number;
   status: TrackStatus;
-  /** Increments on every stop; the map resets to the first frame on stop. */
-  stopCount: number;
-  /** Chart + waveform strip overlaid along the map's bottom edge. */
-  overlay?: ReactNode;
   /** Play/pause the track; the stage button mirrors the transport control. */
   onPlayPause: () => void;
 }
 
 /**
- * Decorative data-driven world map shown inside the shared player. The Air
- * track steps through real NASA SVS 5450 anomaly-map frames; other tracks
- * show the real NASA Blue Marble with a warm overlay whose opacity follows
- * the track's normalized data value. Driven purely by player state, so it
- * stays in sync with the sounded note and the playhead: pause holds the
- * frame, seek/jump moves it, stop resets it to the first frame. The map,
- * heading, strip, and credit are decorative (aria-hidden); the centered
- * Play/Pause button is the exposed control that mirrors transport state.
+ * Decorative data-driven world map shown inside the shared player. Driven
+ * purely by player state, so it stays in sync with the sounded note and the
+ * playhead: pause holds the frame, seek/jump moves it, stop resets it to
+ * the first frame. The map, heading, legend, and credit are decorative
+ * (aria-hidden); the centered Play/Pause button is the exposed control
+ * that mirrors transport state.
  */
 export default function WorldMapVisual({
   spec,
   viewIndex,
   status,
-  stopCount,
-  overlay,
   onPlayPause,
 }: WorldMapVisualProps) {
   const count = spec.kind === 'frames' ? spec.count : spec.values01.length;
-  // Pin to the first frame after a stop (stop leaves the sounded position
-  // in place) until the position moves; resuming playback unpins via status.
-  const [prevPos, setPrevPos] = useState({ stopCount, viewIndex });
-  const [stopPin, setStopPin] = useState(false);
-  if (
-    prevPos.stopCount !== stopCount ||
-    prevPos.viewIndex !== viewIndex
-  ) {
-    setPrevPos({ stopCount, viewIndex });
-    setStopPin(
-      prevPos.stopCount !== stopCount && prevPos.viewIndex === viewIndex,
-    );
-  }
-  const index =
-    stopPin && status === 'idle'
-      ? 0
-      : Math.min(count - 1, Math.max(0, viewIndex));
+  const index = Math.min(count - 1, Math.max(0, viewIndex));
 
   const frameSrc = spec.kind === 'frames' ? spec.frameSrc(index) : null;
   const [[shown, prev], setShown] = useState<[string | null, string | null]>([
@@ -231,11 +221,7 @@ export default function WorldMapVisual({
       <p aria-hidden="true" className="font-semibold text-atmos">
         World Map Visual
       </p>
-      {/* The bottom padding extends the stage below the map so the overlaid
-          strip straddles the map's bottom edge instead of covering it, and so
-          the overlay always fits inside the stage (no clipping) at any width.
-          Taller on small screens, where the strip is tall relative to the map. */}
-      <div className="relative mt-3 pb-40 md:pb-24">
+      <div className="relative mt-3">
         <div className="relative">
           <div
             aria-hidden="true"
@@ -266,6 +252,18 @@ export default function WorldMapVisual({
                 {spec.region && (
                   <RegionLayer region={spec.region} isDesktop={isDesktop} />
                 )}
+                {spec.legend && (
+                  <div className="pointer-events-none absolute bottom-2 left-2 flex items-center gap-1.5 rounded bg-abyss/70 px-2 py-1 font-mono text-[10px] text-cloud md:text-xs">
+                    <span>{spec.legend.min}</span>
+                    <span
+                      className="block h-2.5 w-20 rounded-sm md:w-28"
+                      style={{ background: SSTA_GRADIENT }}
+                    />
+                    <span>
+                      {spec.legend.max} {spec.legend.unit}
+                    </span>
+                  </div>
+                )}
               </>
             ) : (
               <>
@@ -287,12 +285,13 @@ export default function WorldMapVisual({
                 <RegionLayer
                   region={spec.region}
                   contextPaths={spec.contextPaths}
-                  fill={spec.choropleth?.fill}
-                  fillOpacity={
+                  fill={
                     spec.choropleth
-                      ? spec.choropleth.min +
-                        (spec.choropleth.max - spec.choropleth.min) *
-                          spec.values01[index]
+                      ? mixHex(
+                          spec.choropleth.from,
+                          spec.choropleth.to,
+                          spec.values01[index],
+                        )
                       : undefined
                   }
                   isDesktop={isDesktop}
@@ -310,14 +309,6 @@ export default function WorldMapVisual({
             <span aria-hidden="true">{playing ? '❚❚' : '▶'}</span>
           </button>
         </div>
-        {overlay && (
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 bg-abyss/70 px-3 pb-3"
-          >
-            {overlay}
-          </div>
-        )}
       </div>
       <p
         aria-hidden="true"

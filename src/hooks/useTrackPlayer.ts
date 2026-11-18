@@ -13,8 +13,6 @@ export interface TrackControls<TEvent extends TrackEventBase> {
   /** Current tick, or the cursor preview when not playing. Index is absolute. */
   view: TEvent & { index: number; progress: number };
   untouched: boolean;
-  /** Increments on every stop so visuals can reset without touching audio. */
-  stopCount: number;
   play: () => void;
   pause: () => void;
   replay: () => void;
@@ -46,7 +44,6 @@ export function useTrackPlayer<TEvent extends TrackEventBase>(
   const [status, setStatus] = useState<TrackStatus>('idle');
   const [tick, setTick] = useState<Tick | null>(null);
   const [cursor, setCursor] = useState(0);
-  const [stopCount, setStopCount] = useState(0);
 
   useEffect(() => {
     return conductor.register(() => {
@@ -141,7 +138,9 @@ export function useTrackPlayer<TEvent extends TrackEventBase>(
     genRef.current += 1;
     playerRef.current?.stop();
     setStatus('idle');
-    setStopCount((c) => c + 1);
+    // Stop returns to the first note: selection, progress, and scrub reset.
+    setTick({ ...events[0], index: 0, progress: 0 });
+    setCursor(0);
   };
 
   const scrub = (index: number) => {
@@ -166,7 +165,6 @@ export function useTrackPlayer<TEvent extends TrackEventBase>(
     status,
     view,
     untouched: tick === null && cursor === 0,
-    stopCount,
     play,
     pause,
     replay,

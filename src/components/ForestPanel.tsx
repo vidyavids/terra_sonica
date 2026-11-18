@@ -34,7 +34,7 @@ const FOREST_WORLD_MAP: WorldMapSpec = {
     label: 'Brazilian Legal Amazon',
   },
   contextPaths: regionOverlays.forest.contextPaths,
-  choropleth: { fill: '#36A886', min: 0.3, max: 0.95 },
+  choropleth: { from: '#C6E4E2', to: '#36A886' },
   credit: 'Tree cover: MODIS MOD44B C6.1 annual means. Boundary: IBGE.',
 };
 
