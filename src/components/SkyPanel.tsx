@@ -286,8 +286,9 @@ export function SkyTrackPanel() {
             </a>
           </p>
           <p className="mt-1 font-mono text-sm text-slate-300">
-            Covers 2012–2023 while the sound covers 2012–2025;
-            contextual, not synchronized with the sound.
+            Covers 2012–2023 while the sound covers 2012–2025.
+            Contextual video — the map above changes with the data as
+            the track plays.
           </p>
         </>
       }

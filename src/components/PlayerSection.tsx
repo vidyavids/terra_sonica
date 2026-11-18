@@ -722,7 +722,8 @@ const NINO_WORLD_MAP: WorldMapSpec = {
     mobileY: regionOverlays.nino.labelMobile.y,
     label: 'Niño 3.4 — tropical Pacific',
   },
-  credit: 'SST anomaly: NOAA ERSSTv6, 1996–2025 baseline.',
+  credit:
+    'SST anomaly: NOAA ERSSTv6, 1996–2025 baseline. Base: NASA Blue Marble.',
 };
 
 function explainTemperature(
